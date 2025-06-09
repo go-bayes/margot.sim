@@ -1,0 +1,97 @@
+url: https://yourusername.github.io/margot.sim/
+template:
+  bootstrap: 5
+  bootswatch: cosmo
+
+navbar:
+  structure:
+    left: [intro, reference, articles, tutorials, news]
+    right: [github]
+  components:
+    home:
+      icon: fas fa-home fa-lg
+      href: index.html
+    reference:
+      text: Functions
+      href: reference/index.html
+    github:
+      icon: fab fa-github fa-lg
+      href: https://github.com/yourusername/margot.sim
+
+reference:
+- title: "Core Simulation Functions"
+  desc: "Main functions for simulating longitudinal data"
+  contents:
+  - margot_simulate
+  - margot_simulate_causal
+  - margot_simulate_flex
+  - apply_censoring_post_hoc
+  - print.margot_causal_sim
+
+- title: "Shadowing Framework"
+  desc: "Functions for applying observational distortions"
+  contents:
+  - create_shadow
+  - apply_shadow
+  - apply_shadows
+  - combine_shadows
+  - analyse_shadow_effects
+  - create_item_missingness_shadow
+  - create_positivity_shadow
+  - diagnose_shadowing
+  - print.shadow_effects
+
+- title: "Shadow Methods"
+  desc: "S3 methods for specific shadow types"
+  contents:
+  - apply_shadow.censoring_shadow
+  - apply_shadow.combined_shadow
+  - apply_shadow.item_missingness_shadow
+  - apply_shadow.measurement_error_shadow
+  - apply_shadow.positivity_shadow
+  - apply_shadow.selection_shadow
+
+- title: "Monte Carlo Framework"
+  desc: "Functions for Monte Carlo evaluation"
+  contents:
+  - margot_monte_carlo
+  - compare_mc_results
+  - plot.margot_mc_results
+  - print.margot_mc_results
+  - summary.margot_mc_results
+  - print.mc_comparison
+
+- title: "Distribution Specifications"
+  desc: "Functions for flexible distributions"
+  contents:
+  - create_distribution
+  - create_distribution_set
+  - generate_from_dist
+  - check_distribution
+  - margot_distributions
+  - generate_from_dist.custom_distribution
+  - generate_from_dist.parametric_distribution
+
+- title: "Utilities and Documentation"
+  desc: "Helper functions and documentation"
+  contents:
+  - margot_report_sim
+  - margot_scm_details
+  - margot_scm_overview
+  - create_scm_diagram
+  - validate_scm_assumptions
+  - margot_convert_format
+  - margot_extract_var
+  - margot_missingness_summary
+
+- title: "Examples"
+  desc: "Example functions demonstrating package features"
+  contents:
+  - starts_with("example_")
+  - run_all_examples
+
+- title: "Internal Testing Functions"
+  desc: "Functions for package testing"
+  contents:
+  - test_censoring_simple
+
