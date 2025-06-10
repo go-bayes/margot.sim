@@ -1,0 +1,1 @@
+- remember to update _pkgdown.yml after adding or deleting exported functions

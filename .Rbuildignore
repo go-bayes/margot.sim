@@ -10,3 +10,10 @@
 ^LICENSE\.md$
 ^\.claude$
 ^\.dev-notes$
+
+# Planning documents
+^IMPLEMENTATION_PLAN\.md$
+^.*_PLAN\.md$
+^TODO\.md$
+^NOTES\.md$
+^planning$

@@ -11,6 +11,7 @@ articles:
     contents:
     - applying-shadows
     - monte-carlo-simple
+    - shift-interventions
 navbar:
   structure:
     left:
@@ -39,6 +40,8 @@ navbar:
         href: articles/applying-shadows.html
       - text: Monte Carlo Evaluation
         href: articles/monte-carlo-simple.html
+      - text: Shift Interventions
+        href: articles/shift-interventions.html
     github:
       icon: fab fa-github fa-lg
       href: https://github.com/go-bayes/margot.sim
@@ -52,6 +55,15 @@ reference:
   - margot_simulate_flex
   - apply_censoring_post_hoc
   - print.margot_causal_sim
+- title: Intervention Functions
+  desc: Functions for creating treatment interventions
+  contents:
+  - create_shift_intervention
+  - create_threshold_shift
+  - create_wave_specific_shift
+  - create_lmtp_style_shifts
+  - create_mtp_intervention
+  - create_ips_intervention
 - title: Shadowing Framework
   desc: Functions for applying observational distortions
   contents:

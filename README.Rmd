@@ -300,7 +300,7 @@ If you use margot.sim in your research, please cite:
 
 Observational data is often a poor reflection of reality. The `margot.sim` package provides a simulation framework to quantify how statistical estimators perform when the data they are fed are *shadows* of a true causal process. This concept is nods to Plato's Allegory of the Cave, where prisoners mistake shadows for real forms [@bloom1968republic]. `margot.sim` allows researchers to generate data from a known causal truth and then systematically distort it with "shadows" to see how well an estimator can glimpse the ground truth (or underlying forms).
 
-The framework's power comes from its consistent architecture. Recurring observational challenges—such as item-level missingness that creates more realistic missing data patterns, and positivity violations that test the boundaries of causal identification—are both implemented as distinct shadows. This modular design maintains **a clean separation between the true data-generating process and the distorted data that investigators  observe, allowing for principled evaluation of statistical methods in the face of real-world data limitations [@bulbulia2024wierd].
+The framework's power comes from its consistent architecture. Recurring observational challenges—such as item-level missingness that creates more realistic missing data patterns, and positivity violations that test the boundaries of causal identification—are both implemented as distinct shadows. This modular design maintains **a clean separation between the true data-generating process and the distorted data that investigators  observe**, allowing for principled evaluation of statistical methods in the face of real-world data limitations [@bulbulia2024wierd].
 
 ## References
 
