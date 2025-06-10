@@ -280,7 +280,7 @@ example(margot_monte_carlo)
 
 ## Contributing
 
-Contributions are welcome! Please:
+Contributions are welcome. Please:
 
 1. Fork the repository
 2. Create a feature branch
@@ -296,11 +296,24 @@ MIT License
 
 If you use margot.sim in your research, please cite:
 
-## Note
+## Why do we need a beefed-up simulator?
 
-Observational data is often a poor reflection of reality. The `margot.sim` package provides a simulation framework to quantify how statistical estimators perform when the data they are fed are *shadows* of a true causal process. This concept is nods to Plato's Allegory of the Cave, where prisoners mistake shadows for real forms [@bloom1968republic]. `margot.sim` allows researchers to generate data from a known causal truth and then systematically distort it with "shadows" to see how well an estimator can glimpse the ground truth (or underlying forms).
+Real studies seldom hand us tidy, truth-telling data. Instead we get scratches and dents:
+*	Missing answers.  People skip survey items or drop out of follow-ups.
+*	Blurred measurements.  Blood-pressure cuffs mis-read, self-reports round up or down.
+*	Uneven treatment chances.  Some groups are far more (or far less) likely to receive the exposure we're studying, making "apples-with-apples" comparisons tricky.
 
-The framework's power comes from its consistent architecture. Recurring observational challenges—such as item-level missingness that creates more realistic missing data patterns, and positivity violations that test the boundaries of causal identification—are both implemented as distinct shadows. This modular design maintains **a clean separation between the true data-generating process and the distorted data that investigators  observe**, allowing for principled evaluation of statistical methods in the face of real-world data limitations [@bulbulia2024wierd].
+Traditional toy simulations gloss over these hassles, so a method that looks brilliant on paper can wilt in practice. Here we:
+
+1.	Mirror the messiness.  Simulating truth and then adding "shadows" let us layer on realistic missing data, measurement error, and selection bias.
+That means our virtual datasets behave more like the ones sitting on an analyst's desk.
+2.	Stress-test causal tools.  We can ask, "Does this method still give the right answer if half the blood-pressure readings are off by 5 mmHg? If drop-out is twice as common among the treated?"  Running thousands of such scenarios in silico is faster, cheaper, and safer than discovering the problem after a costly field study.
+3.	Keep truth separate from distortion.  By generating the "clean" data first and then adding each shadow, we always know the ground truth.  That makes it painless to check how far an estimator strays once the smoke and mirrors appear.
+4.	Plug in any causal question so that users can tailor simulations to the exact claim they plan to make.
+5.	Build confidence.  Showing that a method works under sharp, realistic tests—especially can gives us (and journal referees) fewer reasons to worry.
+
+
+The `margot.sim` package provides a simulation framework to quantify how statistical estimators perform when the data they are fed are *shadows* of a true causal process. This concept nods to Plato's "Allegory of the Cave," where prisoners mistake shadows cast on walls for reality [@bloom1968republic]. `margot.sim` gives us access to simulated ground truth so that we can evaluate how far our data and modelling choices can mislead us. The framework's power comes from its consistent architecture that maintains **a clean separation between the true data-generating process and the distorted data that investigators observe**, allowing for principled evaluation of statistical methods in the face of data limitations that inevitably arise in science [@bulbulia2024wierd].
 
 ## References
 
