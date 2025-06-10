@@ -111,7 +111,7 @@ longitudinal data following a semi-Markovian structural causal model
 <span><span class="co">#&gt;  - attr(*, "n_waves")= int 5</span></span>
 <span><span class="co">#&gt;  - attr(*, "processed")= logi TRUE</span></span>
 <span><span class="co">#&gt;  - attr(*, "margot_meta")=List of 15</span></span>
-<span><span class="co">#&gt;   ..$ params                  :List of 27</span></span>
+<span><span class="co">#&gt;   ..$ params                  :List of 32</span></span>
 <span><span class="co">#&gt;   .. ..$ cens_rate     : num 0.1</span></span>
 <span><span class="co">#&gt;   .. ..$ cens_a_coef   : num 0.2</span></span>
 <span><span class="co">#&gt;   .. ..$ cens_l_coef   : num 0.1</span></span>
@@ -133,6 +133,11 @@ longitudinal data following a semi-Markovian structural causal model
 <span><span class="co">#&gt;   .. ..$ a_lag_y_coef  : num 0.25</span></span>
 <span><span class="co">#&gt;   .. ..$ a_b_y_het     : num 0.1</span></span>
 <span><span class="co">#&gt;   .. ..$ a_l_y_het     : num 0.05</span></span>
+<span><span class="co">#&gt;   .. ..$ a_b1_y_het    : num 0.1</span></span>
+<span><span class="co">#&gt;   .. ..$ a_b2_y_het    : num 0.08</span></span>
+<span><span class="co">#&gt;   .. ..$ a_b3_y_het    : num 0.06</span></span>
+<span><span class="co">#&gt;   .. ..$ a_y0_y_het    : num 0.15</span></span>
+<span><span class="co">#&gt;   .. ..$ a_a0_y_het    : num 0.12</span></span>
 <span><span class="co">#&gt;   .. ..$ y_cor         : num 0.5</span></span>
 <span><span class="co">#&gt;   .. ..$ y2_shrink     : num 0.8</span></span>
 <span><span class="co">#&gt;   .. ..$ y3_shrink     : num 0.6</span></span>
@@ -155,7 +160,7 @@ longitudinal data following a semi-Markovian structural causal model
 <span><span class="co">#&gt;   ..$ waves                   : num 3</span></span>
 <span><span class="co">#&gt;   ..$ n                       : num 1000</span></span>
 <span><span class="co">#&gt;   ..$ format                  : chr "wide"</span></span>
-<span><span class="co">#&gt;   ..$ timestamp               : POSIXct[1:1], format: "2025-06-10 03:57:11"</span></span>
+<span><span class="co">#&gt;   ..$ timestamp               : POSIXct[1:1], format: "2025-06-10 06:38:58"</span></span>
 <span><span class="co">#&gt;   ..$ shadows_applied         : logi FALSE</span></span></code></pre></div>
 <p>The generated data includes: - <code>id</code>: Subject identifier -
 <code>b1-b5</code>: Baseline covariates - <code>t0_a</code>,
@@ -189,7 +194,7 @@ longitudinal data following a semi-Markovian structural causal model
 <span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">sim_custom</span><span class="op">$</span><span class="va">t2_y</span><span class="op">)</span>    <span class="co"># Binary</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;   0   1 </span></span>
-<span><span class="co">#&gt; 244 256</span></span></code></pre></div>
+<span><span class="co">#&gt; 240 260</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="adding-censoring">Adding Censoring<a class="anchor" aria-label="anchor" href="#adding-censoring"></a>
@@ -233,14 +238,14 @@ censoring:</p>
 <span><span class="co"># View structure</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sim_long</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 11</span></span></span>
-<span><span class="co">#&gt;      id    b1    b2     b3    b4     b5  time     a      y</span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>     1 -<span style="color: #BB0000;">1.52</span> -<span style="color: #BB0000;">1.42</span> -<span style="color: #BB0000;">0.815</span> 0.898 -<span style="color: #BB0000;">1.76</span>      0     1 -<span style="color: #BB0000;">2.05</span> </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>     1 -<span style="color: #BB0000;">1.52</span> -<span style="color: #BB0000;">1.42</span> -<span style="color: #BB0000;">0.815</span> 0.898 -<span style="color: #BB0000;">1.76</span>      1     0 -<span style="color: #BB0000;">0.702</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>     1 -<span style="color: #BB0000;">1.52</span> -<span style="color: #BB0000;">1.42</span> -<span style="color: #BB0000;">0.815</span> 0.898 -<span style="color: #BB0000;">1.76</span>      2     1 -<span style="color: #BB0000;">0.448</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>     1 -<span style="color: #BB0000;">1.52</span> -<span style="color: #BB0000;">1.42</span> -<span style="color: #BB0000;">0.815</span> 0.898 -<span style="color: #BB0000;">1.76</span>      3     0  0.191</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>     1 -<span style="color: #BB0000;">1.52</span> -<span style="color: #BB0000;">1.42</span> -<span style="color: #BB0000;">0.815</span> 0.898 -<span style="color: #BB0000;">1.76</span>      4    <span style="color: #BB0000;">NA</span>  1.14 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span>     2  1.40  3.08  0.996 0.252  0.530     0     1  0.592</span></span>
+<span><span class="co">#&gt;      id    b1    b2     b3    b4     b5  time     a       y</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>     1 -<span style="color: #BB0000;">1.52</span> -<span style="color: #BB0000;">1.42</span> -<span style="color: #BB0000;">0.815</span> 0.898 -<span style="color: #BB0000;">1.76</span>      0     1 -<span style="color: #BB0000;">2.05</span>  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>     1 -<span style="color: #BB0000;">1.52</span> -<span style="color: #BB0000;">1.42</span> -<span style="color: #BB0000;">0.815</span> 0.898 -<span style="color: #BB0000;">1.76</span>      1     0 -<span style="color: #BB0000;">0.896</span> </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>     1 -<span style="color: #BB0000;">1.52</span> -<span style="color: #BB0000;">1.42</span> -<span style="color: #BB0000;">0.815</span> 0.898 -<span style="color: #BB0000;">1.76</span>      2     1 -<span style="color: #BB0000;">0.487</span> </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>     1 -<span style="color: #BB0000;">1.52</span> -<span style="color: #BB0000;">1.42</span> -<span style="color: #BB0000;">0.815</span> 0.898 -<span style="color: #BB0000;">1.76</span>      3     0 -<span style="color: #BB0000;">0.014</span><span style="color: #BB0000; text-decoration: underline;">8</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>     1 -<span style="color: #BB0000;">1.52</span> -<span style="color: #BB0000;">1.42</span> -<span style="color: #BB0000;">0.815</span> 0.898 -<span style="color: #BB0000;">1.76</span>      4    <span style="color: #BB0000;">NA</span>  1.10  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span>     2  1.40  3.08  0.996 0.252  0.530     0     1  0.592 </span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 2 more variables: not_lost_following_wave &lt;int&gt;, l &lt;dbl&gt;</span></span></span>
 <span></span>
 <span><span class="co"># Number of observations per person</span></span>
@@ -265,6 +270,12 @@ censoring:</p>
 <span>  waves <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>  intervention <span class="op">=</span> <span class="va">always_treat</span></span>
 <span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning in check_positivity(df$t0_a, "t0_a", 0): Positivity violation at time 0</span></span>
+<span><span class="co">#&gt; for t0_a: 100.0% treated (threshold: 1.0%)</span></span>
+<span><span class="co">#&gt; Warning in check_positivity(df[[paste0("t", t, "_a")]], paste0("t", t, "_a"), :</span></span>
+<span><span class="co">#&gt; Positivity violation at time 1 for t1_a: 100.0% treated (threshold: 1.0%)</span></span>
+<span><span class="co">#&gt; Warning in check_positivity(df[[paste0("t", t, "_a")]], paste0("t", t, "_a"), :</span></span>
+<span><span class="co">#&gt; Positivity violation at time 2 for t2_a: 100.0% treated (threshold: 1.0%)</span></span>
 <span></span>
 <span><span class="co"># Verify intervention was applied</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">sim_intervention</span><span class="op">$</span><span class="va">t1_a</span><span class="op">)</span>  <span class="co"># All 1s</span></span>

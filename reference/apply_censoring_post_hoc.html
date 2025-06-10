@@ -63,7 +63,7 @@ the stored censoring probabilities or a custom censoring function.</p>
 
 
 <dl><dt id="arg-complete-data">complete_data<a class="anchor" aria-label="anchor" href="#arg-complete-data"></a></dt>
-<dd><p>Data frame from margot_simulate</p></dd>
+<dd><p>Data frame from margot_simulate with "margot_meta" attribute</p></dd>
 
 
 <dt id="arg-censoring-type">censoring_type<a class="anchor" aria-label="anchor" href="#arg-censoring-type"></a></dt>
@@ -72,22 +72,74 @@ the stored censoring probabilities or a custom censoring function.</p>
 
 
 <dt id="arg-censoring-function">censoring_function<a class="anchor" aria-label="anchor" href="#arg-censoring-function"></a></dt>
-<dd><p>Function for custom censoring</p></dd>
+<dd><p>Function for custom censoring (required if censoring_type = "custom").
+Should take a data frame and return it with censoring applied.</p></dd>
 
 
 <dt id="arg-apply-process-function">apply_process_function<a class="anchor" aria-label="anchor" href="#arg-apply-process-function"></a></dt>
-<dd><p>Logical. Apply margot_process_longitudinal?</p></dd>
+<dd><p>Logical. Apply margot_process_longitudinal to create
+not-lost indicators? Default: TRUE</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Additional arguments for processing function</p></dd>
+<dd><p>Additional arguments passed to margot_process_longitudinal or
+the custom censoring_function</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>Data frame with censoring applied and indicators created</p>
+    <p>Data frame with censoring applied and indicators created. The returned
+  object maintains the "margot_meta" attribute with additional censoring information.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>## Censoring Logic</p>
+<p>When a subject is censored at wave k:
+1. All variables from wave k onwards are set to NA
+2. The subject is considered "lost to follow-up" from that point
+3. No future data is observed for that subject</p>
+<p>## Not-Lost Indicators</p>
+<p>When `apply_process_function = TRUE`, the function creates "not_lost" indicators:
+- `t0_not_lost_following_wave`: 1 if subject has data at t1, 0 otherwise
+- `t1_not_lost_following_wave`: 1 if subject has data at t2, 0 otherwise
+- And so on...</p>
+<p>These indicators are useful for:
+- Inverse probability of censoring weights (IPCW)
+- Determining the at-risk population at each wave
+- Creating proper denominators for survival analyses</p>
+<p>## Important Note</p>
+<p>Unlike some implementations, this function does NOT carry forward last
+observations. When a subject is censored:
+- Future values are set to NA (not carried forward)
+- This represents true missingness due to dropout
+- Methods like IPCW or multiple imputation should be used for analysis</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p>[margot_process_longitudinal()] for details on indicator creation</p></div>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Generate complete data</span></span></span>
+<span class="r-in"><span><span class="va">complete</span> <span class="op">&lt;-</span> <span class="fu"><a href="margot_simulate.html">margot_simulate</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">1000</span>, waves <span class="op">=</span> <span class="fl">3</span>, </span></span>
+<span class="r-in"><span>                           censoring <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>rate <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Apply censoring </span></span></span>
+<span class="r-in"><span><span class="va">observed</span> <span class="op">&lt;-</span> <span class="fu">apply_censoring_post_hoc</span><span class="op">(</span><span class="va">complete</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Check censoring rates</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">observed</span><span class="op">$</span><span class="va">t0_not_lost_following_wave</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   0   1 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 396 604 </span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">observed</span><span class="op">$</span><span class="va">t1_not_lost_following_wave</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   0   1 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 520 480 </span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 
