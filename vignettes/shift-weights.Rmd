@@ -438,7 +438,7 @@ bias_results <- data.frame(
   )
 
 cat("\n=== Bias Analysis ===\n")
-print(round(bias_results, 3))
+print(bias_results %>% mutate(across(where(is.numeric), ~round(., 3))))
 
 # Visualize bias
 p4 <- ggplot(bias_results[-1, ], aes(x = Analysis, y = Bias, fill = Analysis)) +
@@ -505,30 +505,20 @@ mc_summary <- data.frame(
   Estimator = c("Unweighted", "Weighted"),
   Mean_ATE = c(mean(mc_results$unweighted), mean(mc_results$weighted)),
   SD = c(sd(mc_results$unweighted), sd(mc_results$weighted)),
-  Bias = c(mean(mc_results$unweighted) - effects_unweighted,
+  Bias = c(mean(mc_results$unweighted) - true_pop_effect,
            mean(mc_results$weighted) - true_pop_effect),
-  MSE = c(mean((mc_results$unweighted - effects_unweighted)^2),
+  MSE = c(mean((mc_results$unweighted - true_pop_effect)^2),
           mean((mc_results$weighted - true_pop_effect)^2)),
   Coverage_95 = c(
-    mean(abs(mc_results$unweighted - effects_unweighted) < 1.96 * sd(mc_results$unweighted)),
+    mean(abs(mc_results$unweighted - true_pop_effect) < 1.96 * sd(mc_results$unweighted)),
     mean(abs(mc_results$weighted - true_pop_effect) < 1.96 * sd(mc_results$weighted))
   )
 )
 
 cat("\n=== Monte Carlo Results (", n_mc, " replications) ===\n", sep = "")
-print(round(mc_summary, 4))
+print(mc_summary %>% mutate(across(where(is.numeric), ~round(., 4))))
 
-# Compare performance
-mc_comparison <- data.frame(
-  Estimator = c("Unweighted", "Weighted"),
-  Bias = c(mc_results$bias["unweighted"], mc_results$bias["weighted"]),
-  Variance = c(mc_results$variance["unweighted"], mc_results$variance["weighted"]),
-  MSE = c(mc_results$mse["unweighted"], mc_results$mse["weighted"]),
-  Coverage = c(mc_results$coverage["unweighted"], mc_results$coverage["weighted"])
-)
-
-cat("\n=== Monte Carlo Results ===\n")
-print(round(mc_comparison, 4))
+# The summary statistics already provide the comparison
 ```
 
 ## Practical Recommendations
