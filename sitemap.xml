@@ -1,5 +1,6 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://go-bayes.github.io/margot.sim/404.html</loc></url>
+<url><loc>https://go-bayes.github.io/margot.sim/CLAUDE.html</loc></url>
 <url><loc>https://go-bayes.github.io/margot.sim/ISSUES.html</loc></url>
 <url><loc>https://go-bayes.github.io/margot.sim/LICENSE-text.html</loc></url>
 <url><loc>https://go-bayes.github.io/margot.sim/LICENSE.html</loc></url>
@@ -7,6 +8,7 @@
 <url><loc>https://go-bayes.github.io/margot.sim/articles/basic-simulation.html</loc></url>
 <url><loc>https://go-bayes.github.io/margot.sim/articles/index.html</loc></url>
 <url><loc>https://go-bayes.github.io/margot.sim/articles/monte-carlo-simple.html</loc></url>
+<url><loc>https://go-bayes.github.io/margot.sim/articles/shift-interventions.html</loc></url>
 <url><loc>https://go-bayes.github.io/margot.sim/authors.html</loc></url>
 <url><loc>https://go-bayes.github.io/margot.sim/index.html</loc></url>
 <url><loc>https://go-bayes.github.io/margot.sim/news/index.html</loc></url>
@@ -37,10 +39,16 @@
 <url><loc>https://go-bayes.github.io/margot.sim/reference/create_distribution.html</loc></url>
 <url><loc>https://go-bayes.github.io/margot.sim/reference/create_distribution_diagnostic_plot.html</loc></url>
 <url><loc>https://go-bayes.github.io/margot.sim/reference/create_distribution_set.html</loc></url>
+<url><loc>https://go-bayes.github.io/margot.sim/reference/create_ips_intervention.html</loc></url>
 <url><loc>https://go-bayes.github.io/margot.sim/reference/create_item_missingness_shadow.html</loc></url>
+<url><loc>https://go-bayes.github.io/margot.sim/reference/create_lmtp_style_shifts.html</loc></url>
+<url><loc>https://go-bayes.github.io/margot.sim/reference/create_mtp_intervention.html</loc></url>
 <url><loc>https://go-bayes.github.io/margot.sim/reference/create_positivity_shadow.html</loc></url>
 <url><loc>https://go-bayes.github.io/margot.sim/reference/create_scm_diagram.html</loc></url>
 <url><loc>https://go-bayes.github.io/margot.sim/reference/create_shadow.html</loc></url>
+<url><loc>https://go-bayes.github.io/margot.sim/reference/create_shift_intervention.html</loc></url>
+<url><loc>https://go-bayes.github.io/margot.sim/reference/create_threshold_shift.html</loc></url>
+<url><loc>https://go-bayes.github.io/margot.sim/reference/create_wave_specific_shift.html</loc></url>
 <url><loc>https://go-bayes.github.io/margot.sim/reference/diagnose_shadowing.html</loc></url>
 <url><loc>https://go-bayes.github.io/margot.sim/reference/dot-default_sim_params.html</loc></url>
 <url><loc>https://go-bayes.github.io/margot.sim/reference/example_basic_simulation.html</loc></url>
@@ -81,6 +89,7 @@
 <url><loc>https://go-bayes.github.io/margot.sim/reference/print.mc_comparison.html</loc></url>
 <url><loc>https://go-bayes.github.io/margot.sim/reference/print.shadow_effects.html</loc></url>
 <url><loc>https://go-bayes.github.io/margot.sim/reference/run_all_examples.html</loc></url>
+<url><loc>https://go-bayes.github.io/margot.sim/reference/shift-interventions.html</loc></url>
 <url><loc>https://go-bayes.github.io/margot.sim/reference/summary.margot_mc_results.html</loc></url>
 <url><loc>https://go-bayes.github.io/margot.sim/reference/test_censoring_simple.html</loc></url>
 <url><loc>https://go-bayes.github.io/margot.sim/reference/validate_proportions.html</loc></url>
