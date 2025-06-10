@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">margot.sim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -25,6 +25,15 @@
     <li><a class="dropdown-item" href="../articles/applying-shadows.html">Applying Observational Shadows</a></li>
     <li><a class="dropdown-item" href="../articles/monte-carlo-simple.html">Monte Carlo Evaluation</a></li>
     <li><a class="dropdown-item" href="../articles/shift-interventions.html">Shift Interventions</a></li>
+    <li><a class="dropdown-item" href="../articles/transport-weights-shadows.html">Transport Weights and Shadows</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Practical Applications</h6></li>
+    <li><a class="dropdown-item" href="../articles/shift-weights.html">Shift Interventions with Sampling Weights</a></li>
+    <li><a class="dropdown-item" href="../articles/censoring-effect-mod.html">Censoring and Effect Modification</a></li>
+    <li><a class="dropdown-item" href="../articles/heterogeneous-effects.html">Heterogeneous Treatment Effects</a></li>
+    <li><a class="dropdown-item" href="../articles/advanced-shift-interventions.html">Advanced Shift Interventions</a></li>
+    <li><a class="dropdown-item" href="../articles/misclassification-bias.html">Misclassification Bias</a></li>
+    <li><a class="dropdown-item" href="../articles/practical-workflow.html">Complete Analysis Workflow</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://github.com/go-bayes/margot.sim" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
@@ -40,6 +49,91 @@
       <small>Source: <a href="https://github.com/go-bayes/margot.sim/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.1.2" id="margotsim-012-2025-06-11">margot.sim 0.1.2 (2025-06-11)<a class="anchor" aria-label="anchor" href="#margotsim-012-2025-06-11"></a></h2>
+<div class="section level3">
+<h3 id="new-features-0-1-2">New features<a class="anchor" aria-label="anchor" href="#new-features-0-1-2"></a></h3>
+<div class="section level4">
+<h4 id="shadow-bias-comparison-framework-0-1-2">Shadow Bias Comparison Framework<a class="anchor" aria-label="anchor" href="#shadow-bias-comparison-framework-0-1-2"></a></h4>
+<ul><li>Added comprehensive framework for comparing causal effects before and after applying observational shadows
+<ul><li>
+<code><a href="../reference/compute_causal_effects.html">compute_causal_effects()</a></code>: Standardized function for computing ATE, ATT, and ATU from data</li>
+<li>
+<code><a href="../reference/compute_effects_from_sim.html">compute_effects_from_sim()</a></code>: Wrapper for margot simulation data with proper time indexing</li>
+<li>
+<code><a href="../reference/compare_shadow_bias.html">compare_shadow_bias()</a></code>: Calculates absolute and relative bias for each estimand</li>
+<li>
+<code><a href="../reference/apply_shadows_with_truth.html">apply_shadows_with_truth()</a></code>: Preserves complete data alongside shadowed observations</li>
+<li>
+<code><a href="../reference/compare_shadow_effects.html">compare_shadow_effects()</a></code>: Full workflow for comparing true vs observed effects</li>
+</ul></li>
+</ul></div>
+<div class="section level4">
+<h4 id="transport-weights-and-generalizability-0-1-2">Transport Weights and Generalizability<a class="anchor" aria-label="anchor" href="#transport-weights-and-generalizability-0-1-2"></a></h4>
+<ul><li>Added support for transportability analyses to generalize from samples to target populations
+<ul><li>
+<code><a href="../reference/simulate_ate_data_with_weights.html">simulate_ate_data_with_weights()</a></code>: Direct replacement for legacy function with identical interface</li>
+<li>
+<code><a href="../reference/margot_transport_analysis.html">margot_transport_analysis()</a></code>: Enhanced version integrating shadows with transport weights</li>
+<li>Shows how observational distortions affect transported estimates differently in source vs target populations</li>
+<li>Handles effect modification that differs between sample and population</li>
+</ul></li>
+</ul></div>
+<div class="section level4">
+<h4 id="enhanced-examples-and-documentation-0-1-2">Enhanced Examples and Documentation<a class="anchor" aria-label="anchor" href="#enhanced-examples-and-documentation-0-1-2"></a></h4>
+<ul><li>
+<code><a href="../reference/example_shadow_bias_analysis.html">example_shadow_bias_analysis()</a></code>: Complete workflow demonstrating shadow bias evaluation</li>
+<li>
+<code><a href="../reference/example_shadow_scenarios.html">example_shadow_scenarios()</a></code>: Compares bias across multiple shadow combinations</li>
+<li>
+<code><a href="../reference/example_weighted_shadow_analysis.html">example_weighted_shadow_analysis()</a></code>: Shows transport weights interacting with shadows</li>
+</ul></div>
+<div class="section level4">
+<h4 id="new-vignettes-0-1-2">New Vignettes<a class="anchor" aria-label="anchor" href="#new-vignettes-0-1-2"></a></h4>
+<ul><li>
+<strong>“Shift Interventions with Sampling Weights”</strong>: Demonstrates progressive interventions with population weighting</li>
+<li>
+<strong>“Censoring and Effect Modification”</strong>: Explores differential censoring by severity with IPCW correction</li>
+<li>
+<strong>“Heterogeneous Treatment Effects and Simpson’s Paradox”</strong>: Shows how aggregation can mask subgroup benefits</li>
+<li>
+<strong>“Advanced Shift Interventions”</strong>: Covers threshold, bounded, responsive, and combined shift patterns</li>
+<li>
+<strong>“Misclassification Bias”</strong>: Compares plain vs differential misclassification with model misspecification</li>
+<li>
+<strong>“Practical Workflow”</strong>: Complete analysis pipeline from design to reporting</li>
+<li>
+<strong>“Transport Weights and Shadows”</strong>: Generalizability with observational distortions</li>
+</ul></div>
+</div>
+<div class="section level3">
+<h3 id="improvements-0-1-2">Improvements<a class="anchor" aria-label="anchor" href="#improvements-0-1-2"></a></h3>
+<div class="section level4">
+<h4 id="dual-data-architecture-0-1-2">Dual Data Architecture<a class="anchor" aria-label="anchor" href="#dual-data-architecture-0-1-2"></a></h4>
+<ul><li>Modified <code><a href="../reference/margot_simulate_causal.html">margot_simulate_causal()</a></code> to support dual data structure (<code>data_true</code> and <code>data_observed</code>)</li>
+<li>Shadows now preserve original values systematically for ground truth comparisons</li>
+<li>Enhanced print methods for shadow results and effect comparisons</li>
+</ul></div>
+<div class="section level4">
+<h4 id="sampling-weights-integration-0-1-2">Sampling Weights Integration<a class="anchor" aria-label="anchor" href="#sampling-weights-integration-0-1-2"></a></h4>
+<ul><li>Sampling weights are fully integrated throughout the effect computation pipeline</li>
+<li>Weights preserved through shadow application process</li>
+<li>Support for comparing weighted (target population) vs unweighted (source population) effects</li>
+</ul></div>
+<div class="section level4">
+<h4 id="documentation-0-1-2">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-1-2"></a></h4>
+<ul><li>Added comprehensive design documentation in CLAUDE.md</li>
+<li>Updated README with transport weights example</li>
+<li>Enhanced _pkgdown.yml structure with new function categories</li>
+</ul></div>
+</div>
+<div class="section level3">
+<h3 id="bug-fixes-0-1-2">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-1-2"></a></h3>
+<ul><li>Fixed wave indexing to properly handle margot.sim structure (wave 0: baseline, wave 1: treatment, wave 2: outcome)</li>
+<li>Improved handling of non-binary treatments in effect computation (with appropriate warnings)</li>
+<li>Fixed recursive print method issue in shadow_bias_comparison</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.1" id="margotsim-011-2025-06-10">margot.sim 0.1.1 (2025-06-10)<a class="anchor" aria-label="anchor" href="#margotsim-011-2025-06-10"></a></h2>
 <div class="section level3">
