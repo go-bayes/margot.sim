@@ -17,17 +17,17 @@
 #' @section Directed Acyclic Graph (DAG):
 #' The data generating process follows this DAG structure:
 #' \preformatted{
-#'     B ──┬──> L₁ ──> A₁ ──> Y₁ ──> L₂ ──> A₂ ──> Y₂ ──> ... ──> Y_K
-#'         │      │      │      │      │      │      │
-#'         │      v      v      v      v      v      v
-#'         └───> C₁     C₂     C₃    C₄     C₅     C₆
+#'     B --+---> L_1 ---> A_1 ---> Y_1 ---> L_2 ---> A_2 ---> Y_2 ---> ... ---> Y_K
+#'         |      |      |      |      |      |      |
+#'         |      v      v      v      v      v      v
+#'         +----> C_1     C_2     C_3    C_4     C_5     C_6
 #'
 #' Where:
 #'   B  = Baseline covariates (time-invariant)
-#'   Lₖ = Time-varying confounders at wave k
-#'   Aₖ = Exposure/treatment at wave k
-#'   Yₖ = Outcome(s) at wave k
-#'   Cₖ = Censoring indicator after wave k
+#'   L_k = Time-varying confounders at wave k
+#'   A_k = Exposure/treatment at wave k
+#'   Y_k = Outcome(s) at wave k
+#'   C_k = Censoring indicator after wave k
 #' }
 #'
 #' @section Structural Equations:
@@ -38,7 +38,7 @@
 #' \deqn{A_0 = f_{A_0}(B, U_{A_0})}
 #' \deqn{Y_0 = f_{Y_0}(B, A_0, U_{Y_0})}
 #'
-#' For wave k ≥ 1:
+#' For wave k >= 1:
 #' \deqn{L_k = \beta_{B \to L} \cdot h_k(B) + \beta_{A \to L} A_{k-1} + \beta_{Y \to L} Y_{k-1} + U_{L_k}}
 #' \deqn{A_k = f_{A_k}(B, L_k, A_{k-1}, Y_{k-1}, U_{A_k})}
 #' \deqn{Y_k = f_{Y_k}(B, L_{k-1}, A_{k-1}, Y_{k-1}, U_{Y_k})}
@@ -154,10 +154,10 @@
 #'
 #' @references
 #' Robins JM (1986). "A new approach to causal inference in mortality studies
-#' with sustained exposure periods—application to control of the healthy worker
+#' with sustained exposure periods--application to control of the healthy worker
 #' survivor effect." Mathematical Modelling, 7(9-12), 1393-1512.
 #'
-#' Hernán MA, Robins JM (2020). "Causal Inference: What If."
+#' Hernan MA, Robins JM (2020). "Causal Inference: What If."
 #' Boca Raton: Chapman & Hall/CRC.
 #'
 #' @export
@@ -623,40 +623,40 @@ margot_simulate <- function(
   list(
     # censoring parameters
     cens_rate       = 0.1,   # base censoring rate
-    cens_a_coef     = 0.2,   # a_{k-1} → c_k
-    cens_l_coef     = 0.1,   # l_{k-1} → c_k
-    cens_y_coef     = 0.15,  # y_{k-1} → c_k
+    cens_a_coef     = 0.2,   # a_{k-1} ->> c_k
+    cens_l_coef     = 0.1,   # l_{k-1} ->> c_k
+    cens_y_coef     = 0.15,  # y_{k-1} ->> c_k
     cens_latent_sd  = 0.5,   # shared frailty sd
 
     # time-invariant baseline effects (b paths)
-    b_l_coef        = 0.15,  # b → l (all times)
-    b_a_coef        = 0.10,  # b → a (all times)
-    b_y_coef        = 0.15,  # b → y (all times)
+    b_l_coef        = 0.15,  # b ->> l (all times)
+    b_a_coef        = 0.10,  # b ->> a (all times)
+    b_y_coef        = 0.15,  # b ->> y (all times)
 
     # time-varying baseline effects on l
-    b_l_time_trend  = 0.05,  # linear time trend for b1 → l
-    b_l_time_decay  = 0.02,  # decay rate for b2 → l
-    b_l_time_cycle  = 1.0,   # cycle length for b3 → l (as fraction of waves)
+    b_l_time_trend  = 0.05,  # linear time trend for b1 ->> l
+    b_l_time_decay  = 0.02,  # decay rate for b2 ->> l
+    b_l_time_cycle  = 1.0,   # cycle length for b3 ->> l (as fraction of waves)
 
     # autoregressive effects
-    a_autoreg       = 0.25,  # a_{t-1} → a_t
-    y_autoreg       = 0.20,  # y_{t-1} → y_t
+    a_autoreg       = 0.25,  # a_{t-1} ->> a_t
+    y_autoreg       = 0.20,  # y_{t-1} ->> y_t
 
     # cross-lagged effects (only when y_feedback != "none")
-    y_a_coef        = 0.15,  # y_{t-1} → a_t
-    y_l_coef        = 0.10,  # y_{t-1} → l_t
-    a_l_coef        = 0.10,  # a_{t-1} → l_t
+    y_a_coef        = 0.15,  # y_{t-1} ->> a_t
+    y_l_coef        = 0.10,  # y_{t-1} ->> l_t
+    a_l_coef        = 0.10,  # a_{t-1} ->> l_t
 
     # contemporaneous effects
-    l_a_coef        = 0.20,  # l_t → a_t
+    l_a_coef        = 0.20,  # l_t ->> a_t
 
     # lagged effects on outcome
-    l_y_coef        = 0.15,  # l_{t-1} → y_t
-    a_lag_y_coef    = 0.25,  # a_{t-1} → y_t (main effect)
+    l_y_coef        = 0.15,  # l_{t-1} ->> y_t
+    a_lag_y_coef    = 0.25,  # a_{t-1} ->> y_t (main effect)
 
     # heterogeneous treatment effects
-    a_b_y_het       = 0.10,  # a × b interaction → y
-    a_l_y_het       = 0.05,  # a × l interaction → y
+    a_b_y_het       = 0.10,  # a * b interaction ->> y
+    a_l_y_het       = 0.05,  # a * l interaction ->> y
 
     # multiple outcome parameters
     y_cor           = 0.5,   # correlation between outcomes
@@ -664,9 +664,9 @@ margot_simulate <- function(
     y3_shrink       = 0.6,   # shrinkage for y3 effects
 
     # cross-outcome effects (when n_outcomes > 1)
-    y1_y2_cross     = 0.10,  # y1_{t-1} → y2_t
-    y1_y3_cross     = 0.05,  # y1_{t-1} → y3_t
-    y2_y3_cross     = 0.05   # y2_{t-1} → y3_t
+    y1_y2_cross     = 0.10,  # y1_{t-1} ->> y2_t
+    y1_y3_cross     = 0.05,  # y1_{t-1} ->> y3_t
+    y2_y3_cross     = 0.05   # y2_{t-1} ->> y3_t
   )
 }
 

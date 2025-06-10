@@ -2,13 +2,10 @@ Package: margot.sim
 Type: Package
 Title: Simulate Longitudinal Data with Masking and Monte Carlo Evaluation
 Version: 0.1.0
-Authors@R: c(
-    person(
-      "Joseph", "Bulbulia",
-      email = "joseph.bulbulia@vuw.ac.nz",
-      role = c("aut", "cre")
-    )
-  )
+Authors@R: 
+    person("Joseph", "Bulbulia", email = "joseph.bulbulia@gmail.com", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-5861-2056"))
+Author: Joseph Bulbulia [aut, cre] (<https://orcid.org/0000-0002-5861-2056>)
 Description: Extensions to the margot package for simulating longitudinal data 
     using Structural Causal Models (SCMs). Provides sophisticated capabilities 
     for applying various masks (censoring, measurement error, selection bias) 
@@ -24,9 +21,12 @@ Depends:
     R (>= 4.0.0)
 Imports:
     cli,
+    dplyr,
     MASS,
     stats,
-    tibble
+    tibble,
+    tidyr,
+    utils
 Suggests:
     testthat (>= 3.0.0),
     knitr,

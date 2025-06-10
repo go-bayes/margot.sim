@@ -614,7 +614,7 @@ example_mc_measurement_error <- function() {
     results_list[[1]],
     results_list[[2]],
     results_list[[3]],
-    names = paste0("σ = ", sigma_values)
+    names = paste0("sigma = ", sigma_values)
   )
 
   print(comparison)

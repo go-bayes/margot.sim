@@ -1,36 +1,50 @@
-# margot Extensions: Advanced SCM Simulation Framework
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# margot.sim
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+R package for simulating longitudinal data with realistic observational shadows (measurement error, missingness, selection bias) and evaluating causal inference methods via Monte Carlo simulation.
+
+## Installation
+
+You can install the development version of margot.sim from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("go-bayes/margot.sim")
+```
 
 ## Overview
 
-These extensions to the `margot` package provide a comprehensive framework for:
+margot.sim extends the `margot` package with:
 
-1. **Unified Masking System** - Apply various observational distortions (censoring, measurement error, selection bias)
-2. **Monte Carlo Framework** - Systematically evaluate statistical estimators
-3. **Flexible Distributions** - Specify non-normal distributions for any component
-4. **Integrated Workflows** - Combine all components for complex simulation studies
+1. **Shadowing Framework** - Apply observational distortions (measurement error, missingness, selection bias)
+2. **Monte Carlo Framework** - Systematically evaluate statistical estimators  
+3. **Flexible Distributions** - Specify non-normal distributions
+4. **Integrated Workflows** - Complete simulation studies
 
 ## Quick Start
 
-```r
-# Load the extensions
-source("margot_masks.R")
-source("margot_monte_carlo.R")
-source("margot_distributions.R")
-source("margot_examples_integrated.R")
+```{r example, eval=FALSE}
+library(margot.sim)
 
-# Run a complete example
-results <- example_complete_workflow(n_reps = 100)
-```
-
-## Core Components
-
-### 1. Masking Framework (`margot_masks.R`)
-
-The masking system provides a unified interface for applying observational distortions:
-
-```r
-# Create a measurement error mask
-mask <- create_mask(
+# Generate data with measurement error
+shadow <- create_shadow(
   type = "measurement_error",
   params = list(
     variables = c("t1_l", "t2_l"),
@@ -39,260 +53,234 @@ mask <- create_mask(
   )
 )
 
-# Apply to data
-masked_data <- apply_mask(data, mask)
-
-# Chain multiple masks
-masks <- list(
-  create_mask("measurement_error", params = list(...)),
-  create_mask("selection", params = list(...))
+dat <- margot_simulate(
+  n = 1000,
+  waves = 3,
+  shadows = shadow
 )
-masked_data <- apply_masks(data, masks)
+
+# Run Monte Carlo evaluation
+mc_results <- margot_monte_carlo(
+  n_reps = 100,
+  n_per_rep = 500,
+  dgp_params = list(waves = 2),
+  shadows = list(shadow),
+  estimator_fn = function(data) {
+    fit <- lm(t3_y ~ t2_a + t1_l + b1, data = data)
+    list(
+      estimate = coef(fit)["t2_a"],
+      se = sqrt(diag(vcov(fit)))["t2_a"]
+    )
+  }
+)
+
+print(mc_results)
 ```
 
-#### Available Mask Types
+## Shadowing Framework
+
+### Available Shadow Types
 
 **Measurement Error:**
-- Classical error: `error_type = "classical"`
-- Differential error: `error_type = "differential"`
-- Dichotomisation: `error_type = "dichotomise"`
-- Correlated errors: `error_type = "correlated"`
+- Classical error (continuous variables)
+- Misclassification (binary variables) 
+- Differential error
+- Dichotomization
+- Correlated errors
+
+```{r measurement-error, eval=FALSE}
+# Classical measurement error
+me_shadow <- create_shadow(
+  type = "measurement_error",
+  params = list(
+    variables = "t1_l",
+    error_type = "classical",
+    sigma = 0.5
+  )
+)
+
+# Misclassification for binary variables
+misclass_shadow <- create_shadow(
+  type = "measurement_error", 
+  params = list(
+    variables = "t1_a",
+    error_type = "misclassification",
+    sensitivity = 0.85,  # P(observed=1|true=1)
+    specificity = 0.90   # P(observed=0|true=0)
+  )
+)
+```
+
+**Missing Data:**
+```{r missingness, eval=FALSE}
+# Item-level missingness
+miss_shadow <- create_item_missingness_shadow(
+  variables = c("t1_l", "t2_l"),
+  missing_rate = 0.2,
+  missing_mechanism = "MAR",
+  dependent_vars = "b1"
+)
+```
 
 **Selection Bias:**
-- Baseline selection: `selection_type = "baseline"`
-- Post-treatment selection: `selection_type = "post_treatment"`
-- Custom selection: `selection_type = "custom"`
+```{r selection, eval=FALSE}
+# Positivity violations
+pos_shadow <- create_positivity_shadow(
+  exposure_var = "t1_a",
+  filter_fn = function(data) {
+    # Treatment only possible if risk score <= 2
+    data$b1 + data$b2 <= 2
+  }
+)
+```
 
-**Censoring:**
-- Wraps existing `apply_censoring_post_hoc()`
-- Maintains compatibility with current margot functions
+### Combining Shadows
 
-### 2. Monte Carlo Framework (`margot_monte_carlo.R`)
+```{r combining, eval=FALSE}
+# Apply multiple shadows
+shadows <- list(me_shadow, miss_shadow)
+dat <- margot_simulate(n = 1000, waves = 3, shadows = shadows)
 
-Systematically evaluate estimator performance:
+# Or apply post-hoc
+shadowed_data <- apply_shadows(dat, shadows)
+```
 
-```r
-# Define your estimator
-my_estimator <- function(data) {
-  fit <- lm(y ~ a + l + b, data = data)
+## Monte Carlo Framework
+
+Evaluate estimator performance under various conditions:
+
+```{r monte-carlo, eval=FALSE}
+# Define estimator
+ipw_estimator <- function(data) {
+  # Fit propensity score model
+  ps_model <- glm(t1_a ~ b1 + b2 + t0_l, 
+                  data = data, 
+                  family = binomial)
+  ps <- predict(ps_model, type = "response")
+  
+  # Calculate weights
+  weights <- ifelse(data$t1_a == 1, 1/ps, 1/(1-ps))
+  
+  # Outcome model
+  fit <- lm(t2_y ~ t1_a, weights = weights, data = data)
+  
   list(
-    estimate = coef(fit)["a"],
-    se = sqrt(diag(vcov(fit)))["a"]
+    estimate = coef(fit)["t1_a"],
+    se = sqrt(diag(vcov(fit)))["t1_a"],
+    converged = TRUE
   )
 }
 
-# Run Monte Carlo simulation
-mc_results <- margot_monte_carlo(
+# Run simulation
+results <- margot_monte_carlo(
   n_reps = 500,
   n_per_rep = 1000,
   dgp_params = list(
-    waves = 3,
-    params = list(a_lag_y_coef = 0.3)
+    waves = 2,
+    params = list(a_lag_y_coef = 0.3)  # True effect
   ),
-  masks = list(mask1, mask2),
-  estimator_fn = my_estimator,
+  shadows = list(me_shadow, miss_shadow),
+  estimator_fn = ipw_estimator,
   truth_fn = function(data) 0.3,
-  parallel = TRUE
+  parallel = TRUE,
+  n_cores = 4
 )
 
-# Examine results
-print(mc_results)
-plot(mc_results, type = "histogram")
+# View results
+print(results)
+plot(results, type = "histogram")
 ```
 
-#### Key Features
+### Performance Metrics
 
-- Automatic performance metrics (bias, variance, MSE, coverage)
-- Parallel processing support
-- Flexible estimator specification
-- Built-in diagnostics and plotting
+The framework automatically calculates:
+- Bias and relative bias
+- Variance and MSE
+- Coverage of confidence intervals
+- Convergence rates
+- Sample size retention
 
-### 3. Flexible Distributions (`margot_distributions.R`)
+## Complete Example
 
-Specify non-normal distributions for any component:
-
-```r
-# Create distribution specifications
-dist_gamma <- create_distribution(
-  "gamma",
-  params = list(shape = 2, rate = 1)
-)
-
-dist_zero_inflated <- create_distribution(
-  family = function(n, location, params) {
-    # Custom zero-inflated distribution
-    n_zeros <- rbinom(1, n, params$p_zero)
-    values <- numeric(n)
-    values[1:(n-n_zeros)] <- rnorm(n-n_zeros, location, params$sd)
-    sample(values)
-  },
-  params = list(p_zero = 0.3, sd = 1)
-)
-
-# Create a distribution set
-dists <- create_distribution_set(
-  baseline = dist_gamma,
-  outcome = create_distribution("lognormal", ...),
-  exposure = create_distribution("binomial", ...)
-)
-```
-
-### 4. Integrated Examples (`margot_examples_integrated.R`)
-
-Complete workflows demonstrating all components together:
-
-```r
-# Example 1: Full workflow with TMLE under complex masking
-results <- example_complete_workflow()
-
-# Example 2: Compare estimators under measurement error
+```{r complete-example, eval=FALSE}
+# Compare estimators under measurement error
 comparison <- example_measurement_error_comparison()
+
+# Full workflow demonstration
+results <- example_complete_workflow()
 ```
 
-## Design Principles
+## Advanced Usage
 
-### 1. Separation of Truth and Observation
+### Custom Shadows
 
-The framework maintains clean separation between:
-- **True data** (complete, no masking)
-- **Observed data** (with masking applied)
+Create your own shadow types:
 
-This allows direct calculation of:
-- True causal effects
-- Bias introduced by masking
-- Estimator performance
-
-### 2. Composability
-
-All components are designed to work together:
-```r
-data → interventions → masks → estimator → results
-```
-
-### 3. Extensibility
-
-Easy to add new:
-- Mask types (via S3 methods)
-- Distribution families
-- Estimators
-- Performance metrics
-
-## Common Workflows
-
-### Workflow 1: Evaluate Estimator Under Single Mask
-
-```r
-# Define mask
-mask <- create_mask("measurement_error", params = list(sigma = 0.5))
-
-# Run MC simulation
-results <- margot_monte_carlo(
-  n_reps = 200,
-  estimator_fn = my_estimator,
-  masks = list(mask)
-)
-```
-
-### Workflow 2: Compare Multiple Masking Scenarios
-
-```r
-scenarios <- list(
-  none = list(),
-  mild = list(create_mask(...)),
-  severe = list(create_mask(...), create_mask(...))
-)
-
-results <- list()
-for (name in names(scenarios)) {
-  results[[name]] <- margot_monte_carlo(
-    masks = scenarios[[name]],
-    ...
-  )
-}
-
-compare_mc_results(results$none, results$mild, results$severe)
-```
-
-### Workflow 3: Sensitivity Analysis
-
-```r
-# Vary measurement error severity
-for (sigma in seq(0, 1, by = 0.2)) {
-  mask <- create_mask("measurement_error", 
-                     params = list(sigma = sigma))
-  # Run simulation and store results
-}
-```
-
-## Advanced Features
-
-### Custom Masks
-
-Create your own mask types:
-
-```r
+```{r custom-shadow, eval=FALSE}
 # Define apply method
-apply_mask.my_custom_mask <- function(data, mask, ...) {
-  # Your masking logic here
+apply_shadow.my_custom_shadow <- function(data, shadow, ...) {
+  # Your shadowing logic here
   data
 }
 
 # Use it
-mask <- structure(
+shadow <- structure(
   list(type = "my_custom", params = list(...)),
-  class = c("my_custom_mask", "margot_mask")
+  class = c("my_custom_shadow", "margot_shadow")
 )
 ```
 
-### Performance Optimization
+### Flexible Distributions
 
-- Use `parallel = TRUE` for Monte Carlo simulations
-- Pre-compile estimator functions for speed
-- Consider `save_data = FALSE` to reduce memory usage
+```{r distributions, eval=FALSE}
+# Non-normal baseline
+gamma_dist <- create_distribution(
+  "gamma",
+  params = list(shape = 2, rate = 1)
+)
 
-### Diagnostic Tools
-
-```r
-# Diagnose masking effects
-diagnose_masking(original_data, masked_data)
-
-# Analyze mask effects
-effects <- analyse_mask_effects(original_data, masked_data)
-print(effects)
+# Use in simulation
+dat <- margot_simulate_flex(
+  n = 1000,
+  distributions = list(baseline = gamma_dist)
+)
 ```
 
-## Best Practices
+## Documentation
 
-1. **Start Simple**: Begin with single masks and small simulations
-2. **Validate Components**: Test each mask/estimator separately
-3. **Document Assumptions**: Clearly state DGP parameters and masking choices
-4. **Check Diagnostics**: Always examine convergence and sample retention
-5. **Use Version Control**: Track simulation specifications for reproducibility
+For detailed documentation, see:
 
-## Troubleshooting
+```{r help, eval=FALSE}
+# Package documentation
+?margot.sim
 
-**Common Issues:**
+# Key functions
+?create_shadow
+?margot_monte_carlo
+?margot_simulate
 
-1. **Estimator failures**: Check for sufficient sample size after masking
-2. **Memory issues**: Reduce `n_reps` or use `save_data = FALSE`
-3. **Slow performance**: Enable parallel processing
-4. **Unexpected bias**: Verify mask parameters and estimator implementation
+# Examples
+example(create_shadow)
+example(margot_monte_carlo)
+```
 
-## Future Extensions
+## Contributing
 
-Planned features:
-- Group/cluster structures
-- Time-varying masks
-- Adaptive interventions
-- Integration with causal inference packages (lmtp, grf, tmle)
+Contributions are welcome! Please:
 
-## References
+1. Fork the repository
+2. Create a feature branch
+3. Add tests for new functionality
+4. Submit a pull request
 
-This framework implements ideas from:
-- Robins (1986) - G-formula and censoring
-- Hernán & Robins (2020) - Causal Inference: What If
-- Pearl (2009) - Causality
+## License
 
-## Support
+MIT License
 
-For questions or contributions, please refer to the main margot package documentation.
+## Citation
+
+If you use margot.sim in your research, please cite:
+
+```{r citation, eval=FALSE}
+citation("margot.sim")
+```

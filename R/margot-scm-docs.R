@@ -18,38 +18,38 @@ margot_scm_details <- function(format = c("text", "latex"), estimand = NULL) {
     
     cli::cli_h2("Directed Acyclic Graph (DAG)")
     cli::cli_verbatim("
-    B ──┬──> L₁ ──> A₁ ──> Y₁ ──> L₂ ──> A₂ ──> Y₂ ──> ... ──> Y_K
-        │      │      │      │      │      │      │
-        │      v      v      v      v      v      v
-        └───> C₁     C₂     C₃    C₄     C₅     C₆
+    B --+---> L_1 ---> A_1 ---> Y_1 ---> L_2 ---> A_2 ---> Y_2 ---> ... ---> Y_K
+        |      |      |      |      |      |      |
+        |      v      v      v      v      v      v
+        +----> C_1     C_2     C_3    C_4     C_5     C_6
     
     Where:
       B  = Baseline covariates (time-invariant)
-      Lₖ = Time-varying confounder at wave k
-      Aₖ = Exposure/treatment at wave k  
-      Yₖ = Outcome(s) at wave k
-      Cₖ = Censoring indicator after wave k
+      L_k = Time-varying confounder at wave k
+      A_k = Exposure/treatment at wave k  
+      Y_k = Outcome(s) at wave k
+      C_k = Censoring indicator after wave k
     ")
     
     cli::cli_h2("Structural Equations")
     
     cli::cli_h3("Baseline Generation")
-    cli::cli_text("{.emph B ~ MVN(0, Σ_B)} where {.emph Σ_B[i,j] = 0.3} for i ≠ j")
+    cli::cli_text("{.emph B ~ MVN(0, Sigma_B)} where {.emph Sigma_B[i,j] = 0.3} for i != j")
     
     cli::cli_h3("Time-Varying Processes")
-    cli::cli_text("For t ≥ 1:")
+    cli::cli_text("For t >= 1:")
     cli::cli_bullets(c(
-      "*" = "{.emph L_t = β_{B→L} h_t(B) + β_{A→L} A_{t-1} + β_{Y→L} Y_{t-1} + U_{L,t}}",
-      "*" = "{.emph A_t = f(β_{B→A} B + β_{L→A} L_t + β_{A→A} A_{t-1} + β_{Y→A} Y_{t-1} + U_{A,t})}",
-      "*" = "{.emph Y_t = β_{B→Y} B + β_{L→Y} L_{t-1} + β_{A→Y} A_{t-1} + β_{Y→Y} Y_{t-1} + U_{Y,t}}",
-      "*" = "{.emph C_t = f(γ_0 + γ_A A_{t-1} + γ_L L_{t-1} + γ_Y Y_{t-1} + θ + U_{C,t})}"
+      "*" = "{.emph L_t = beta_{B->>L} h_t(B) + beta_{A->>L} A_{t-1} + beta_{Y->>L} Y_{t-1} + U_{L,t}}",
+      "*" = "{.emph A_t = f(beta_{B->>A} B + beta_{L->>A} L_t + beta_{A->>A} A_{t-1} + beta_{Y->>A} Y_{t-1} + U_{A,t})}",
+      "*" = "{.emph Y_t = beta_{B->>Y} B + beta_{L->>Y} L_{t-1} + beta_{A->>Y} A_{t-1} + beta_{Y->>Y} Y_{t-1} + U_{Y,t}}",
+      "*" = "{.emph C_t = f(gamma_0 + gamma_A A_{t-1} + gamma_L L_{t-1} + gamma_Y Y_{t-1} + theta + U_{C,t})}"
     ))
     
     cli::cli_h3("Time-Varying Functions")
     cli::cli_bullets(c(
-      "*" = "{.emph h_t(B)[1] = B_1 × min(2, 1 + 0.05t)} (growth)",
-      "*" = "{.emph h_t(B)[2] = B_2 × max(0, 1 - 0.02t)} (decay)",  
-      "*" = "{.emph h_t(B)[3] = B_3 × sin(πt/waves)} (cyclic)"
+      "*" = "{.emph h_t(B)[1] = B_1 * min(2, 1 + 0.05t)} (growth)",
+      "*" = "{.emph h_t(B)[2] = B_2 * max(0, 1 - 0.02t)} (decay)",  
+      "*" = "{.emph h_t(B)[3] = B_3 * sin(pi*t/waves)} (cyclic)"
     ))
     
     if (!is.null(estimand)) {
@@ -115,12 +115,12 @@ validate_scm_assumptions <- function(
     # test baseline independence from future
     ind_tests <- list()
     
-    # B ⊥ U_L | ∅ (baseline independent of L residuals)
+    # B perp U_L | empty (baseline independent of L residuals)
     if (all(c("b1", "t1_l", "t0_a") %in% names(data))) {
       resid_l <- residuals(lm(t1_l ~ t0_a, data = data))
       cor_test <- cor.test(data$b1, resid_l)
       ind_tests$b_ul <- list(
-        test = "B ⊥ U_L",
+        test = "B perp U_L",
         p_value = cor_test$p.value,
         passed = cor_test$p.value > alpha
       )
@@ -259,10 +259,10 @@ create_scm_diagram <- function(
     diagram <- c(diagram, "")
     
     # main structure
-    diagram <- c(diagram, "B ──┬──> L₁ ──> A₁ ──> Y₁ ──> L₂ ──> A₂ ──> Y₂")
-    diagram <- c(diagram, "    │      │      │      │      │      │      │")
-    diagram <- c(diagram, "    │      v      v      v      v      v      v")
-    diagram <- c(diagram, "    └───> C₁     C₂     C₃    C₄     C₅     C₆")
+    diagram <- c(diagram, "B --+---> L_1 ---> A_1 ---> Y_1 ---> L_2 ---> A_2 ---> Y_2")
+    diagram <- c(diagram, "    |      |      |      |      |      |      |")
+    diagram <- c(diagram, "    |      v      v      v      v      v      v")
+    diagram <- c(diagram, "    +----> C_1     C_2     C_3    C_4     C_5     C_6")
     
     if (show_equations) {
       diagram <- c(diagram, "", "Key Structural Equations:")

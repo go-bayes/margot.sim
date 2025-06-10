@@ -34,6 +34,7 @@ This mirrors counterfactual notation: \(A_k \to A_k^g, C_k \equiv 0, Y_K^{g,C=0}
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Functions</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://github.com/yourusername/margot.sim"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul></div>
 
@@ -185,17 +186,17 @@ measurement error, missingness, or selection bias.</p></dd>
 
 
 <p>The data generating process follows this DAG structure:</p><div class="sourceCode"><pre><code>
-    B ──┬──&gt; L₁ ──&gt; A₁ ──&gt; Y₁ ──&gt; L₂ ──&gt; A₂ ──&gt; Y₂ ──&gt; ... ──&gt; Y_K
-        │      │      │      │      │      │      │
-        │      v      v      v      v      v      v
-        └───&gt; C₁     C₂     C₃    C₄     C₅     C₆
+    B --+---&gt; L_1 ---&gt; A_1 ---&gt; Y_1 ---&gt; L_2 ---&gt; A_2 ---&gt; Y_2 ---&gt; ... ---&gt; Y_K
+        |      |      |      |      |      |      |
+        |      v      v      v      v      v      v
+        +----&gt; C_1     C_2     C_3    C_4     C_5     C_6
 
 Where:
   B  = Baseline covariates (time-invariant)
-  Lₖ = Time-varying confounders at wave k
-  Aₖ = Exposure/treatment at wave k
-  Yₖ = Outcome(s) at wave k
-  Cₖ = Censoring indicator after wave k
+  L_k = Time-varying confounders at wave k
+  A_k = Exposure/treatment at wave k
+  Y_k = Outcome(s) at wave k
+  C_k = Censoring indicator after wave k
 </code></pre></div>
 
     </div>
@@ -208,7 +209,7 @@ Where:
 $$B \sim \text{MVN}(0, \Sigma_B) \text{ with } \Sigma_B[i,j] = \rho_B \text{ if } i \neq j$$
 $$A_0 = f_{A_0}(B, U_{A_0})$$
 $$Y_0 = f_{Y_0}(B, A_0, U_{Y_0})$$</p>
-<p>For wave k ≥ 1:
+<p>For wave k &gt;= 1:
 $$L_k = \beta_{B \to L} \cdot h_k(B) + \beta_{A \to L} A_{k-1} + \beta_{Y \to L} Y_{k-1} + U_{L_k}$$
 $$A_k = f_{A_k}(B, L_k, A_{k-1}, Y_{k-1}, U_{A_k})$$
 $$Y_k = f_{Y_k}(B, L_{k-1}, A_{k-1}, Y_{k-1}, U_{Y_k})$$
@@ -249,9 +250,9 @@ All confounding passes through measured variables (B, L).</p>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
     <p>Robins JM (1986). "A new approach to causal inference in mortality studies
-with sustained exposure periods—application to control of the healthy worker
+with sustained exposure periods–application to control of the healthy worker
 survivor effect." Mathematical Modelling, 7(9-12), 1393-1512.</p>
-<p>Hernán MA, Robins JM (2020). "Causal Inference: What If."
+<p>Hernan MA, Robins JM (2020). "Causal Inference: What If."
 Boca Raton: Chapman &amp; Hall/CRC.</p>
     </div>
 

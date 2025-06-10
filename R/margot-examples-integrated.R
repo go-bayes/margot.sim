@@ -486,7 +486,7 @@ example_measurement_error_comparison <- function() {
       ggplot2::theme_minimal() +
       ggplot2::labs(
         title = "Absolute Bias vs Measurement Error",
-        x = "Measurement Error SD (σ)",
+        x = "Measurement Error SD (sigma)",
         y = "Absolute Bias",
         color = "Method"
       ) +

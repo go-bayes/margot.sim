@@ -454,7 +454,7 @@ example_long_format <- function() {
     seed = 444
   )
   
-  cli::cli_alert_info("Long format: {nrow(dat_long)} rows ({length(unique(dat_long$id))} subjects × {length(unique(dat_long$time))} times)")
+  cli::cli_alert_info("Long format: {nrow(dat_long)} rows ({length(unique(dat_long$id))} subjects * {length(unique(dat_long$time))} times)")
   
   cli::cli_h3("Data structure")
   print(head(dat_long[, c("id", "time", "a", "l", "y")], 10))

@@ -99,17 +99,17 @@ This mirrors counterfactual notation: \eqn{A_k \to A_k^g, C_k \equiv 0, Y_K^{g,C
 
 The data generating process follows this DAG structure:
 \preformatted{
-    B ──┬──> L₁ ──> A₁ ──> Y₁ ──> L₂ ──> A₂ ──> Y₂ ──> ... ──> Y_K
-        │      │      │      │      │      │      │
-        │      v      v      v      v      v      v
-        └───> C₁     C₂     C₃    C₄     C₅     C₆
+    B --+---> L_1 ---> A_1 ---> Y_1 ---> L_2 ---> A_2 ---> Y_2 ---> ... ---> Y_K
+        |      |      |      |      |      |      |
+        |      v      v      v      v      v      v
+        +----> C_1     C_2     C_3    C_4     C_5     C_6
 
 Where:
   B  = Baseline covariates (time-invariant)
-  Lₖ = Time-varying confounders at wave k
-  Aₖ = Exposure/treatment at wave k
-  Yₖ = Outcome(s) at wave k
-  Cₖ = Censoring indicator after wave k
+  L_k = Time-varying confounders at wave k
+  A_k = Exposure/treatment at wave k
+  Y_k = Outcome(s) at wave k
+  C_k = Censoring indicator after wave k
 }
 }
 
@@ -122,7 +122,7 @@ For baseline (k=0):
 \deqn{A_0 = f_{A_0}(B, U_{A_0})}
 \deqn{Y_0 = f_{Y_0}(B, A_0, U_{Y_0})}
 
-For wave k ≥ 1:
+For wave k >= 1:
 \deqn{L_k = \beta_{B \to L} \cdot h_k(B) + \beta_{A \to L} A_{k-1} + \beta_{Y \to L} Y_{k-1} + U_{L_k}}
 \deqn{A_k = f_{A_k}(B, L_k, A_{k-1}, Y_{k-1}, U_{A_k})}
 \deqn{Y_k = f_{Y_k}(B, L_{k-1}, A_{k-1}, Y_{k-1}, U_{Y_k})}
@@ -208,9 +208,9 @@ dat_with_error <- margot_simulate(
 }
 \references{
 Robins JM (1986). "A new approach to causal inference in mortality studies
-with sustained exposure periods—application to control of the healthy worker
+with sustained exposure periods--application to control of the healthy worker
 survivor effect." Mathematical Modelling, 7(9-12), 1393-1512.
 
-Hernán MA, Robins JM (2020). "Causal Inference: What If."
+Hernan MA, Robins JM (2020). "Causal Inference: What If."
 Boca Raton: Chapman & Hall/CRC.
 }

@@ -22,13 +22,13 @@
   - Support for parametric and custom distributions
   - Distribution sets for multivariate outcomes
 * Integration with `margot_simulate()` function via `shadows` parameter
-* Comprehensive unit tests using testthat
-* Package website using pkgdown
+* Comprehensive unit tests using `testthat`
+* Package website using `pkgdown`
 * Examples demonstrating complete workflows
 
 ## Improved
 
-* Replaced external dependency `margot_process_longitudinal_data_wider()` with internal `margot_process_longitudinal()` function
+* Replaced external dependency `margot::margot_process_longitudinal_data_wider()` with internal `margot.sim::margot_process_longitudinal()` function
 * Split large `margot-simulate-functions.R` file into logical components:
   - `margot-simulate-core.R` - Main simulation function
   - `margot-simulate-censoring.R` - Censoring functions

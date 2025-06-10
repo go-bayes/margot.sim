@@ -107,7 +107,7 @@ apply_censoring <- function(data,
 #'   frailty.
 #' @param item_missing_rate   marginal probability an observed value is
 #'   replaced by `NA` (mcar).
-#' @param exposure_outcome    coefficient for the exposure → outcome path.
+#' @param exposure_outcome    coefficient for the exposure ->> outcome path.
 #' @param covar_feedback      strength of lagged covariate feedback on
 #'   exposure assignment.
 #' @param y_feedback          optional feedback from the most recent
