@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head><title>R: Simulate Longitudinal Data with Observational Shadows and Monte
+Carlo Evaluation</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body><div class="container">
+<h1> Simulate Longitudinal Data with Observational Shadows and Monte
+Carlo Evaluation
+<img class="toplogo" src="../../../doc/html/Rlogo.svg" alt="[R logo]" />
+</h1>
+<hr/>
+<div style="text-align: center;">
+<a href="../../../doc/html/packages.html"><img class="arrow" src="../../../doc/html/left.jpg" alt="[Up]" /></a>
+<a href="../../../doc/html/index.html"><img class="arrow" src="../../../doc/html/up.jpg" alt="[Top]" /></a>
+</div><h2>Documentation for package &lsquo;margot.sim&rsquo; version 0.1.0</h2>
+
+<ul><li><a href="../DESCRIPTION" type="text/plain; charset=utf-8">DESCRIPTION file</a>.</li>
+<li><a href="../doc/index.html">User guides, package vignettes and other documentation.</a></li>
+<li><a href="../NEWS.md">Package NEWS</a>.</li>
+</ul>
+
+<h2>Help Pages</h2>
+
+
+<table style="width: 100%;">
+<tr><td style="width: 25%;"><a href="analyse_shadow_effects.html">analyse_shadow_effects</a></td>
+<td>Compare data before and after shadowing</td></tr>
+<tr><td style="width: 25%;"><a href="apply_censoring_post_hoc.html">apply_censoring_post_hoc</a></td>
+<td>Apply censoring to complete data</td></tr>
+<tr><td style="width: 25%;"><a href="apply_shadow.html">apply_shadow</a></td>
+<td>Apply a shadow to data</td></tr>
+<tr><td style="width: 25%;"><a href="apply_shadow.censoring_shadow.html">apply_shadow.censoring_shadow</a></td>
+<td>Apply censoring shadow</td></tr>
+<tr><td style="width: 25%;"><a href="apply_shadow.combined_shadow.html">apply_shadow.combined_shadow</a></td>
+<td>Apply combined shadow</td></tr>
+<tr><td style="width: 25%;"><a href="apply_shadow.item_missingness_shadow.html">apply_shadow.item_missingness_shadow</a></td>
+<td>Apply item-level missingness shadow</td></tr>
+<tr><td style="width: 25%;"><a href="apply_shadow.measurement_error_shadow.html">apply_shadow.measurement_error_shadow</a></td>
+<td>Apply measurement error shadow</td></tr>
+<tr><td style="width: 25%;"><a href="apply_shadow.positivity_shadow.html">apply_shadow.positivity_shadow</a></td>
+<td>Apply positivity violation shadow</td></tr>
+<tr><td style="width: 25%;"><a href="apply_shadow.selection_shadow.html">apply_shadow.selection_shadow</a></td>
+<td>Apply selection bias shadow</td></tr>
+<tr><td style="width: 25%;"><a href="apply_shadows.html">apply_shadows</a></td>
+<td>Apply multiple shadows sequentially</td></tr>
+<tr><td style="width: 25%;"><a href="check_distribution.html">check_distribution</a></td>
+<td>Check if a variable follows a specified distribution</td></tr>
+<tr><td style="width: 25%;"><a href="combine_shadows.html">combine_shadows</a></td>
+<td>Create a complex shadow combining multiple distortions</td></tr>
+<tr><td style="width: 25%;"><a href="compare_mc_results.html">compare_mc_results</a></td>
+<td>Compare multiple Monte Carlo results</td></tr>
+<tr><td style="width: 25%;"><a href="create_distribution.html">create_distribution</a></td>
+<td>Flexible Distribution Specifications for margot</td></tr>
+<tr><td style="width: 25%;"><a href="create_distribution_set.html">create_distribution_set</a></td>
+<td>Create a set of distributions for different variable types</td></tr>
+<tr><td style="width: 25%;"><a href="create_item_missingness_shadow.html">create_item_missingness_shadow</a></td>
+<td>Create item-level missingness shadow</td></tr>
+<tr><td style="width: 25%;"><a href="create_positivity_shadow.html">create_positivity_shadow</a></td>
+<td>Create positivity violation shadow</td></tr>
+<tr><td style="width: 25%;"><a href="create_scm_diagram.html">create_scm_diagram</a></td>
+<td>Create SCM diagram</td></tr>
+<tr><td style="width: 25%;"><a href="create_shadow.html">create_shadow</a></td>
+<td>Shadowing Framework for margot</td></tr>
+<tr><td style="width: 25%;"><a href="diagnose_shadowing.html">diagnose_shadowing</a></td>
+<td>Quick diagnostic for a shadowed dataset</td></tr>
+<tr><td style="width: 25%;"><a href="example_complete_workflow.html">example_complete_workflow</a></td>
+<td>Integrated Examples for margot Extensions</td></tr>
+<tr><td style="width: 25%;"><a href="example_flexible_distributions.html">example_flexible_distributions</a></td>
+<td>Example: Simulate with different distributions</td></tr>
+<tr><td style="width: 25%;"><a href="example_mc_measurement_error.html">example_mc_measurement_error</a></td>
+<td>Example: Evaluate estimator under measurement error</td></tr>
+<tr><td style="width: 25%;"><a href="example_measurement_error_comparison.html">example_measurement_error_comparison</a></td>
+<td>Practical example: Impact of measurement error on different estimators</td></tr>
+<tr><td style="width: 25%;"><a href="example_shadows.html">example_shadows</a></td>
+<td>Example: Create and apply various shadows</td></tr>
+<tr><td style="width: 25%;"><a href="example_test_censoring.html">example_test_censoring</a></td>
+<td>Example: Test censoring indicators</td></tr>
+<tr><td style="width: 25%;"><a href="generate_from_dist.html">generate_from_dist</a></td>
+<td>Generate values from a distribution specification</td></tr>
+<tr><td style="width: 25%;"><a href="generate_from_dist.custom_distribution.html">generate_from_dist.custom_distribution</a></td>
+<td>Generate from custom distribution function</td></tr>
+<tr><td style="width: 25%;"><a href="generate_from_dist.parametric_distribution.html">generate_from_dist.parametric_distribution</a></td>
+<td>Generate from parametric distribution</td></tr>
+<tr><td style="width: 25%;"><a href="margot_convert_format.html">margot_convert_format</a></td>
+<td>Convert margot data between wide and long formats</td></tr>
+<tr><td style="width: 25%;"><a href="margot_distributions.html">margot_distributions</a></td>
+<td>Common distribution specifications</td></tr>
+<tr><td style="width: 25%;"><a href="margot_extract_var.html">margot_extract_var</a></td>
+<td>Extract variable at specific time point</td></tr>
+<tr><td style="width: 25%;"><a href="margot_missingness_summary.html">margot_missingness_summary</a></td>
+<td>Get summary of missingness patterns</td></tr>
+<tr><td style="width: 25%;"><a href="margot_monte_carlo.html">margot_monte_carlo</a></td>
+<td>Monte Carlo Framework for margot</td></tr>
+<tr><td style="width: 25%;"><a href="margot_report_sim.html">margot_report_sim</a></td>
+<td>Report margot simulation summary</td></tr>
+<tr><td style="width: 25%;"><a href="margot_scm_details.html">margot_scm_details</a></td>
+<td>Display detailed SCM equations</td></tr>
+<tr><td style="width: 25%;"><a href="margot_scm_overview.html">margot_scm_overview</a></td>
+<td>High-level SCM overview</td></tr>
+<tr><td style="width: 25%;"><a href="margot_simulate.html">margot_simulate</a></td>
+<td>Simulate semi-markovian longitudinal data with sampling weights</td></tr>
+<tr><td style="width: 25%;"><a href="margot_simulate_causal.html">margot_simulate_causal</a></td>
+<td>Simulate data for causal inference with proper censoring</td></tr>
+<tr><td style="width: 25%;"><a href="margot_simulate_flex.html">margot_simulate_flex</a></td>
+<td>Enhanced margot_simulate with flexible distributions</td></tr>
+<tr><td style="width: 25%;"><a href="plot.margot_mc_results.html">plot.margot_mc_results</a></td>
+<td>Plot Monte Carlo results</td></tr>
+<tr><td style="width: 25%;"><a href="print.margot_causal_sim.html">print.margot_causal_sim</a></td>
+<td>Print method for margot_causal_sim</td></tr>
+<tr><td style="width: 25%;"><a href="print.margot_mc_results.html">print.margot_mc_results</a></td>
+<td>Print method for Monte Carlo results</td></tr>
+<tr><td style="width: 25%;"><a href="print.mc_comparison.html">print.mc_comparison</a></td>
+<td>Print method for MC comparison</td></tr>
+<tr><td style="width: 25%;"><a href="print.shadow_effects.html">print.shadow_effects</a></td>
+<td>Print shadow effects</td></tr>
+<tr><td style="width: 25%;"><a href="run_all_examples.html">run_all_examples</a></td>
+<td>Run all margot examples</td></tr>
+<tr><td style="width: 25%;"><a href="summary.margot_mc_results.html">summary.margot_mc_results</a></td>
+<td>Summary method for Monte Carlo results</td></tr>
+<tr><td style="width: 25%;"><a href="test_censoring_simple.html">test_censoring_simple</a></td>
+<td>Test simple censoring</td></tr>
+<tr><td style="width: 25%;"><a href="validate_scm_assumptions.html">validate_scm_assumptions</a></td>
+<td>Validate SCM assumptions in simulated data</td></tr>
+</table>
+</div></body></html>

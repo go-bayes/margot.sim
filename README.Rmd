@@ -1,7 +1,10 @@
 ---
-output: github_document
+output:
+  github_document:
+    toc: false     # or whatever other github_document options you need
+citation_package: biblatex
+bibliography: '/Users/joseph/GIT/templates/bib/references.bib'
 ---
-
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 ```{r, include = FALSE}
@@ -16,11 +19,21 @@ knitr::opts_chunk$set(
 # margot.sim
 
 <!-- badges: start -->
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Codecov test coverage](https://codecov.io/gh/go-bayes/margot.sim/graph/badge.svg)](https://app.codecov.io/gh/go-bayes/margot.sim)
+[![GitHub stars](https://img.shields.io/github/stars/go-bayes/margot.sim?style=social)](https://github.com/go-bayes/margot.sim)
+<!-- CRAN badges: will activate after CRAN release
+[![CRAN status](https://www.r-pkg.org/badges/version/margot.sim)](https://CRAN.R-project.org/package=margot.sim)
+[![Downloads](https://cranlogs.r-pkg.org/badges/margot.sim)](https://cran.r-project.org/package=margot.sim)
+[![Total Downloads](https://cranlogs.r-pkg.org/badges/grand-total/margot.sim)](https://cran.r-project.org/package=margot.sim)
+-->
 <!-- badges: end -->
 
 R package for simulating longitudinal data with realistic observational shadows (measurement error, missingness, selection bias) and evaluating causal inference methods via Monte Carlo simulation.
 
 ## Installation
+
 
 You can install the development version of margot.sim from [GitHub](https://github.com/) with:
 
@@ -264,6 +277,7 @@ example(create_shadow)
 example(margot_monte_carlo)
 ```
 
+
 ## Contributing
 
 Contributions are welcome! Please:
@@ -273,6 +287,7 @@ Contributions are welcome! Please:
 3. Add tests for new functionality
 4. Submit a pull request
 
+
 ## License
 
 MIT License
@@ -280,6 +295,14 @@ MIT License
 ## Citation
 
 If you use margot.sim in your research, please cite:
+
+## Note
+
+Observational data is often a poor reflection of reality. The `margot.sim` package provides a simulation framework to quantify how statistical estimators perform when the data they are fed are *shadows* of a true causal process. This concept is nods to Plato's Allegory of the Cave, where prisoners mistake shadows for real forms [@bloom1968republic]. `margot.sim` allows researchers to generate data from a known causal truth and then systematically distort it with "shadows" to see how well an estimator can glimpse the ground truth (or underlying forms).
+
+The framework's power comes from its consistent architecture. Recurring observational challenges—such as item-level missingness that creates more realistic missing data patterns, and positivity violations that test the boundaries of causal identification—are both implemented as distinct shadows. This modular design maintains **a clean separation between the true data-generating process and the distorted data that investigators  observe, allowing for principled evaluation of statistical methods in the face of real-world data limitations [@bulbulia2024wierd].
+
+## References
 
 ```{r citation, eval=FALSE}
 citation("margot.sim")

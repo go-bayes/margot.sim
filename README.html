@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style type="text/css">
+@font-face {
+font-family: octicons-link;
+src: url(data:font/woff;charset=utf-8;base64,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) format('woff');
+}
+body {
+-webkit-text-size-adjust: 100%;
+text-size-adjust: 100%;
+color: #333;
+font-family: "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+font-size: 16px;
+line-height: 1.6;
+word-wrap: break-word;
+}
+a {
+background-color: transparent;
+}
+a:active,
+a:hover {
+outline: 0;
+}
+strong {
+font-weight: bold;
+}
+h1 {
+font-size: 2em;
+margin: 0.67em 0;
+}
+img {
+border: 0;
+}
+hr {
+box-sizing: content-box;
+height: 0;
+}
+pre {
+overflow: auto;
+}
+code,
+kbd,
+pre {
+font-family: monospace, monospace;
+font-size: 1em;
+}
+input {
+color: inherit;
+font: inherit;
+margin: 0;
+}
+html input[disabled] {
+cursor: default;
+}
+input {
+line-height: normal;
+}
+input[type="checkbox"] {
+box-sizing: border-box;
+padding: 0;
+}
+table {
+border-collapse: collapse;
+border-spacing: 0;
+}
+td,
+th {
+padding: 0;
+}
+* {
+box-sizing: border-box;
+}
+input {
+font: 13px / 1.4 Helvetica, arial, nimbussansl, liberationsans, freesans, clean, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+a {
+color: #4078c0;
+text-decoration: none;
+}
+a:hover,
+a:active {
+text-decoration: underline;
+}
+hr {
+height: 0;
+margin: 15px 0;
+overflow: hidden;
+background: transparent;
+border: 0;
+border-bottom: 1px solid #ddd;
+}
+hr:before {
+display: table;
+content: "";
+}
+hr:after {
+display: table;
+clear: both;
+content: "";
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+margin-top: 15px;
+margin-bottom: 15px;
+line-height: 1.1;
+}
+h1 {
+font-size: 30px;
+}
+h2 {
+font-size: 21px;
+}
+h3 {
+font-size: 16px;
+}
+h4 {
+font-size: 14px;
+}
+h5 {
+font-size: 12px;
+}
+h6 {
+font-size: 11px;
+}
+blockquote {
+margin: 0;
+}
+ul,
+ol {
+padding: 0;
+margin-top: 0;
+margin-bottom: 0;
+}
+ol ol,
+ul ol {
+list-style-type: lower-roman;
+}
+ul ul ol,
+ul ol ol,
+ol ul ol,
+ol ol ol {
+list-style-type: lower-alpha;
+}
+dd {
+margin-left: 0;
+}
+code {
+font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+font-size: 12px;
+}
+pre {
+margin-top: 0;
+margin-bottom: 0;
+font: 12px Consolas, "Liberation Mono", Menlo, Courier, monospace;
+}
+.select::-ms-expand {
+opacity: 0;
+}
+.octicon {
+font: normal normal normal 16px/1 octicons-link;
+display: inline-block;
+text-decoration: none;
+text-rendering: auto;
+-webkit-font-smoothing: antialiased;
+-moz-osx-font-smoothing: grayscale;
+-webkit-user-select: none;
+-moz-user-select: none;
+-ms-user-select: none;
+user-select: none;
+}
+.octicon-link:before {
+content: '\f05c';
+}
+.markdown-body:before {
+display: table;
+content: "";
+}
+.markdown-body:after {
+display: table;
+clear: both;
+content: "";
+}
+.markdown-body>*:first-child {
+margin-top: 0 !important;
+}
+.markdown-body>*:last-child {
+margin-bottom: 0 !important;
+}
+a:not([href]) {
+color: inherit;
+text-decoration: none;
+}
+.anchor {
+display: inline-block;
+padding-right: 2px;
+margin-left: -18px;
+}
+.anchor:focus {
+outline: none;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+margin-top: 1em;
+margin-bottom: 16px;
+font-weight: bold;
+line-height: 1.4;
+}
+h1 .octicon-link,
+h2 .octicon-link,
+h3 .octicon-link,
+h4 .octicon-link,
+h5 .octicon-link,
+h6 .octicon-link {
+color: #000;
+vertical-align: middle;
+visibility: hidden;
+}
+h1:hover .anchor,
+h2:hover .anchor,
+h3:hover .anchor,
+h4:hover .anchor,
+h5:hover .anchor,
+h6:hover .anchor {
+text-decoration: none;
+}
+h1:hover .anchor .octicon-link,
+h2:hover .anchor .octicon-link,
+h3:hover .anchor .octicon-link,
+h4:hover .anchor .octicon-link,
+h5:hover .anchor .octicon-link,
+h6:hover .anchor .octicon-link {
+visibility: visible;
+}
+h1 {
+padding-bottom: 0.3em;
+font-size: 2.25em;
+line-height: 1.2;
+border-bottom: 1px solid #eee;
+}
+h1 .anchor {
+line-height: 1;
+}
+h2 {
+padding-bottom: 0.3em;
+font-size: 1.75em;
+line-height: 1.225;
+border-bottom: 1px solid #eee;
+}
+h2 .anchor {
+line-height: 1;
+}
+h3 {
+font-size: 1.5em;
+line-height: 1.43;
+}
+h3 .anchor {
+line-height: 1.2;
+}
+h4 {
+font-size: 1.25em;
+}
+h4 .anchor {
+line-height: 1.2;
+}
+h5 {
+font-size: 1em;
+}
+h5 .anchor {
+line-height: 1.1;
+}
+h6 {
+font-size: 1em;
+color: #777;
+}
+h6 .anchor {
+line-height: 1.1;
+}
+p,
+blockquote,
+ul,
+ol,
+dl,
+table,
+pre {
+margin-top: 0;
+margin-bottom: 16px;
+}
+hr {
+height: 4px;
+padding: 0;
+margin: 16px 0;
+background-color: #e7e7e7;
+border: 0 none;
+}
+ul,
+ol {
+padding-left: 2em;
+}
+ul ul,
+ul ol,
+ol ol,
+ol ul {
+margin-top: 0;
+margin-bottom: 0;
+}
+li>p {
+margin-top: 16px;
+}
+dl {
+padding: 0;
+}
+dl dt {
+padding: 0;
+margin-top: 16px;
+font-size: 1em;
+font-style: italic;
+font-weight: bold;
+}
+dl dd {
+padding: 0 16px;
+margin-bottom: 16px;
+}
+blockquote {
+padding: 0 15px;
+color: #777;
+border-left: 4px solid #ddd;
+}
+blockquote>:first-child {
+margin-top: 0;
+}
+blockquote>:last-child {
+margin-bottom: 0;
+}
+table {
+display: block;
+width: 100%;
+overflow: auto;
+word-break: normal;
+word-break: keep-all;
+}
+table th {
+font-weight: bold;
+}
+table th,
+table td {
+padding: 6px 13px;
+border: 1px solid #ddd;
+}
+table tr {
+background-color: #fff;
+border-top: 1px solid #ccc;
+}
+table tr:nth-child(2n) {
+background-color: #f8f8f8;
+}
+img {
+max-width: 100%;
+box-sizing: content-box;
+background-color: #fff;
+}
+code {
+padding: 0;
+padding-top: 0.2em;
+padding-bottom: 0.2em;
+margin: 0;
+font-size: 85%;
+background-color: rgba(0,0,0,0.04);
+border-radius: 3px;
+}
+code:before,
+code:after {
+letter-spacing: -0.2em;
+content: "\00a0";
+}
+pre>code {
+padding: 0;
+margin: 0;
+font-size: 100%;
+word-break: normal;
+white-space: pre;
+background: transparent;
+border: 0;
+}
+.highlight {
+margin-bottom: 16px;
+}
+.highlight pre,
+pre {
+padding: 16px;
+overflow: auto;
+font-size: 85%;
+line-height: 1.45;
+background-color: #f7f7f7;
+border-radius: 3px;
+}
+.highlight pre {
+margin-bottom: 0;
+word-break: normal;
+}
+pre {
+word-wrap: normal;
+}
+pre code {
+display: inline;
+max-width: initial;
+padding: 0;
+margin: 0;
+overflow: initial;
+line-height: inherit;
+word-wrap: normal;
+background-color: transparent;
+border: 0;
+}
+pre code:before,
+pre code:after {
+content: normal;
+}
+kbd {
+display: inline-block;
+padding: 3px 5px;
+font-size: 11px;
+line-height: 10px;
+color: #555;
+vertical-align: middle;
+background-color: #fcfcfc;
+border: solid 1px #ccc;
+border-bottom-color: #bbb;
+border-radius: 3px;
+box-shadow: inset 0 -1px 0 #bbb;
+}
+.pl-c {
+color: #969896;
+}
+.pl-c1,
+.pl-s .pl-v {
+color: #0086b3;
+}
+.pl-e,
+.pl-en {
+color: #795da3;
+}
+.pl-s .pl-s1,
+.pl-smi {
+color: #333;
+}
+.pl-ent {
+color: #63a35c;
+}
+.pl-k {
+color: #a71d5d;
+}
+.pl-pds,
+.pl-s,
+.pl-s .pl-pse .pl-s1,
+.pl-sr,
+.pl-sr .pl-cce,
+.pl-sr .pl-sra,
+.pl-sr .pl-sre {
+color: #183691;
+}
+.pl-v {
+color: #ed6a43;
+}
+.pl-id {
+color: #b52a1d;
+}
+.pl-ii {
+background-color: #b52a1d;
+color: #f8f8f8;
+}
+.pl-sr .pl-cce {
+color: #63a35c;
+font-weight: bold;
+}
+.pl-ml {
+color: #693a17;
+}
+.pl-mh,
+.pl-mh .pl-en,
+.pl-ms {
+color: #1d3e81;
+font-weight: bold;
+}
+.pl-mq {
+color: #008080;
+}
+.pl-mi {
+color: #333;
+font-style: italic;
+}
+.pl-mb {
+color: #333;
+font-weight: bold;
+}
+.pl-md {
+background-color: #ffecec;
+color: #bd2c00;
+}
+.pl-mi1 {
+background-color: #eaffea;
+color: #55a532;
+}
+.pl-mdr {
+color: #795da3;
+font-weight: bold;
+}
+.pl-mo {
+color: #1d3e81;
+}
+kbd {
+display: inline-block;
+padding: 3px 5px;
+font: 11px Consolas, "Liberation Mono", Menlo, Courier, monospace;
+line-height: 10px;
+color: #555;
+vertical-align: middle;
+background-color: #fcfcfc;
+border: solid 1px #ccc;
+border-bottom-color: #bbb;
+border-radius: 3px;
+box-shadow: inset 0 -1px 0 #bbb;
+}
+.task-list-item {
+list-style-type: none;
+}
+.task-list-item+.task-list-item {
+margin-top: 3px;
+}
+.task-list-item input {
+margin: 0 0.35em 0.25em -1.6em;
+vertical-align: middle;
+}
+:checked+.radio-label {
+z-index: 1;
+position: relative;
+border-color: #4078c0;
+}
+.sourceLine {
+display: inline-block;
+}
+code .kw { color: #000000; }
+code .dt { color: #ed6a43; }
+code .dv { color: #009999; }
+code .bn { color: #009999; }
+code .fl { color: #009999; }
+code .ch { color: #009999; }
+code .st { color: #183691; }
+code .co { color: #969896; }
+code .ot { color: #0086b3; }
+code .al { color: #a61717; }
+code .fu { color: #63a35c; }
+code .er { color: #a61717; background-color: #e3d2d2; }
+code .wa { color: #000000; }
+code .cn { color: #008080; }
+code .sc { color: #008080; }
+code .vs { color: #183691; }
+code .ss { color: #183691; }
+code .im { color: #000000; }
+code .va {color: #008080; }
+code .cf { color: #000000; }
+code .op { color: #000000; }
+code .bu { color: #000000; }
+code .ex { color: #000000; }
+code .pp { color: #999999; }
+code .at { color: #008080; }
+code .do { color: #969896; }
+code .an { color: #008080; }
+code .cv { color: #008080; }
+code .in { color: #008080; }
+</style>
+<style>
+body {
+box-sizing: border-box;
+min-width: 200px;
+max-width: 980px;
+margin: 0 auto;
+padding: 45px;
+padding-top: 0px;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+<h1 id="margotsim">margot.sim</h1>
+<!-- badges: start -->
+
+<p><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental"><img role="img" aria-label="Lifecycle: experimental" src="data:image/svg+xml;charset=utf-8;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMzgiIGhlaWdodD0iMjAiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0ibGlmZWN5Y2xlOiBleHBlcmltZW50YWwiPjx0aXRsZT5saWZlY3ljbGU6IGV4cGVyaW1lbnRhbDwvdGl0bGU+PGxpbmVhckdyYWRpZW50IGlkPSJzIiB4Mj0iMCIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2JiYiIgc3RvcC1vcGFjaXR5PSIuMSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1vcGFjaXR5PSIuMSIvPjwvbGluZWFyR3JhZGllbnQ+PGNsaXBQYXRoIGlkPSJyIj48cmVjdCB3aWR0aD0iMTM4IiBoZWlnaHQ9IjIwIiByeD0iMyIgZmlsbD0iI2ZmZiIvPjwvY2xpcFBhdGg+PGcgY2xpcC1wYXRoPSJ1cmwoI3IpIj48cmVjdCB3aWR0aD0iNTUiIGhlaWdodD0iMjAiIGZpbGw9IiM1NTUiLz48cmVjdCB4PSI1NSIgd2lkdGg9IjgzIiBoZWlnaHQ9IjIwIiBmaWxsPSIjZmU3ZDM3Ii8+PHJlY3Qgd2lkdGg9IjEzOCIgaGVpZ2h0PSIyMCIgZmlsbD0idXJsKCNzKSIvPjwvZz48ZyBmaWxsPSIjZmZmIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iVmVyZGFuYSxHZW5ldmEsRGVqYVZ1IFNhbnMsc2Fucy1zZXJpZiIgdGV4dC1yZW5kZXJpbmc9Imdlb21ldHJpY1ByZWNpc2lvbiIgZm9udC1zaXplPSIxMTAiPjx0ZXh0IGFyaWEtaGlkZGVuPSJ0cnVlIiB4PSIyODUiIHk9IjE1MCIgZmlsbD0iIzAxMDEwMSIgZmlsbC1vcGFjaXR5PSIuMyIgdHJhbnNmb3JtPSJzY2FsZSguMSkiIHRleHRMZW5ndGg9IjQ1MCI+bGlmZWN5Y2xlPC90ZXh0Pjx0ZXh0IHg9IjI4NSIgeT0iMTQwIiB0cmFuc2Zvcm09InNjYWxlKC4xKSIgZmlsbD0iI2ZmZiIgdGV4dExlbmd0aD0iNDUwIj5saWZlY3ljbGU8L3RleHQ+PHRleHQgYXJpYS1oaWRkZW49InRydWUiIHg9Ijk1NSIgeT0iMTUwIiBmaWxsPSIjMDEwMTAxIiBmaWxsLW9wYWNpdHk9Ii4zIiB0cmFuc2Zvcm09InNjYWxlKC4xKSIgdGV4dExlbmd0aD0iNzMwIj5leHBlcmltZW50YWw8L3RleHQ+PHRleHQgeD0iOTU1IiB5PSIxNDAiIHRyYW5zZm9ybT0ic2NhbGUoLjEpIiBmaWxsPSIjZmZmIiB0ZXh0TGVuZ3RoPSI3MzAiPmV4cGVyaW1lbnRhbDwvdGV4dD48L2c+PC9zdmc+" alt="Lifecycle: experimental" /></a> <a href="https://opensource.org/licenses/MIT"><img role="img" aria-label="License: MIT" src="data:image/svg+xml;charset=utf-8;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4MiIgaGVpZ2h0PSIyMCIgcm9sZT0iaW1nIiBhcmlhLWxhYmVsPSJMaWNlbnNlOiBNSVQiPjx0aXRsZT5MaWNlbnNlOiBNSVQ8L3RpdGxlPjxsaW5lYXJHcmFkaWVudCBpZD0icyIgeDI9IjAiIHkyPSIxMDAlIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNiYmIiIHN0b3Atb3BhY2l0eT0iLjEiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3Atb3BhY2l0eT0iLjEiLz48L2xpbmVhckdyYWRpZW50PjxjbGlwUGF0aCBpZD0iciI+PHJlY3Qgd2lkdGg9IjgyIiBoZWlnaHQ9IjIwIiByeD0iMyIgZmlsbD0iI2ZmZiIvPjwvY2xpcFBhdGg+PGcgY2xpcC1wYXRoPSJ1cmwoI3IpIj48cmVjdCB3aWR0aD0iNTEiIGhlaWdodD0iMjAiIGZpbGw9IiM1NTUiLz48cmVjdCB4PSI1MSIgd2lkdGg9IjMxIiBoZWlnaHQ9IjIwIiBmaWxsPSIjZGZiMzE3Ii8+PHJlY3Qgd2lkdGg9IjgyIiBoZWlnaHQ9IjIwIiBmaWxsPSJ1cmwoI3MpIi8+PC9nPjxnIGZpbGw9IiNmZmYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJWZXJkYW5hLEdlbmV2YSxEZWphVnUgU2FucyxzYW5zLXNlcmlmIiB0ZXh0LXJlbmRlcmluZz0iZ2VvbWV0cmljUHJlY2lzaW9uIiBmb250LXNpemU9IjExMCI+PHRleHQgYXJpYS1oaWRkZW49InRydWUiIHg9IjI2NSIgeT0iMTUwIiBmaWxsPSIjMDEwMTAxIiBmaWxsLW9wYWNpdHk9Ii4zIiB0cmFuc2Zvcm09InNjYWxlKC4xKSIgdGV4dExlbmd0aD0iNDEwIj5MaWNlbnNlPC90ZXh0Pjx0ZXh0IHg9IjI2NSIgeT0iMTQwIiB0cmFuc2Zvcm09InNjYWxlKC4xKSIgZmlsbD0iI2ZmZiIgdGV4dExlbmd0aD0iNDEwIj5MaWNlbnNlPC90ZXh0Pjx0ZXh0IGFyaWEtaGlkZGVuPSJ0cnVlIiB4PSI2NTUiIHk9IjE1MCIgZmlsbD0iIzAxMDEwMSIgZmlsbC1vcGFjaXR5PSIuMyIgdHJhbnNmb3JtPSJzY2FsZSguMSkiIHRleHRMZW5ndGg9IjIxMCI+TUlUPC90ZXh0Pjx0ZXh0IHg9IjY1NSIgeT0iMTQwIiB0cmFuc2Zvcm09InNjYWxlKC4xKSIgZmlsbD0iI2ZmZiIgdGV4dExlbmd0aD0iMjEwIj5NSVQ8L3RleHQ+PC9nPjwvc3ZnPg==" alt="License: MIT" /></a> <a href="https://app.codecov.io/gh/go-bayes/margot.sim"><img role="img" aria-label="Codecov test coverage" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMzciIGhlaWdodD0iMjAiPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJiIiB4Mj0iMCIgeTI9IjEwMCUiPgogICAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2JiYiIgc3RvcC1vcGFjaXR5PSIuMSIgLz4KICAgICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3Atb3BhY2l0eT0iLjEiIC8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPG1hc2sgaWQ9ImEiPgogICAgICAgIDxyZWN0IHdpZHRoPSIxMzciIGhlaWdodD0iMjAiIHJ4PSIzIiBmaWxsPSIjZmZmIiAvPgogICAgPC9tYXNrPgogICAgPGcgbWFzaz0idXJsKCNhKSI+CiAgICAgICAgPHBhdGggZmlsbD0iIzU1NSIgZD0iTTAgMGg3NnYyMEgweiIgLz4KICAgICAgICA8cGF0aCBmaWxsPSIjOWY5ZjlmIiBkPSJNNzYgMGg2MXYyMEg3NnoiIC8+CiAgICAgICAgPHBhdGggZmlsbD0idXJsKCNiKSIgZD0iTTAgMGgxMzd2MjBIMHoiIC8+CiAgICA8L2c+CiAgICA8ZyBmaWxsPSIjZmZmIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMsVmVyZGFuYSxHZW5ldmEsc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMSI+CiAgICAgICAgPHRleHQgeD0iNDYiIHk9IjE1IiBmaWxsPSIjMDEwMTAxIiBmaWxsLW9wYWNpdHk9Ii4zIj5jb2RlY292PC90ZXh0PgogICAgICAgIDx0ZXh0IHg9IjQ2IiB5PSIxNCI+Y29kZWNvdjwvdGV4dD4KICAgICAgICA8dGV4dCB4PSIxMDUuNSIgeT0iMTUiIGZpbGw9IiMwMTAxMDEiIGZpbGwtb3BhY2l0eT0iLjMiPnVua25vd248L3RleHQ+CiAgICAgICAgPHRleHQgeD0iMTA1LjUiIHk9IjE0Ij51bmtub3duPC90ZXh0PgogICAgPC9nPgogICAgPHN2ZyB2aWV3Qm94PSIxNjEgLTggNjAgNjAiPgogICAgICAgIDxwYXRoIGQ9Ik0yMy4wMTMgMEMxMC4zMzMuMDA5LjAxIDEwLjIyIDAgMjIuNzYydi4wNThsMy45MTQgMi4yNzUuMDUzLS4wMzZhMTEuMjkxIDExLjI5MSAwIDAgMSA4LjM1Mi0xLjc2NyAxMC45MTEgMTAuOTExIDAgMCAxIDUuNSAyLjcyNmwuNjczLjYyNC4zOC0uODI4Yy4zNjgtLjgwMi43OTMtMS41NTYgMS4yNjQtMi4yNC4xOS0uMjc2LjM5OC0uNTU0LjYzNy0uODUxbC4zOTMtLjQ5LS40ODQtLjQwNGExNi4wOCAxNi4wOCAwIDAgMC03LjQ1My0zLjQ2NiAxNi40ODIgMTYuNDgyIDAgMCAwLTcuNzA1LjQ0OUM3LjM4NiAxMC42ODMgMTQuNTYgNS4wMTYgMjMuMDMgNS4wMWM0Ljc3OSAwIDkuMjcyIDEuODQgMTIuNjUxIDUuMTggMi40MSAyLjM4MiA0LjA2OSA1LjM1IDQuODA3IDguNTkxYTE2LjUzIDE2LjUzIDAgMCAwLTQuNzkyLS43MjNsLS4yOTItLjAwMmExNi43MDcgMTYuNzA3IDAgMCAwLTEuOTAyLjE0bC0uMDguMDEyYy0uMjguMDM3LS41MjQuMDc0LS43NDguMTE1LS4xMS4wMTktLjIxOC4wNDEtLjMyNy4wNjMtLjI1Ny4wNTItLjUxLjEwOC0uNzUuMTY5bC0uMjY1LjA2N2ExNi4zOSAxNi4zOSAwIDAgMC0uOTI2LjI3NmwtLjA1Ni4wMThjLS42ODIuMjMtMS4zNi41MTEtMi4wMTYuODM4bC0uMDUyLjAyNmMtLjI5LjE0NS0uNTg0LjMwNS0uODk5LjQ5bC0uMDY5LjA0YTE1LjU5NiAxNS41OTYgMCAwIDAtNC4wNjEgMy40NjZsLS4xNDUuMTc1Yy0uMjkuMzYtLjUyMS42NjYtLjcyMy45Ni0uMTcuMjQ3LS4zNC41MTMtLjU1Mi44NjRsLS4xMTYuMTk5Yy0uMTcuMjkyLS4zMi41Ny0uNDQ5LjgyNGwtLjAzLjA1N2ExNi4xMTYgMTYuMTE2IDAgMCAwLS44NDMgMi4wMjlsLS4wMzQuMTAyYTE1LjY1IDE1LjY1IDAgMCAwLS43ODYgNS4xNzRsLjAwMy4yMTRhMjEuNTIzIDIxLjUyMyAwIDAgMCAuMDQuNzU0Yy4wMDkuMTE5LjAyLjIzNy4wMzIuMzU1LjAxNC4xNDUuMDMyLjI5LjA0OS40MzJsLjAxLjA4Yy4wMS4wNjcuMDE3LjEzMy4wMjYuMTk3LjAzNC4yNDIuMDc0LjQ4LjExOS43Mi40NjMgMi40MTkgMS42MiA0LjgzNiAzLjM0NSA2Ljk5bC4wNzguMDk4LjA4LS4wOTVjLjY4OC0uODEgMi4zOTUtMy4zOCAyLjUzOS00LjkyMmwuMDAzLS4wMjktLjAxNC0uMDI1YTEwLjcyNyAxMC43MjcgMCAwIDEtMS4yMjYtNC45NTZjMC01Ljc2IDQuNTQ1LTEwLjU0NCAxMC4zNDMtMTAuODlsLjM4MS0uMDE0YTExLjQwMyAxMS40MDMgMCAwIDEgNi42NTEgMS45NTdsLjA1NC4wMzYgMy44NjItMi4yMzcuMDUtLjAzdi0uMDU2Yy4wMDYtNi4wOC0yLjM4NC0xMS43OTMtNi43MjktMTYuMDg5QzM0LjkzMiAyLjM2MSAyOS4xNiAwIDIzLjAxMyAwIiBmaWxsPSIjRjAxRjdBIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz4KICAgIDwvc3ZnPgo8L3N2Zz4K" alt="Codecov test coverage" /></a> <a href="https://github.com/go-bayes/margot.sim"><img role="img" aria-label="GitHub stars" src="data:image/svg+xml;charset=utf-8;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI3NiIgaGVpZ2h0PSIyMCI+PHN0eWxlPmE6aG92ZXIgI2xsaW5re2ZpbGw6dXJsKCNiKTtzdHJva2U6I2NjY31hOmhvdmVyICNybGlua3tmaWxsOiM0MTgzYzR9PC9zdHlsZT48bGluZWFyR3JhZGllbnQgaWQ9ImEiIHgyPSIwIiB5Mj0iMTAwJSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZmNmY2ZjIiBzdG9wLW9wYWNpdHk9IjAiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3Atb3BhY2l0eT0iLjEiLz48L2xpbmVhckdyYWRpZW50PjxsaW5lYXJHcmFkaWVudCBpZD0iYiIgeDI9IjAiIHkyPSIxMDAlIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNjY2MiIHN0b3Atb3BhY2l0eT0iLjEiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3Atb3BhY2l0eT0iLjEiLz48L2xpbmVhckdyYWRpZW50PjxnIHN0cm9rZT0iI2Q1ZDVkNSI+PHJlY3Qgc3Ryb2tlPSJub25lIiBmaWxsPSIjZmNmY2ZjIiB4PSIwLjUiIHk9IjAuNSIgd2lkdGg9IjU0IiBoZWlnaHQ9IjE5IiByeD0iMiIvPjxyZWN0IHg9IjYwLjUiIHk9IjAuNSIgd2lkdGg9IjE1IiBoZWlnaHQ9IjE5IiByeD0iMiIgZmlsbD0iI2ZhZmFmYSIvPjxyZWN0IHg9IjYwIiB5PSI3LjUiIHdpZHRoPSIwLjUiIGhlaWdodD0iNSIgc3Ryb2tlPSIjZmFmYWZhIi8+PHBhdGggZD0iTTYwLjUgNi41IGwtMyAzdjEgbDMgMyIgZmlsbD0iI2ZhZmFmYSIvPjwvZz48aW1hZ2UgeD0iNSIgeT0iMyIgd2lkdGg9IjE0IiBoZWlnaHQ9IjE0IiBocmVmPSJkYXRhOmltYWdlL3N2Zyt4bWw7YmFzZTY0LFBITjJaeUJtYVd4c1BTSWpNVGd4TnpFM0lpQnliMnhsUFNKcGJXY2lJSFpwWlhkQ2IzZzlJakFnTUNBeU5DQXlOQ0lnZUcxc2JuTTlJbWgwZEhBNkx5OTNkM2N1ZHpNdWIzSm5Mekl3TURBdmMzWm5JajQ4ZEdsMGJHVStSMmwwU0hWaVBDOTBhWFJzWlQ0OGNHRjBhQ0JrUFNKTk1USWdMakk1TjJNdE5pNDJNeUF3TFRFeUlEVXVNemN6TFRFeUlERXlJREFnTlM0ek1ETWdNeTQwTXpnZ09TNDRJRGd1TWpBMUlERXhMak00TlM0MkxqRXhNeTQ0TWkwdU1qVTRMamd5TFM0MU56Y2dNQzB1TWpnMUxTNHdNUzB4TGpBMExTNHdNVFV0TWk0d05DMHpMak16T0M0M01qUXROQzR3TkRJdE1TNDJNUzAwTGpBME1pMHhMall4UXpRdU5ESXlJREU0TGpBM0lETXVOak16SURFM0xqY2dNeTQyTXpNZ01UY3VOMk10TVM0d09EY3RMamMwTkM0d09EUXRMamN5T1M0d09EUXRMamN5T1NBeExqSXdOUzR3T0RRZ01TNDRNemdnTVM0eU16WWdNUzQ0TXpnZ01TNHlNellnTVM0d055QXhMamd6TlNBeUxqZ3dPU0F4TGpNd05TQXpMalE1TlM0NU9UZ3VNVEE0TFM0M056WXVOREUzTFRFdU16QTFMamMyTFRFdU5qQTFMVEl1TmpZMUxTNHpMVFV1TkRZMkxURXVNek15TFRVdU5EWTJMVFV1T1RNZ01DMHhMak14TGpRMk5TMHlMak00SURFdU1qTTFMVE11TWpJdExqRXpOUzB1TXpBekxTNDFOQzB4TGpVeU15NHhNRFV0TXk0eE56WWdNQ0F3SURFdU1EQTFMUzR6TWpJZ015NHpJREV1TWpNdU9UWXRMakkyTnlBeExqazRMUzR6T1RrZ015MHVOREExSURFdU1ESXVNREEySURJdU1EUXVNVE00SURNZ0xqUXdOU0F5TGpJNExURXVOVFV5SURNdU1qZzFMVEV1TWpNZ015NHlPRFV0TVM0eU15NDJORFVnTVM0Mk5UTXVNalFnTWk0NE56TXVNVElnTXk0eE56WXVOelkxTGpnMElERXVNak1nTVM0NU1TQXhMakl6SURNdU1qSWdNQ0EwTGpZeExUSXVPREExSURVdU5qSTFMVFV1TkRjMUlEVXVPVEl1TkRJdU16WXVPREVnTVM0d09UWXVPREVnTWk0eU1pQXdJREV1TmpBMkxTNHdNVFVnTWk0NE9UWXRMakF4TlNBekxqSTROaUF3SUM0ek1UVXVNakV1TmprdU9ESTFMalUzUXpJd0xqVTJOU0F5TWk0d09USWdNalFnTVRjdU5Ua3lJREkwSURFeUxqSTVOMk13TFRZdU5qSTNMVFV1TXpjekxURXlMVEV5TFRFeUlpOCtQQzl6ZG1jKyIvPjxnIGFyaWEtaGlkZGVuPSJmYWxzZSIgZmlsbD0iIzMzMyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkhlbHZldGljYSBOZXVlLEhlbHZldGljYSxBcmlhbCxzYW5zLXNlcmlmIiB0ZXh0LXJlbmRlcmluZz0iZ2VvbWV0cmljUHJlY2lzaW9uIiBmb250LXdlaWdodD0iNzAwIiBmb250LXNpemU9IjExMHB4IiBsaW5lLWhlaWdodD0iMTRweCI+PGEgdGFyZ2V0PSJfYmxhbmsiIGhyZWY9Imh0dHBzOi8vZ2l0aHViLmNvbS9nby1iYXllcy9tYXJnb3Quc2ltIj48dGV4dCBhcmlhLWhpZGRlbj0idHJ1ZSIgeD0iMzU1IiB5PSIxNTAiIGZpbGw9IiNmZmYiIHRyYW5zZm9ybT0ic2NhbGUoLjEpIiB0ZXh0TGVuZ3RoPSIyNzAiPlN0YXJzPC90ZXh0Pjx0ZXh0IHg9IjM1NSIgeT0iMTQwIiB0cmFuc2Zvcm09InNjYWxlKC4xKSIgdGV4dExlbmd0aD0iMjcwIj5TdGFyczwvdGV4dD48cmVjdCBpZD0ibGxpbmsiIHN0cm9rZT0iI2Q1ZDVkNSIgZmlsbD0idXJsKCNhKSIgeD0iLjUiIHk9Ii41IiB3aWR0aD0iNTQiIGhlaWdodD0iMTkiIHJ4PSIyIi8+PC9hPjxhIHRhcmdldD0iX2JsYW5rIiBocmVmPSJodHRwczovL2dpdGh1Yi5jb20vZ28tYmF5ZXMvbWFyZ290LnNpbS9zdGFyZ2F6ZXJzIj48cmVjdCB3aWR0aD0iMTYiIHg9IjYwIiBoZWlnaHQ9IjIwIiBmaWxsPSJyZ2JhKDAsMCwwLDApIi8+PHRleHQgYXJpYS1oaWRkZW49InRydWUiIHg9IjY3NSIgeT0iMTUwIiBmaWxsPSIjZmZmIiB0cmFuc2Zvcm09InNjYWxlKC4xKSIgdGV4dExlbmd0aD0iNzAiPjA8L3RleHQ+PHRleHQgaWQ9InJsaW5rIiB4PSI2NzUiIHk9IjE0MCIgdHJhbnNmb3JtPSJzY2FsZSguMSkiIHRleHRMZW5ndGg9IjcwIj4wPC90ZXh0PjwvYT48L2c+PC9zdmc+" alt="GitHub stars" /></a></p>
+<!-- CRAN badges: will activate after CRAN release
+[![CRAN status](https://www.r-pkg.org/badges/version/margot.sim)](https://CRAN.R-project.org/package=margot.sim)
+[![Downloads](https://cranlogs.r-pkg.org/badges/margot.sim)](https://cran.r-project.org/package=margot.sim)
+[![Total Downloads](https://cranlogs.r-pkg.org/badges/grand-total/margot.sim)](https://cran.r-project.org/package=margot.sim)
+--> <!-- badges: end -->
+
+<p>R package for simulating longitudinal data with realistic
+observational shadows (measurement error, missingness, selection bias)
+and evaluating causal inference methods via Monte Carlo simulation.</p>
+<h2 id="installation">Installation</h2>
+<p>You can install the development version of margot.sim from <a href="https://github.com/">GitHub</a> with:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># install.packages(&quot;devtools&quot;)</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;go-bayes/margot.sim&quot;</span>)</span></code></pre></div>
+<h2 id="overview">Overview</h2>
+<p>margot.sim extends the <code>margot</code> package with:</p>
+<ol style="list-style-type: decimal">
+<li><strong>Shadowing Framework</strong> - Apply observational
+distortions (measurement error, missingness, selection bias)</li>
+<li><strong>Monte Carlo Framework</strong> - Systematically evaluate
+statistical estimators</li>
+<li><strong>Flexible Distributions</strong> - Specify non-normal
+distributions</li>
+<li><strong>Integrated Workflows</strong> - Complete simulation
+studies</li>
+</ol>
+<h2 id="quick-start">Quick Start</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">library</span>(margot.sim)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co"># Generate data with measurement error</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>shadow <span class="ot">&lt;-</span> <span class="fu">create_shadow</span>(</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>  <span class="at">type =</span> <span class="st">&quot;measurement_error&quot;</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>  <span class="at">params =</span> <span class="fu">list</span>(</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>    <span class="at">variables =</span> <span class="fu">c</span>(<span class="st">&quot;t1_l&quot;</span>, <span class="st">&quot;t2_l&quot;</span>),</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>    <span class="at">error_type =</span> <span class="st">&quot;classical&quot;</span>,</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>    <span class="at">sigma =</span> <span class="fl">0.5</span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>  )</span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>)</span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">margot_simulate</span>(</span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>  <span class="at">n =</span> <span class="dv">1000</span>,</span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>  <span class="at">waves =</span> <span class="dv">3</span>,</span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a>  <span class="at">shadows =</span> shadow</span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a>)</span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a></span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a><span class="co"># Run Monte Carlo evaluation</span></span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a>mc_results <span class="ot">&lt;-</span> <span class="fu">margot_monte_carlo</span>(</span>
+<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a>  <span class="at">n_reps =</span> <span class="dv">100</span>,</span>
+<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a>  <span class="at">n_per_rep =</span> <span class="dv">500</span>,</span>
+<span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a>  <span class="at">dgp_params =</span> <span class="fu">list</span>(<span class="at">waves =</span> <span class="dv">2</span>),</span>
+<span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a>  <span class="at">shadows =</span> <span class="fu">list</span>(shadow),</span>
+<span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a>  <span class="at">estimator_fn =</span> <span class="cf">function</span>(data) {</span>
+<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a>    fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(t3_y <span class="sc">~</span> t2_a <span class="sc">+</span> t1_l <span class="sc">+</span> b1, <span class="at">data =</span> data)</span>
+<span id="cb2-27"><a href="#cb2-27" tabindex="-1"></a>    <span class="fu">list</span>(</span>
+<span id="cb2-28"><a href="#cb2-28" tabindex="-1"></a>      <span class="at">estimate =</span> <span class="fu">coef</span>(fit)[<span class="st">&quot;t2_a&quot;</span>],</span>
+<span id="cb2-29"><a href="#cb2-29" tabindex="-1"></a>      <span class="at">se =</span> <span class="fu">sqrt</span>(<span class="fu">diag</span>(<span class="fu">vcov</span>(fit)))[<span class="st">&quot;t2_a&quot;</span>]</span>
+<span id="cb2-30"><a href="#cb2-30" tabindex="-1"></a>    )</span>
+<span id="cb2-31"><a href="#cb2-31" tabindex="-1"></a>  }</span>
+<span id="cb2-32"><a href="#cb2-32" tabindex="-1"></a>)</span>
+<span id="cb2-33"><a href="#cb2-33" tabindex="-1"></a></span>
+<span id="cb2-34"><a href="#cb2-34" tabindex="-1"></a><span class="fu">print</span>(mc_results)</span></code></pre></div>
+<h2 id="shadowing-framework">Shadowing Framework</h2>
+<h3 id="available-shadow-types">Available Shadow Types</h3>
+<p><strong>Measurement Error:</strong> - Classical error (continuous
+variables) - Misclassification (binary variables) - Differential error -
+Dichotomization - Correlated errors</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Classical measurement error</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>me_shadow <span class="ot">&lt;-</span> <span class="fu">create_shadow</span>(</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="at">type =</span> <span class="st">&quot;measurement_error&quot;</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  <span class="at">params =</span> <span class="fu">list</span>(</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>    <span class="at">variables =</span> <span class="st">&quot;t1_l&quot;</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>    <span class="at">error_type =</span> <span class="st">&quot;classical&quot;</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>    <span class="at">sigma =</span> <span class="fl">0.5</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>  )</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>)</span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co"># Misclassification for binary variables</span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>misclass_shadow <span class="ot">&lt;-</span> <span class="fu">create_shadow</span>(</span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>  <span class="at">type =</span> <span class="st">&quot;measurement_error&quot;</span>, </span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a>  <span class="at">params =</span> <span class="fu">list</span>(</span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a>    <span class="at">variables =</span> <span class="st">&quot;t1_a&quot;</span>,</span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a>    <span class="at">error_type =</span> <span class="st">&quot;misclassification&quot;</span>,</span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a>    <span class="at">sensitivity =</span> <span class="fl">0.85</span>,  <span class="co"># P(observed=1|true=1)</span></span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a>    <span class="at">specificity =</span> <span class="fl">0.90</span>   <span class="co"># P(observed=0|true=0)</span></span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a>  )</span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a>)</span></code></pre></div>
+<p><strong>Missing Data:</strong></p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Item-level missingness</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>miss_shadow <span class="ot">&lt;-</span> <span class="fu">create_item_missingness_shadow</span>(</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="at">variables =</span> <span class="fu">c</span>(<span class="st">&quot;t1_l&quot;</span>, <span class="st">&quot;t2_l&quot;</span>),</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="at">missing_rate =</span> <span class="fl">0.2</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="at">missing_mechanism =</span> <span class="st">&quot;MAR&quot;</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  <span class="at">dependent_vars =</span> <span class="st">&quot;b1&quot;</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>)</span></code></pre></div>
+<p><strong>Selection Bias:</strong></p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Positivity violations</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>pos_shadow <span class="ot">&lt;-</span> <span class="fu">create_positivity_shadow</span>(</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="at">exposure_var =</span> <span class="st">&quot;t1_a&quot;</span>,</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>  <span class="at">filter_fn =</span> <span class="cf">function</span>(data) {</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>    <span class="co"># Treatment only possible if risk score &lt;= 2</span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>    data<span class="sc">$</span>b1 <span class="sc">+</span> data<span class="sc">$</span>b2 <span class="sc">&lt;=</span> <span class="dv">2</span></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>  }</span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>)</span></code></pre></div>
+<h3 id="combining-shadows">Combining Shadows</h3>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># Apply multiple shadows</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>shadows <span class="ot">&lt;-</span> <span class="fu">list</span>(me_shadow, miss_shadow)</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">margot_simulate</span>(<span class="at">n =</span> <span class="dv">1000</span>, <span class="at">waves =</span> <span class="dv">3</span>, <span class="at">shadows =</span> shadows)</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co"># Or apply post-hoc</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>shadowed_data <span class="ot">&lt;-</span> <span class="fu">apply_shadows</span>(dat, shadows)</span></code></pre></div>
+<h2 id="monte-carlo-framework">Monte Carlo Framework</h2>
+<p>Evaluate estimator performance under various conditions:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># Define estimator</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>ipw_estimator <span class="ot">&lt;-</span> <span class="cf">function</span>(data) {</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  <span class="co"># Fit propensity score model</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>  ps_model <span class="ot">&lt;-</span> <span class="fu">glm</span>(t1_a <span class="sc">~</span> b1 <span class="sc">+</span> b2 <span class="sc">+</span> t0_l, </span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>                  <span class="at">data =</span> data, </span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>                  <span class="at">family =</span> binomial)</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>  ps <span class="ot">&lt;-</span> <span class="fu">predict</span>(ps_model, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>)</span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>  </span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>  <span class="co"># Calculate weights</span></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>  weights <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(data<span class="sc">$</span>t1_a <span class="sc">==</span> <span class="dv">1</span>, <span class="dv">1</span><span class="sc">/</span>ps, <span class="dv">1</span><span class="sc">/</span>(<span class="dv">1</span><span class="sc">-</span>ps))</span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>  </span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a>  <span class="co"># Outcome model</span></span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a>  fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(t2_y <span class="sc">~</span> t1_a, <span class="at">weights =</span> weights, <span class="at">data =</span> data)</span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a>  </span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a>  <span class="fu">list</span>(</span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a>    <span class="at">estimate =</span> <span class="fu">coef</span>(fit)[<span class="st">&quot;t1_a&quot;</span>],</span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a>    <span class="at">se =</span> <span class="fu">sqrt</span>(<span class="fu">diag</span>(<span class="fu">vcov</span>(fit)))[<span class="st">&quot;t1_a&quot;</span>],</span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a>    <span class="at">converged =</span> <span class="cn">TRUE</span></span>
+<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a>  )</span>
+<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a>}</span>
+<span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a></span>
+<span id="cb7-22"><a href="#cb7-22" tabindex="-1"></a><span class="co"># Run simulation</span></span>
+<span id="cb7-23"><a href="#cb7-23" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">margot_monte_carlo</span>(</span>
+<span id="cb7-24"><a href="#cb7-24" tabindex="-1"></a>  <span class="at">n_reps =</span> <span class="dv">500</span>,</span>
+<span id="cb7-25"><a href="#cb7-25" tabindex="-1"></a>  <span class="at">n_per_rep =</span> <span class="dv">1000</span>,</span>
+<span id="cb7-26"><a href="#cb7-26" tabindex="-1"></a>  <span class="at">dgp_params =</span> <span class="fu">list</span>(</span>
+<span id="cb7-27"><a href="#cb7-27" tabindex="-1"></a>    <span class="at">waves =</span> <span class="dv">2</span>,</span>
+<span id="cb7-28"><a href="#cb7-28" tabindex="-1"></a>    <span class="at">params =</span> <span class="fu">list</span>(<span class="at">a_lag_y_coef =</span> <span class="fl">0.3</span>)  <span class="co"># True effect</span></span>
+<span id="cb7-29"><a href="#cb7-29" tabindex="-1"></a>  ),</span>
+<span id="cb7-30"><a href="#cb7-30" tabindex="-1"></a>  <span class="at">shadows =</span> <span class="fu">list</span>(me_shadow, miss_shadow),</span>
+<span id="cb7-31"><a href="#cb7-31" tabindex="-1"></a>  <span class="at">estimator_fn =</span> ipw_estimator,</span>
+<span id="cb7-32"><a href="#cb7-32" tabindex="-1"></a>  <span class="at">truth_fn =</span> <span class="cf">function</span>(data) <span class="fl">0.3</span>,</span>
+<span id="cb7-33"><a href="#cb7-33" tabindex="-1"></a>  <span class="at">parallel =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb7-34"><a href="#cb7-34" tabindex="-1"></a>  <span class="at">n_cores =</span> <span class="dv">4</span></span>
+<span id="cb7-35"><a href="#cb7-35" tabindex="-1"></a>)</span>
+<span id="cb7-36"><a href="#cb7-36" tabindex="-1"></a></span>
+<span id="cb7-37"><a href="#cb7-37" tabindex="-1"></a><span class="co"># View results</span></span>
+<span id="cb7-38"><a href="#cb7-38" tabindex="-1"></a><span class="fu">print</span>(results)</span>
+<span id="cb7-39"><a href="#cb7-39" tabindex="-1"></a><span class="fu">plot</span>(results, <span class="at">type =</span> <span class="st">&quot;histogram&quot;</span>)</span></code></pre></div>
+<h3 id="performance-metrics">Performance Metrics</h3>
+<p>The framework automatically calculates: - Bias and relative bias -
+Variance and MSE - Coverage of confidence intervals - Convergence rates
+- Sample size retention</p>
+<h2 id="complete-example">Complete Example</h2>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Compare estimators under measurement error</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>comparison <span class="ot">&lt;-</span> <span class="fu">example_measurement_error_comparison</span>()</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="co"># Full workflow demonstration</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">example_complete_workflow</span>()</span></code></pre></div>
+<h2 id="advanced-usage">Advanced Usage</h2>
+<h3 id="custom-shadows">Custom Shadows</h3>
+<p>Create your own shadow types:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># Define apply method</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>apply_shadow.my_custom_shadow <span class="ot">&lt;-</span> <span class="cf">function</span>(data, shadow, ...) {</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>  <span class="co"># Your shadowing logic here</span></span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>  data</span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>}</span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a></span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a><span class="co"># Use it</span></span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a>shadow <span class="ot">&lt;-</span> <span class="fu">structure</span>(</span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">type =</span> <span class="st">&quot;my_custom&quot;</span>, <span class="at">params =</span> <span class="fu">list</span>(...)),</span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a>  <span class="at">class =</span> <span class="fu">c</span>(<span class="st">&quot;my_custom_shadow&quot;</span>, <span class="st">&quot;margot_shadow&quot;</span>)</span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a>)</span></code></pre></div>
+<h3 id="flexible-distributions">Flexible Distributions</h3>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co"># Non-normal baseline</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>gamma_dist <span class="ot">&lt;-</span> <span class="fu">create_distribution</span>(</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>  <span class="st">&quot;gamma&quot;</span>,</span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>  <span class="at">params =</span> <span class="fu">list</span>(<span class="at">shape =</span> <span class="dv">2</span>, <span class="at">rate =</span> <span class="dv">1</span>)</span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>)</span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a></span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a><span class="co"># Use in simulation</span></span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">margot_simulate_flex</span>(</span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a>  <span class="at">n =</span> <span class="dv">1000</span>,</span>
+<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a>  <span class="at">distributions =</span> <span class="fu">list</span>(<span class="at">baseline =</span> gamma_dist)</span>
+<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a>)</span></code></pre></div>
+<h2 id="documentation">Documentation</h2>
+<p>For detailed documentation, see:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co"># Package documentation</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>?margot.sim</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="co"># Key functions</span></span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a>?create_shadow</span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a>?margot_monte_carlo</span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a>?margot_simulate</span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a></span>
+<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a><span class="co"># Examples</span></span>
+<span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a><span class="fu">example</span>(create_shadow)</span>
+<span id="cb11-11"><a href="#cb11-11" tabindex="-1"></a><span class="fu">example</span>(margot_monte_carlo)</span></code></pre></div>
+<h2 id="contributing">Contributing</h2>
+<p>Contributions are welcome! Please:</p>
+<ol style="list-style-type: decimal">
+<li>Fork the repository</li>
+<li>Create a feature branch</li>
+<li>Add tests for new functionality</li>
+<li>Submit a pull request</li>
+</ol>
+<h2 id="license">License</h2>
+<p>MIT License</p>
+<h2 id="citation">Citation</h2>
+<p>If you use margot.sim in your research, please cite:</p>
+<h2 id="note">Note</h2>
+<p>Observational data is often a poor reflection of reality. The
+<code>margot.sim</code> package provides a simulation framework to
+quantify how statistical estimators perform when the data they are fed
+are <em>shadows</em> of a true causal process. This concept is nods to
+Plato’s Allegory of the Cave, where prisoners mistake shadows for real
+forms (Bloom, Kirsch, et al. 1968). <code>margot.sim</code> allows
+researchers to generate data from a known causal truth and then
+systematically distort it with “shadows” to see how well an estimator
+can glimpse the ground truth (or underlying forms).</p>
+<p>The framework’s power comes from its consistent architecture.
+Recurring observational challenges—such as item-level missingness that
+creates more realistic missing data patterns, and positivity violations
+that test the boundaries of causal identification—are both implemented
+as distinct shadows. This modular design maintains **a clean separation
+between the true data-generating process and the distorted data that
+investigators observe, allowing for principled evaluation of statistical
+methods in the face of real-world data limitations (Bulbulia 2024).</p>
+<h2 id="references">References</h2>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="fu">citation</span>(<span class="st">&quot;margot.sim&quot;</span>)</span></code></pre></div>
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+
+<div id="ref-bloom1968republic" class="csl-entry">
+
+<p>Bloom, Allan, Adam Kirsch, et al. 1968. <em>The Republic of
+Plato</em>. Vol. 2. Basic Books New York.</p>
+</div>
+
+<div id="ref-bulbulia2024wierd" class="csl-entry">
+
+<p>Bulbulia, J. A. 2024. “Methods in Causal Inference Part 3:
+Measurement Error and External Validity Threats.” <em>Evolutionary Human
+Sciences</em> 6: e42. <a href="https://doi.org/10.1017/ehs.2024.33">https://doi.org/10.1017/ehs.2024.33</a>.</p>
+</div>
+
+</div>
+
+</body>
+</html>

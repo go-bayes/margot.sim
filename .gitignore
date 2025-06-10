@@ -5,4 +5,5 @@
 *.DS_Store
 /doc/
 /Meta/
-CLAUDE.md
+.dev-notes/
+docs

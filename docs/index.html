@@ -5,14 +5,14 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Simulate Longitudinal Data with Masking and Monte Carlo Evaluation • margot.sim</title>
+<title>Simulate Longitudinal Data with Observational Shadows and Monte Carlo Evaluation • margot.sim</title>
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Simulate Longitudinal Data with Masking and Monte Carlo Evaluation">
-<meta name="description" content="Extensions to the margot package for simulating longitudinal data using Structural Causal Models (SCMs). Provides sophisticated capabilities for applying various masks (censoring, measurement error, selection bias) to simulated data, running Monte Carlo simulations to evaluate statistical estimators, supporting flexible non-normal distributions, and creating a unified framework for causal inference method evaluation.">
-<meta property="og:description" content="Extensions to the margot package for simulating longitudinal data using Structural Causal Models (SCMs). Provides sophisticated capabilities for applying various masks (censoring, measurement error, selection bias) to simulated data, running Monte Carlo simulations to evaluate statistical estimators, supporting flexible non-normal distributions, and creating a unified framework for causal inference method evaluation.">
+<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Simulate Longitudinal Data with Observational Shadows and Monte Carlo Evaluation">
+<meta name="description" content="Extensions to the margot package for simulating longitudinal data using Structural Causal Models (SCMs). Provides sophisticated capabilities for applying various observational shadows (measurement error, missingness, selection bias) to simulated data, running Monte Carlo simulations to evaluate statistical estimators, supporting flexible non-normal distributions, and creating a unified framework for causal inference method evaluation.">
+<meta property="og:description" content="Extensions to the margot package for simulating longitudinal data using Structural Causal Models (SCMs). Provides sophisticated capabilities for applying various observational shadows (measurement error, missingness, selection bias) to simulated data, running Monte Carlo simulations to evaluate statistical estimators, supporting flexible non-normal distributions, and creating a unified framework for causal inference method evaluation.">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">margot.sim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -32,10 +32,21 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
 <li class="nav-item"><a class="nav-link" href="reference/index.html">Functions</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-vignettes" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Vignettes</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-vignettes">
+<li><h6 class="dropdown-header" data-toc-skip>Getting Started</h6></li>
+    <li><a class="dropdown-item" href="articles/basic-simulation.html">Basic Simulation</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Advanced Topics</h6></li>
+    <li><a class="dropdown-item" href="articles/applying-shadows.html">Applying Observational Shadows</a></li>
+    <li><a class="dropdown-item" href="articles/monte-carlo-simple.html">Monte Carlo Evaluation</a></li>
+  </ul>
+</li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
       </ul>
 <ul class="navbar-nav">
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/go-bayes/margot.sim"><span class="fa fab fa-github fa-lg"></span></a></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/go-bayes/margot.sim" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
 
@@ -47,7 +58,7 @@
 <div class="page-header"><h1 id="margotsim">margot.sim<a class="anchor" aria-label="anchor" href="#margotsim"></a>
 </h1></div>
 <!-- badges: start -->
-<!-- badges: end -->
+
 <p>R package for simulating longitudinal data with realistic observational shadows (measurement error, missingness, selection bias) and evaluating causal inference methods via Monte Carlo simulation.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -306,8 +317,26 @@
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
 <p>If you use margot.sim in your research, please cite:</p>
+</div>
+<div class="section level2">
+<h2 id="note">Note<a class="anchor" aria-label="anchor" href="#note"></a>
+</h2>
+<p>Observational data is often a poor reflection of reality. The <code>margot.sim</code> package provides a simulation framework to quantify how statistical estimators perform when the data they are fed are <em>shadows</em> of a true causal process. This concept is nods to Plato’s Allegory of the Cave, where prisoners mistake shadows for real forms (Bloom, Kirsch, et al. 1968). <code>margot.sim</code> allows researchers to generate data from a known causal truth and then systematically distort it with “shadows” to see how well an estimator can glimpse the ground truth (or underlying forms).</p>
+<p>The framework’s power comes from its consistent architecture. Recurring observational challenges—such as item-level missingness that creates more realistic missing data patterns, and positivity violations that test the boundaries of causal identification—are both implemented as distinct shadows. This modular design maintains **a clean separation between the true data-generating process and the distorted data that investigators observe, allowing for principled evaluation of statistical methods in the face of real-world data limitations (Bulbulia 2024).</p>
+</div>
+<div class="section level2">
+<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h2>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/citation.html" class="external-link">citation</a></span><span class="op">(</span><span class="st">"margot.sim"</span><span class="op">)</span></span></code></pre></div>
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="ref-bloom1968republic" class="csl-entry">
+Bloom, Allan, Adam Kirsch, et al. 1968. <em>The Republic of Plato</em>. Vol. 2. Basic Books New York.
+</div>
+<div id="ref-bulbulia2024wierd" class="csl-entry">
+Bulbulia, J. A. 2024. “Methods in Causal Inference Part 3: Measurement Error and External Validity Threats.” <em>Evolutionary Human Sciences</em> 6: e42. <a href="https://doi.org/10.1017/ehs.2024.33" class="external-link uri">https://doi.org/10.1017/ehs.2024.33</a>.
+</div>
+</div>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
@@ -341,7 +370,15 @@
 </ul>
 </div>
 
-
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Lifecycle: experimental"></a></li>
+<li><a href="https://opensource.org/licenses/MIT" class="external-link"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a></li>
+<li><a href="https://app.codecov.io/gh/go-bayes/margot.sim" class="external-link"><img src="https://codecov.io/gh/go-bayes/margot.sim/graph/badge.svg" alt="Codecov test coverage"></a></li>
+<li><a href="https://github.com/go-bayes/margot.sim" class="external-link"><img src="https://img.shields.io/github/stars/go-bayes/margot.sim?style=social" alt="GitHub stars"></a></li>
+</ul>
+</div>
 
   </aside>
 </div>

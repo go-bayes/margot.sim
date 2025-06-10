@@ -3,10 +3,23 @@ template:
   bootstrap: 5
   bootswatch: cosmo
 
+articles:
+  - title: "Getting Started"
+    contents:
+    - basic-simulation
+  - title: "Advanced Topics"  
+    contents:
+    - applying-shadows
+    - monte-carlo-simple
 navbar:
   structure:
-    left: [intro, reference, articles, tutorials, news]
-    right: [github]
+    left:
+    - intro
+    - reference
+    - articles
+    - tutorials
+    - news
+    right: github
   components:
     home:
       icon: fas fa-home fa-lg
@@ -14,22 +27,33 @@ navbar:
     reference:
       text: Functions
       href: reference/index.html
+    articles:
+      text: Vignettes
+      menu:
+      - text: Getting Started
+      - text: Basic Simulation
+        href: articles/basic-simulation.html
+      - text: '-------'
+      - text: Advanced Topics
+      - text: Applying Observational Shadows
+        href: articles/applying-shadows.html
+      - text: Monte Carlo Evaluation
+        href: articles/monte-carlo-simple.html
     github:
       icon: fab fa-github fa-lg
       href: https://github.com/go-bayes/margot.sim
-
+      aria-label: GitHub
 reference:
-- title: "Core Simulation Functions"
-  desc: "Main functions for simulating longitudinal data"
+- title: Core Simulation Functions
+  desc: Main functions for simulating longitudinal data
   contents:
   - margot_simulate
   - margot_simulate_causal
   - margot_simulate_flex
   - apply_censoring_post_hoc
   - print.margot_causal_sim
-
-- title: "Shadowing Framework"
-  desc: "Functions for applying observational distortions"
+- title: Shadowing Framework
+  desc: Functions for applying observational distortions
   contents:
   - create_shadow
   - apply_shadow
@@ -40,9 +64,8 @@ reference:
   - create_positivity_shadow
   - diagnose_shadowing
   - print.shadow_effects
-
-- title: "Shadow Methods"
-  desc: "S3 methods for specific shadow types"
+- title: Shadow Methods
+  desc: S3 methods for specific shadow types
   contents:
   - apply_shadow.censoring_shadow
   - apply_shadow.combined_shadow
@@ -50,9 +73,8 @@ reference:
   - apply_shadow.measurement_error_shadow
   - apply_shadow.positivity_shadow
   - apply_shadow.selection_shadow
-
-- title: "Monte Carlo Framework"
-  desc: "Functions for Monte Carlo evaluation"
+- title: Monte Carlo Framework
+  desc: Functions for Monte Carlo evaluation
   contents:
   - margot_monte_carlo
   - compare_mc_results
@@ -60,9 +82,8 @@ reference:
   - print.margot_mc_results
   - summary.margot_mc_results
   - print.mc_comparison
-
-- title: "Distribution Specifications"
-  desc: "Functions for flexible distributions"
+- title: Distribution Specifications
+  desc: Functions for flexible distributions
   contents:
   - create_distribution
   - create_distribution_set
@@ -71,9 +92,8 @@ reference:
   - margot_distributions
   - generate_from_dist.custom_distribution
   - generate_from_dist.parametric_distribution
-
-- title: "Utilities and Documentation"
-  desc: "Helper functions and documentation"
+- title: Utilities and Documentation
+  desc: Helper functions and documentation
   contents:
   - margot_report_sim
   - margot_scm_details
@@ -83,15 +103,12 @@ reference:
   - margot_convert_format
   - margot_extract_var
   - margot_missingness_summary
-
-- title: "Examples"
-  desc: "Example functions demonstrating package features"
+- title: Examples
+  desc: Example functions demonstrating package features
   contents:
   - starts_with("example_")
   - run_all_examples
-
-- title: "Internal Testing Functions"
-  desc: "Functions for package testing"
-  contents:
-  - test_censoring_simple
+- title: Internal Testing Functions
+  desc: Functions for package testing
+  contents: test_censoring_simple
 

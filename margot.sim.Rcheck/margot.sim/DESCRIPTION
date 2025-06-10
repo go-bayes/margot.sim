@@ -1,0 +1,31 @@
+Package: margot.sim
+Type: Package
+Title: Simulate Longitudinal Data with Observational Shadows and Monte
+        Carlo Evaluation
+Version: 0.1.0
+Authors@R: 
+    person("Joseph", "Bulbulia", email = "joseph.bulbulia@gmail.com", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-5861-2056"))
+Description: Extensions to the margot package for simulating longitudinal data 
+    using Structural Causal Models (SCMs). Provides sophisticated capabilities 
+    for applying various observational shadows (measurement error, missingness, 
+    selection bias) to simulated data, running Monte Carlo simulations to evaluate 
+    statistical estimators, supporting flexible non-normal distributions, and creating 
+    a unified framework for causal inference method evaluation.
+License: MIT + file LICENSE
+Encoding: UTF-8
+URL: https://go-bayes.github.io/margot.sim/
+BugReports: https://github.com/go-bayes/margot.sim/issues
+Depends: R (>= 4.1.0)
+Imports: cli, dplyr, MASS, stats, tibble, tidyr, utils
+Suggests: testthat (>= 3.0.0), knitr, rmarkdown, ggplot2, pkgdown,
+        devtools, usethis, parallel, moments, lme4
+Config/testthat/edition: 3
+RoxygenNote: 7.3.2
+VignetteBuilder: knitr
+NeedsCompilation: no
+Packaged: 2025-06-10 02:32:49 UTC; joseph
+Author: Joseph Bulbulia [aut, cre] (ORCID:
+    <https://orcid.org/0000-0002-5861-2056>)
+Maintainer: Joseph Bulbulia <joseph.bulbulia@gmail.com>
+Built: R 4.5.0; ; 2025-06-10 02:33:00 UTC; unix

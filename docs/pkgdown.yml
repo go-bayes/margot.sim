@@ -1,8 +1,11 @@
 pandoc: 3.7.0.2
 pkgdown: 2.1.2
 pkgdown_sha: ~
-articles: {}
-last_built: 2025-06-10T01:03Z
+articles:
+  applying-shadows: applying-shadows.html
+  basic-simulation: basic-simulation.html
+  monte-carlo-simple: monte-carlo-simple.html
+last_built: 2025-06-10T03:52Z
 urls:
   reference: https://go-bayes.github.io/margot.sim/reference
   article: https://go-bayes.github.io/margot.sim/articles

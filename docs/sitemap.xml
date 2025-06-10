@@ -2,9 +2,12 @@
 <url><loc>https://go-bayes.github.io/margot.sim/404.html</loc></url>
 <url><loc>https://go-bayes.github.io/margot.sim/LICENSE-text.html</loc></url>
 <url><loc>https://go-bayes.github.io/margot.sim/LICENSE.html</loc></url>
+<url><loc>https://go-bayes.github.io/margot.sim/articles/applying-shadows.html</loc></url>
+<url><loc>https://go-bayes.github.io/margot.sim/articles/basic-simulation.html</loc></url>
+<url><loc>https://go-bayes.github.io/margot.sim/articles/index.html</loc></url>
+<url><loc>https://go-bayes.github.io/margot.sim/articles/monte-carlo-simple.html</loc></url>
 <url><loc>https://go-bayes.github.io/margot.sim/authors.html</loc></url>
 <url><loc>https://go-bayes.github.io/margot.sim/index.html</loc></url>
-<url><loc>https://go-bayes.github.io/margot.sim/margot-development-brief.html</loc></url>
 <url><loc>https://go-bayes.github.io/margot.sim/news/index.html</loc></url>
 <url><loc>https://go-bayes.github.io/margot.sim/reference/analyse_mask_effects.html</loc></url>
 <url><loc>https://go-bayes.github.io/margot.sim/reference/analyse_shadow_effects.html</loc></url>
@@ -68,6 +71,7 @@
 <url><loc>https://go-bayes.github.io/margot.sim/reference/generate_from_dist.html</loc></url>
 <url><loc>https://go-bayes.github.io/margot.sim/reference/generate_from_dist.parametric_distribution.html</loc></url>
 <url><loc>https://go-bayes.github.io/margot.sim/reference/get_default_links.html</loc></url>
+<url><loc>https://go-bayes.github.io/margot.sim/reference/get_time_index.html</loc></url>
 <url><loc>https://go-bayes.github.io/margot.sim/reference/hello.html</loc></url>
 <url><loc>https://go-bayes.github.io/margot.sim/reference/index.html</loc></url>
 <url><loc>https://go-bayes.github.io/margot.sim/reference/margot_convert_format.html</loc></url>
@@ -95,5 +99,6 @@
 <url><loc>https://go-bayes.github.io/margot.sim/reference/validate_proportions.html</loc></url>
 <url><loc>https://go-bayes.github.io/margot.sim/reference/validate_scm_assumptions.html</loc></url>
 <url><loc>https://go-bayes.github.io/margot.sim/reference/validate_shadow_params.html</loc></url>
+<url><loc>https://go-bayes.github.io/margot.sim/reference/validate_temporal_order.html</loc></url>
 </urlset>
 

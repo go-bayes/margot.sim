@@ -1,0 +1,284 @@
+
+R version 4.5.0 (2025-04-11) -- "How About a Twenty-Six"
+Copyright (C) 2025 The R Foundation for Statistical Computing
+Platform: aarch64-apple-darwin20
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> pkgname <- "margot.sim"
+> source(file.path(R.home("share"), "R", "examples-header.R"))
+> options(warn = 1)
+> library('margot.sim')
+margot.sim 0.1.0
+> 
+> base::assign(".oldSearch", base::search(), pos = 'CheckExEnv')
+> base::assign(".old_wd", base::getwd(), pos = 'CheckExEnv')
+> cleanEx()
+> nameEx("create_distribution")
+> ### * create_distribution
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: create_distribution
+> ### Title: Flexible Distribution Specifications for margot
+> ### Aliases: create_distribution
+> 
+> ### ** Examples
+> 
+> # Normal distribution
+> dist_normal <- create_distribution("normal", params = list(sd = 1))
+> 
+> # Log-normal via transformation
+> dist_lognormal <- create_distribution(
++   "normal",
++   params = list(sd = 0.5),
++   inverse_link = exp
++ )
+> 
+> # Beta distribution for bounded variables
+> dist_beta <- create_distribution(
++   "beta",
++   params = list(shape1 = 2, shape2 = 5)
++ )
+> 
+> 
+> 
+> cleanEx()
+> nameEx("create_shadow")
+> ### * create_shadow
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: create_shadow
+> ### Title: Shadowing Framework for margot
+> ### Aliases: create_shadow
+> 
+> ### ** Examples
+> 
+> # Create a classical measurement error shadow
+> shadow <- create_shadow(
++   type = "measurement_error",
++   params = list(
++     variables = c("t1_l", "t2_l"),
++     error_type = "classical",
++     sigma = 0.5
++   )
++ )
+> 
+> # Create a misclassification shadow for binary variables
+> misclass_shadow <- create_shadow(
++   type = "measurement_error",
++   params = list(
++     variables = "t1_a",
++     error_type = "misclassification",
++     sensitivity = 0.85,  # 85% of true positives correctly classified
++     specificity = 0.90   # 90% of true negatives correctly classified
++   )
++ )
+> 
+> 
+> 
+> cleanEx()
+> nameEx("margot_monte_carlo")
+> ### * margot_monte_carlo
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: margot_monte_carlo
+> ### Title: Monte Carlo Framework for margot
+> ### Aliases: margot_monte_carlo
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D # Define estimator
+> ##D my_estimator <- function(data) {
+> ##D   fit <- lm(t3_y ~ t2_a + t1_a + b1, data = data)
+> ##D   list(
+> ##D     estimate = coef(fit)["t2_a"],
+> ##D     se = sqrt(diag(vcov(fit)))["t2_a"],
+> ##D     converged = TRUE
+> ##D   )
+> ##D }
+> ##D 
+> ##D # Run simulation
+> ##D results <- margot_monte_carlo(
+> ##D   n_reps = 500,
+> ##D   n_per_rep = 1000,
+> ##D   dgp_params = list(
+> ##D     waves = 3,
+> ##D     params = list(a_lag_y_coef = 0.3)
+> ##D   ),
+> ##D   estimator_fn = my_estimator
+> ##D )
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("margot_report_sim")
+> ### * margot_report_sim
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: margot_report_sim
+> ### Title: Report margot simulation summary
+> ### Aliases: margot_report_sim
+> 
+> ### ** Examples
+> 
+> dat <- margot_simulate(n = 100, waves = 3, seed = 123)
+> margot_report_sim(dat)
+
+── margot simulation summary ───────────────────────────────────────────────────
+
+── design ──
+
+• n = 100 subjects
+• waves = 3 measurement occasions
+• structural model: semi-markovian
+• intervention: no
+• sampling weights: no
+
+── variables ──
+
+• baseline covariates: 5
+• exposure type: binary
+• outcome type: continuous (1 outcome)
+• outcome feedback: full
+
+── censoring ──
+
+• censoring mechanism: built-in
+• base rate: 0.1
+ℹ data format: wide (id only)
+> 
+> 
+> 
+> 
+> cleanEx()
+> nameEx("margot_simulate")
+> ### * margot_simulate
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: margot_simulate
+> ### Title: Simulate semi-markovian longitudinal data with sampling weights
+> ### Aliases: margot_simulate
+> 
+> ### ** Examples
+> 
+> # basic simulation following the SCM
+> dat <- margot_simulate(
++   n = 1000,
++   waves = 3,
++   seed = 2025
++ )
+> 
+> # with intervention g: always treat after baseline
+> dat_g <- margot_simulate(
++   n = 1000,
++   waves = 3,
++   intervention = function(data, time, trt) {
++     if (time == 0) return(data[[trt]])  # natural at baseline
++     rep(1, nrow(data))                   # always treat after
++   },
++   seed = 2025
++ )
+> 
+> # the estimand E[Y_K^{g,C=0}] can be computed as mean(dat_g$t4_y)
+> 
+> # Example with shadows
+> # Create measurement error shadow
+> me_shadow <- create_shadow(
++   "measurement_error",
++   params = list(
++     variables = c("t1_l", "t2_l"),
++     error_type = "classical",
++     sigma = 0.5
++   )
++ )
+> 
+> # Generate data with measurement error
+> dat_with_error <- margot_simulate(
++   n = 1000,
++   waves = 2,
++   shadows = me_shadow,
++   seed = 2025
++ )
+> # shadowed data has measurement error applied to specified variables
+> 
+> 
+> 
+> 
+> cleanEx()
+> nameEx("margot_simulate_causal")
+> ### * margot_simulate_causal
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: margot_simulate_causal
+> ### Title: Simulate data for causal inference with proper censoring
+> ### Aliases: margot_simulate_causal
+> 
+> ### ** Examples
+> 
+> # Define interventions
+> interventions <- list(
++   never_treat = function(data, time, trt) {
++     rep(0, nrow(data))
++   },
++   always_treat = function(data, time, trt) {
++     rep(1, nrow(data))
++   },
++   natural = function(data, time, trt) {
++     data[[trt]]  # return natural treatment
++   }
++ )
+> 
+> # Simulate with censoring
+> results <- margot_simulate_causal(
++   n = 1000,
++   waves = 3,
++   treatments = "a",
++   interventions = interventions,
++   apply_censoring = TRUE,
++   common_params = list(
++     params = list(a_lag_y_coef = 0.3),
++     verbose = TRUE
++   )
++ )
+simulating under intervention: never_treat
+simulating under intervention: always_treat
+simulating under intervention: natural
+> 
+> 
+> 
+> 
+> ### * <FOOTER>
+> ###
+> cleanEx()
+> options(digits = 7L)
+> base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
+Time elapsed:  0.245 0.015 0.259 0 0 
+> grDevices::dev.off()
+null device 
+          1 
+> ###
+> ### Local variables: ***
+> ### mode: outline-minor ***
+> ### outline-regexp: "\\(> \\)?### [*]+" ***
+> ### End: ***
+> quit('no')

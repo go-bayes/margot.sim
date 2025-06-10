@@ -6,9 +6,9 @@
     GNU Fortran (GCC) 14.2.0
 * running under: macOS Sequoia 15.5
 * using session charset: UTF-8
-* using options ‘--no-manual --as-cran’
+* using option ‘--no-manual’
 * checking for file ‘./DESCRIPTION’ ... ERROR
-Required field missing or empty:
-  ‘Maintainer’
+Required fields missing or empty:
+  ‘Author’ ‘Maintainer’
 * DONE
 Status: 1 ERROR

@@ -4,6 +4,8 @@
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
-^margot-development-brief\.md$
 ^\.github$
-^CLAUDE\.md$
+^codecov\.yml$
+^LICENSE\.md$
+^\.claude$
+^\.dev-notes$

@@ -1,0 +1,27 @@
+* installing *source* package ‘margot.sim’ ...
+** this is package ‘margot.sim’ version ‘0.1.0’
+** using staged installation
+** R
+** inst
+** byte-compile and prepare package for lazy loading
+
+===========================================
+MARGOT EXTENSION COMPONENTS LOADED
+===========================================
+
+Available functions:
+- Shadowing: create_shadow(), apply_shadow(), apply_shadows()
+- Monte Carlo: margot_monte_carlo(), compare_mc_results()
+- Distributions: create_distribution(), create_distribution_set()
+- Examples: example_complete_workflow(), example_measurement_error_comparison()
+
+Run example_complete_workflow() for a full demonstration.
+
+** help
+*** installing help indices
+** building package indices
+** installing vignettes
+** testing if installed package can be loaded from temporary location
+** testing if installed package can be loaded from final location
+** testing if installed package keeps a record of temporary installation path
+* DONE (margot.sim)

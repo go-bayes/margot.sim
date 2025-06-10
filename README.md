@@ -5,7 +5,19 @@
 
 <!-- badges: start -->
 
-<!-- badges: end -->
+[![Lifecycle:
+experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![License:
+MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Codecov test
+coverage](https://codecov.io/gh/go-bayes/margot.sim/graph/badge.svg)](https://app.codecov.io/gh/go-bayes/margot.sim)
+[![GitHub
+stars](https://img.shields.io/github/stars/go-bayes/margot.sim?style=social)](https://github.com/go-bayes/margot.sim)
+<!-- CRAN badges: will activate after CRAN release
+[![CRAN status](https://www.r-pkg.org/badges/version/margot.sim)](https://CRAN.R-project.org/package=margot.sim)
+[![Downloads](https://cranlogs.r-pkg.org/badges/margot.sim)](https://cran.r-project.org/package=margot.sim)
+[![Total Downloads](https://cranlogs.r-pkg.org/badges/grand-total/margot.sim)](https://cran.r-project.org/package=margot.sim)
+--> <!-- badges: end -->
 
 R package for simulating longitudinal data with realistic observational
 shadows (measurement error, missingness, selection bias) and evaluating
@@ -271,6 +283,49 @@ MIT License
 
 If you use margot.sim in your research, please cite:
 
+## Note
+
+Observational data is often a poor reflection of reality. The
+`margot.sim` package provides a simulation framework to quantify how
+statistical estimators perform when the data they are fed are *shadows*
+of a true causal process. This concept is nods to Plato’s Allegory of
+the Cave, where prisoners mistake shadows for real forms (Bloom, Kirsch,
+et al. 1968). `margot.sim` allows researchers to generate data from a
+known causal truth and then systematically distort it with “shadows” to
+see how well an estimator can glimpse the ground truth (or underlying
+forms).
+
+The framework’s power comes from its consistent architecture. Recurring
+observational challenges—such as item-level missingness that creates
+more realistic missing data patterns, and positivity violations that
+test the boundaries of causal identification—are both implemented as
+distinct shadows. This modular design maintains \*\*a clean separation
+between the true data-generating process and the distorted data that
+investigators observe, allowing for principled evaluation of statistical
+methods in the face of real-world data limitations (Bulbulia 2024).
+
+## References
+
 ``` r
 citation("margot.sim")
 ```
+
+<div id="refs" class="references csl-bib-body hanging-indent"
+entry-spacing="0">
+
+<div id="ref-bloom1968republic" class="csl-entry">
+
+Bloom, Allan, Adam Kirsch, et al. 1968. *The Republic of Plato*. Vol. 2.
+Basic Books New York.
+
+</div>
+
+<div id="ref-bulbulia2024wierd" class="csl-entry">
+
+Bulbulia, J. A. 2024. “Methods in Causal Inference Part 3: Measurement
+Error and External Validity Threats.” *Evolutionary Human Sciences* 6:
+e42. <https://doi.org/10.1017/ehs.2024.33>.
+
+</div>
+
+</div>
