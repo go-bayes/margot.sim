@@ -15,8 +15,8 @@ Description: Extensions to the margot package for simulating longitudinal data
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-URL: https://yourusername.github.io/margot.sim/
-BugReports: https://github.com/yourusername/margot.sim/issues
+URL: https://go-bayes.github.io/margot.sim/
+BugReports: https://github.com/go-bayes/margot.sim/issues
 Depends: 
     R (>= 4.0.0)
 Imports:

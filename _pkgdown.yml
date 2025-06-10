@@ -1,4 +1,4 @@
-url: https://yourusername.github.io/margot.sim/
+url: https://go-bayes.github.io/margot.sim/
 template:
   bootstrap: 5
   bootswatch: cosmo
@@ -16,7 +16,7 @@ navbar:
       href: reference/index.html
     github:
       icon: fab fa-github fa-lg
-      href: https://github.com/yourusername/margot.sim
+      href: https://github.com/go-bayes/margot.sim
 
 reference:
 - title: "Core Simulation Functions"
