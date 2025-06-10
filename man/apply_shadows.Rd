@@ -4,7 +4,7 @@
 \alias{apply_shadows}
 \title{Apply multiple shadows sequentially}
 \usage{
-apply_shadows(data, shadows, verbose = FALSE)
+apply_shadows(data, shadows, verbose = FALSE, preserve_truth = FALSE)
 }
 \arguments{
 \item{data}{Data frame}
@@ -12,6 +12,8 @@ apply_shadows(data, shadows, verbose = FALSE)
 \item{shadows}{List of shadow objects}
 
 \item{verbose}{Logical, print progress?}
+
+\item{preserve_truth}{Logical, whether to preserve original values (default FALSE)}
 }
 \value{
 Data frame with all shadows applied

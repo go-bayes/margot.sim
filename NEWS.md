@@ -1,5 +1,61 @@
 # NEWS
 
+# margot.sim 0.1.2 (2025-06-11)
+
+## New features
+
+### Shadow Bias Comparison Framework
+* Added comprehensive framework for comparing causal effects before and after applying observational shadows
+  - `compute_causal_effects()`: Standardized function for computing ATE, ATT, and ATU from data
+  - `compute_effects_from_sim()`: Wrapper for margot simulation data with proper time indexing
+  - `compare_shadow_bias()`: Calculates absolute and relative bias for each estimand
+  - `apply_shadows_with_truth()`: Preserves complete data alongside shadowed observations
+  - `compare_shadow_effects()`: Full workflow for comparing true vs observed effects
+
+### Transport Weights and Generalizability
+* Added support for transportability analyses to generalize from samples to target populations
+  - `simulate_ate_data_with_weights()`: Direct replacement for legacy function with identical interface
+  - `margot_transport_analysis()`: Enhanced version integrating shadows with transport weights
+  - Shows how observational distortions affect transported estimates differently in source vs target populations
+  - Handles effect modification that differs between sample and population
+
+### Enhanced Examples and Documentation
+* `example_shadow_bias_analysis()`: Complete workflow demonstrating shadow bias evaluation
+* `example_shadow_scenarios()`: Compares bias across multiple shadow combinations
+* `example_weighted_shadow_analysis()`: Shows transport weights interacting with shadows
+
+### New Vignettes
+* **"Shift Interventions with Sampling Weights"**: Demonstrates progressive interventions with population weighting
+* **"Censoring and Effect Modification"**: Explores differential censoring by severity with IPCW correction
+* **"Heterogeneous Treatment Effects and Simpson's Paradox"**: Shows how aggregation can mask subgroup benefits
+* **"Advanced Shift Interventions"**: Covers threshold, bounded, responsive, and combined shift patterns
+* **"Misclassification Bias"**: Compares plain vs differential misclassification with model misspecification
+* **"Practical Workflow"**: Complete analysis pipeline from design to reporting
+* **"Transport Weights and Shadows"**: Generalizability with observational distortions
+
+## Improvements
+
+### Dual Data Architecture
+* Modified `margot_simulate_causal()` to support dual data structure (`data_true` and `data_observed`)
+* Shadows now preserve original values systematically for ground truth comparisons
+* Enhanced print methods for shadow results and effect comparisons
+
+### Sampling Weights Integration
+* Sampling weights are fully integrated throughout the effect computation pipeline
+* Weights preserved through shadow application process
+* Support for comparing weighted (target population) vs unweighted (source population) effects
+
+### Documentation
+* Added comprehensive design documentation in CLAUDE.md
+* Updated README with transport weights example
+* Enhanced _pkgdown.yml structure with new function categories
+
+## Bug fixes
+
+* Fixed wave indexing to properly handle margot.sim structure (wave 0: baseline, wave 1: treatment, wave 2: outcome)
+* Improved handling of non-binary treatments in effect computation (with appropriate warnings)
+* Fixed recursive print method issue in shadow_bias_comparison
+
 # margot.sim 0.1.1 (2025-06-10)
 
 ## Bug fixes

@@ -17,7 +17,9 @@ stars](https://img.shields.io/github/stars/go-bayes/margot.sim?style=social)](ht
 [![CRAN status](https://www.r-pkg.org/badges/version/margot.sim)](https://CRAN.R-project.org/package=margot.sim)
 [![Downloads](https://cranlogs.r-pkg.org/badges/margot.sim)](https://cran.r-project.org/package=margot.sim)
 [![Total Downloads](https://cranlogs.r-pkg.org/badges/grand-total/margot.sim)](https://cran.r-project.org/package=margot.sim)
---> <!-- badges: end -->
+-->
+[![R-CMD-check](https://github.com/go-bayes/margot.sim/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/go-bayes/margot.sim/actions/workflows/R-CMD-check.yaml)
+<!-- badges: end -->
 
 R package for simulating longitudinal data with realistic observational
 shadows (measurement error, missingness, selection bias) and evaluating
@@ -32,6 +34,17 @@ You can install the development version of margot.sim from
 # install.packages("devtools")
 devtools::install_github("go-bayes/margot.sim")
 ```
+
+## What’s New in v0.1.2
+
+- **6 new comprehensive vignettes** covering shift interventions,
+  censoring, heterogeneous effects, and practical workflows
+- **Shadow bias comparison framework** for evaluating how observational
+  distortions affect causal estimates
+- **Transport weights integration** for generalizing from samples to
+  target populations
+- **Enhanced documentation** with complete examples for all major
+  functions
 
 ## Overview
 
@@ -260,10 +273,50 @@ For detailed documentation, see:
 ?create_shadow
 ?margot_monte_carlo
 ?margot_simulate
+?simulate_ate_data_with_weights
 
-# Examples
-example(create_shadow)
-example(margot_monte_carlo)
+# Vignettes
+vignette("basic-simulation", package = "margot.sim")
+vignette("applying-shadows", package = "margot.sim") 
+vignette("monte-carlo-simple", package = "margot.sim")
+vignette("shift-interventions", package = "margot.sim")
+vignette("shift-weights", package = "margot.sim")
+vignette("censoring-effect-mod", package = "margot.sim")
+vignette("heterogeneous-effects", package = "margot.sim")
+vignette("advanced-shift-interventions", package = "margot.sim")
+vignette("misclassification-bias", package = "margot.sim")
+vignette("practical-workflow", package = "margot.sim")
+vignette("transport-weights-shadows", package = "margot.sim")
+```
+
+## Transport Weights Example
+
+margot.sim supports transportability analyses where you need to
+generalize from a study sample to a target population:
+
+``` r
+# Simulate data where effect modifier distribution differs
+# between sample (10% elderly) and population (50% elderly)
+data <- simulate_ate_data_with_weights(
+  n_sample = 1000,
+  p_z_sample = 0.1,      # 10% elderly in sample
+  p_z_population = 0.5,   # 50% elderly in population  
+  beta_a = 1,            # base treatment effect
+  beta_az = 2,           # treatment works better in elderly
+  seed = 2025
+)
+
+# Compare effects
+sample_ate <- with(data$sample_data,
+  mean(y_sample[a_sample == 1]) - mean(y_sample[a_sample == 0]))
+
+weighted_ate <- with(data$sample_data, {
+  weighted.mean(y_sample[a_sample == 1], weights[a_sample == 1]) -
+  weighted.mean(y_sample[a_sample == 0], weights[a_sample == 0])
+})
+
+cat("Sample ATE:", round(sample_ate, 2), "\n")
+cat("Population ATE (weighted):", round(weighted_ate, 2), "\n")
 ```
 
 ## Contributing

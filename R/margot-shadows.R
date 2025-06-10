@@ -169,11 +169,12 @@ validate_shadow_params <- function(type, params) {
 #'
 #' @param data Data frame to apply shadow to
 #' @param shadow A shadow object created with create_shadow()
+#' @param preserve_truth Logical, whether to preserve original values (default FALSE)
 #' @param ... Additional arguments passed to specific shadow methods
 #'
 #' @return Modified data frame
 #' @export
-apply_shadow <- function(data, shadow, ...) {
+apply_shadow <- function(data, shadow, preserve_truth = FALSE, ...) {
   UseMethod("apply_shadow", shadow)
 }
 
@@ -182,10 +183,11 @@ apply_shadow <- function(data, shadow, ...) {
 #' @param data Data frame
 #' @param shadows List of shadow objects
 #' @param verbose Logical, print progress?
+#' @param preserve_truth Logical, whether to preserve original values (default FALSE)
 #'
 #' @return Data frame with all shadows applied
 #' @export
-apply_shadows <- function(data, shadows, verbose = FALSE) {
+apply_shadows <- function(data, shadows, verbose = FALSE, preserve_truth = FALSE) {
   if (!is.list(shadows)) shadows <- list(shadows)
 
   for (i in seq_along(shadows)) {
@@ -201,7 +203,7 @@ apply_shadows <- function(data, shadows, verbose = FALSE) {
       cat(sprintf("Applying shadow %d/%d: %s\n",
                   i, length(shadows), shadow$name))
     }
-    data <- apply_shadow(data, shadow)
+    data <- apply_shadow(data, shadow, preserve_truth = preserve_truth)
   }
 
   # Add metadata about applied shadows

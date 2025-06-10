@@ -25,7 +25,11 @@
 #'
 #' @return Object of class "margot_causal_sim" containing:
 #'   - data: List of datasets under each intervention
+#'   - data_true: Complete data before any shadows (if shadows applied)
+#'   - data_observed: Data after shadows applied (if shadows applied)
 #'   - effects: True causal effects (if multiple interventions)
+#'   - effects_true: Effects computed from true data
+#'   - effects_observed: Effects computed from observed data
 #'   - censoring_bias: Bias induced by censoring (if apply_censoring = TRUE)
 #'   - metadata: Simulation metadata
 #'
@@ -175,6 +179,7 @@ margot_simulate_causal <- function(
 
       # bias from censoring if applicable
       censoring_bias <- NULL
+      observed_effects <- NULL
       if (!is.null(observed_data)) {
         observed_effects <- compute_true_effects(
           observed_data,
@@ -195,26 +200,40 @@ margot_simulate_causal <- function(
   } else {
     effects <- NULL
     censoring_bias <- NULL
+    observed_effects <- NULL
   }
 
-  # return results
-  structure(
-    list(
-      data = data_list,
-      effects = effects,
-      censoring_bias = censoring_bias,
-      metadata = list(
-        n = n,
-        waves = waves,
-        treatments = treatments,
-        intervention_names = intervention_names,
-        sampling_weights_applied = !is.null(sampling_weights),
-        censoring_applied = apply_censoring,
-        timestamp = Sys.time()
-      )
-    ),
-    class = "margot_causal_sim"
+  # prepare dual data architecture output
+  result <- list(
+    data = data_list,
+    effects = effects,
+    censoring_bias = censoring_bias,
+    metadata = list(
+      n = n,
+      waves = waves,
+      treatments = treatments,
+      intervention_names = intervention_names,
+      sampling_weights_applied = !is.null(sampling_weights),
+      censoring_applied = apply_censoring,
+      timestamp = Sys.time()
+    )
   )
+  
+  # add dual data architecture when censoring/shadows applied
+  if (apply_censoring) {
+    # extract complete and observed data separately
+    result$data_true <- lapply(data_list, function(x) x$complete)
+    result$data_observed <- lapply(data_list, function(x) x$observed)
+    
+    # compute effects using new interface if we have the right structure
+    if (length(intervention_names) >= 2 && !is.null(effects)) {
+      # for now, keep the existing effects structure
+      result$effects_true <- effects
+      result$effects_observed <- observed_effects
+    }
+  }
+  
+  structure(result, class = "margot_causal_sim")
 }
 
 #' Compute true causal effects from simulated data
@@ -288,6 +307,7 @@ print.margot_causal_sim <- function(x, ...) {
 
   if (x$metadata$censoring_applied) {
     cat("censoring: applied (complete and observed data available)\n")
+    cat("data structure: dual architecture (data_true and data_observed)\n")
   }
 
   if (!is.null(x$effects)) {

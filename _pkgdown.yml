@@ -12,6 +12,15 @@ articles:
     - applying-shadows
     - monte-carlo-simple
     - shift-interventions
+    - transport-weights-shadows
+  - title: "Practical Applications"
+    contents:
+    - shift-weights
+    - censoring-effect-mod
+    - heterogeneous-effects
+    - advanced-shift-interventions
+    - misclassification-bias
+    - practical-workflow
 navbar:
   structure:
     left:
@@ -42,6 +51,22 @@ navbar:
         href: articles/monte-carlo-simple.html
       - text: Shift Interventions
         href: articles/shift-interventions.html
+      - text: Transport Weights and Shadows
+        href: articles/transport-weights-shadows.html
+      - text: '-------'
+      - text: Practical Applications
+      - text: Shift Interventions with Sampling Weights
+        href: articles/shift-weights.html
+      - text: Censoring and Effect Modification
+        href: articles/censoring-effect-mod.html
+      - text: Heterogeneous Treatment Effects
+        href: articles/heterogeneous-effects.html
+      - text: Advanced Shift Interventions
+        href: articles/advanced-shift-interventions.html
+      - text: Misclassification Bias
+        href: articles/misclassification-bias.html
+      - text: Complete Analysis Workflow
+        href: articles/practical-workflow.html
     github:
       icon: fab fa-github fa-lg
       href: https://github.com/go-bayes/margot.sim
@@ -76,6 +101,10 @@ reference:
   - create_positivity_shadow
   - diagnose_shadowing
   - print.shadow_effects
+  - print.margot_effects
+  - print.margot_shadow_result
+  - print.shadow_bias_comparison
+  - print.shadow_effect_comparison
 - title: Shadow Methods
   desc: S3 methods for specific shadow types
   contents:
@@ -85,6 +114,16 @@ reference:
   - apply_shadow.measurement_error_shadow
   - apply_shadow.positivity_shadow
   - apply_shadow.selection_shadow
+- title: Causal Effects and Transport
+  desc: Functions for computing and comparing causal effects with transport weights
+  contents:
+  - compute_causal_effects
+  - compute_effects_from_sim
+  - compare_shadow_bias
+  - compare_shadow_effects
+  - apply_shadows_with_truth
+  - simulate_ate_data_with_weights
+  - margot_transport_analysis
 - title: Monte Carlo Framework
   desc: Functions for Monte Carlo evaluation
   contents:

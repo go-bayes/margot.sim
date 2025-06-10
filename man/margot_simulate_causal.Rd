@@ -42,7 +42,11 @@ have signature function(data, time, trt) and return treatment values}
 \value{
 Object of class "margot_causal_sim" containing:
   - data: List of datasets under each intervention
+  - data_true: Complete data before any shadows (if shadows applied)
+  - data_observed: Data after shadows applied (if shadows applied)
   - effects: True causal effects (if multiple interventions)
+  - effects_true: Effects computed from true data
+  - effects_observed: Effects computed from observed data
   - censoring_bias: Bias induced by censoring (if apply_censoring = TRUE)
   - metadata: Simulation metadata
 }
