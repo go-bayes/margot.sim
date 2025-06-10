@@ -2,11 +2,18 @@ pandoc: 3.7.0.2
 pkgdown: 2.1.2
 pkgdown_sha: ~
 articles:
+  advanced-shift-interventions: advanced-shift-interventions.html
   applying-shadows: applying-shadows.html
   basic-simulation: basic-simulation.html
+  censoring-effect-mod: censoring-effect-mod.html
+  heterogeneous-effects: heterogeneous-effects.html
+  misclassification-bias: misclassification-bias.html
   monte-carlo-simple: monte-carlo-simple.html
+  practical-workflow: practical-workflow.html
   shift-interventions: shift-interventions.html
-last_built: 2025-06-10T09:53Z
+  shift-weights: shift-weights.html
+  transport-weights-shadows: transport-weights-shadows.html
+last_built: 2025-06-10T15:14Z
 urls:
   reference: https://go-bayes.github.io/margot.sim/reference
   article: https://go-bayes.github.io/margot.sim/articles

@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Using Shift Interventions in margot.sim</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Using Shift Interventions in
+margot.sim</h1>
+
+
+
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(margot.sim)</span></code></pre></div>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>This vignette demonstrates how to implement shift interventions in
+<code>margot.sim</code>, similar to those used in the <code>lmtp</code>
+package for modified treatment policies.</p>
+</div>
+<div id="basic-shift-interventions" class="section level2">
+<h2>Basic Shift Interventions</h2>
+<div id="example-1-lmtp-style-shifts" class="section level3">
+<h3>Example 1: LMTP-Style Shifts</h3>
+<p>Here’s how to implement the exact pattern you described:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Define score bounds</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>min_score <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>max_score <span class="ot">&lt;-</span> <span class="dv">7</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="co"># Create shift functions matching lmtp style</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>shift_up <span class="ot">&lt;-</span> <span class="cf">function</span>(data, time, trt) {</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>  <span class="co"># Keep baseline (t0) as observed</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>  <span class="cf">if</span> (time <span class="sc">==</span> <span class="dv">0</span>) {</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>    <span class="fu">return</span>(data[[trt]])</span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>  }</span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>  </span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>  <span class="co"># Apply shift at wave 1</span></span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>  <span class="cf">if</span> (time <span class="sc">==</span> <span class="dv">1</span>) {</span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>    values <span class="ot">&lt;-</span> data[[trt]]</span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">ifelse</span>(values <span class="sc">&lt;=</span> max_score <span class="sc">-</span> <span class="dv">1</span>, values <span class="sc">+</span> <span class="dv">1</span>, max_score))</span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a>  }</span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a>  </span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a>  <span class="co"># No treatment at later waves</span></span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">rep</span>(<span class="dv">0</span>, <span class="fu">nrow</span>(data)))</span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a>}</span>
+<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a></span>
+<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a>shift_down <span class="ot">&lt;-</span> <span class="cf">function</span>(data, time, trt) {</span>
+<span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a>  <span class="co"># Keep baseline (t0) as observed  </span></span>
+<span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a>  <span class="cf">if</span> (time <span class="sc">==</span> <span class="dv">0</span>) {</span>
+<span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a>    <span class="fu">return</span>(data[[trt]])</span>
+<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a>  }</span>
+<span id="cb2-27"><a href="#cb2-27" tabindex="-1"></a>  </span>
+<span id="cb2-28"><a href="#cb2-28" tabindex="-1"></a>  <span class="co"># Apply shift at wave 1</span></span>
+<span id="cb2-29"><a href="#cb2-29" tabindex="-1"></a>  <span class="cf">if</span> (time <span class="sc">==</span> <span class="dv">1</span>) {</span>
+<span id="cb2-30"><a href="#cb2-30" tabindex="-1"></a>    values <span class="ot">&lt;-</span> data[[trt]]</span>
+<span id="cb2-31"><a href="#cb2-31" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">ifelse</span>(values <span class="sc">&gt;=</span> min_score <span class="sc">+</span> <span class="dv">1</span>, values <span class="sc">-</span> <span class="dv">1</span>, min_score))</span>
+<span id="cb2-32"><a href="#cb2-32" tabindex="-1"></a>  }</span>
+<span id="cb2-33"><a href="#cb2-33" tabindex="-1"></a>  </span>
+<span id="cb2-34"><a href="#cb2-34" tabindex="-1"></a>  <span class="co"># No treatment at later waves</span></span>
+<span id="cb2-35"><a href="#cb2-35" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">rep</span>(<span class="dv">0</span>, <span class="fu">nrow</span>(data)))</span>
+<span id="cb2-36"><a href="#cb2-36" tabindex="-1"></a>}</span>
+<span id="cb2-37"><a href="#cb2-37" tabindex="-1"></a></span>
+<span id="cb2-38"><a href="#cb2-38" tabindex="-1"></a><span class="co"># Natural (observed) intervention for comparison</span></span>
+<span id="cb2-39"><a href="#cb2-39" tabindex="-1"></a>natural <span class="ot">&lt;-</span> <span class="cf">function</span>(data, time, trt) {</span>
+<span id="cb2-40"><a href="#cb2-40" tabindex="-1"></a>  data[[trt]]</span>
+<span id="cb2-41"><a href="#cb2-41" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+<div id="example-2-using-in-simulation" class="section level3">
+<h3>Example 2: Using in Simulation</h3>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Simulate data under different shift interventions</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">margot_simulate_causal</span>(</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="at">n =</span> <span class="dv">1000</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  <span class="at">waves =</span> <span class="dv">3</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>  <span class="at">treatments =</span> <span class="st">&quot;a&quot;</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>  <span class="at">interventions =</span> <span class="fu">list</span>(</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>    <span class="at">natural =</span> natural,</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>    <span class="at">shift_up =</span> shift_up,</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>    <span class="at">shift_down =</span> shift_down</span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>  ),</span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>  <span class="at">common_params =</span> <span class="fu">list</span>(</span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>    <span class="at">params =</span> <span class="fu">list</span>(</span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>      <span class="at">a_lag_y_coef =</span> <span class="fl">0.3</span>,  <span class="co"># True causal effect</span></span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a>      <span class="at">exposure_type =</span> <span class="st">&quot;continuous&quot;</span></span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a>    )</span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a>  ),</span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a>  <span class="at">seed =</span> <span class="dv">2025</span></span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a>)</span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a></span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a><span class="co"># Compare effects</span></span>
+<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a><span class="fu">print</span>(results)</span>
+<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a><span class="co">#&gt; margot causal simulation results</span></span>
+<span id="cb3-23"><a href="#cb3-23" tabindex="-1"></a><span class="co">#&gt; --------------------------------</span></span>
+<span id="cb3-24"><a href="#cb3-24" tabindex="-1"></a><span class="co">#&gt; sample size: 1000 </span></span>
+<span id="cb3-25"><a href="#cb3-25" tabindex="-1"></a><span class="co">#&gt; waves: 3 </span></span>
+<span id="cb3-26"><a href="#cb3-26" tabindex="-1"></a><span class="co">#&gt; interventions: natural, shift_up, shift_down </span></span>
+<span id="cb3-27"><a href="#cb3-27" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-28"><a href="#cb3-28" tabindex="-1"></a><span class="co">#&gt; true causal effects (from complete data):</span></span>
+<span id="cb3-29"><a href="#cb3-29" tabindex="-1"></a><span class="co">#&gt;                contrast estimand    estimate         se   ci_lower    ci_upper</span></span>
+<span id="cb3-30"><a href="#cb3-30" tabindex="-1"></a><span class="co">#&gt;     shift_up_vs_natural      ATE -0.23704126 0.04925686 -0.3335847 -0.14049780</span></span>
+<span id="cb3-31"><a href="#cb3-31" tabindex="-1"></a><span class="co">#&gt;   shift_down_vs_natural      ATE -0.25108053 0.04917770 -0.3474688 -0.15469224</span></span>
+<span id="cb3-32"><a href="#cb3-32" tabindex="-1"></a><span class="co">#&gt;  shift_down_vs_shift_up      ATE -0.01403927 0.04704059 -0.1062388  0.07816028</span></span>
+<span id="cb3-33"><a href="#cb3-33" tabindex="-1"></a><span class="co">#&gt;     n</span></span>
+<span id="cb3-34"><a href="#cb3-34" tabindex="-1"></a><span class="co">#&gt;  1000</span></span>
+<span id="cb3-35"><a href="#cb3-35" tabindex="-1"></a><span class="co">#&gt;  1000</span></span>
+<span id="cb3-36"><a href="#cb3-36" tabindex="-1"></a><span class="co">#&gt;  1000</span></span></code></pre></div>
+</div>
+</div>
+<div id="using-helper-functions" class="section level2">
+<h2>Using Helper Functions</h2>
+<p>The package provides helper functions to create shift
+interventions:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Create bounded shift interventions</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>shifts <span class="ot">&lt;-</span> <span class="fu">create_lmtp_style_shifts</span>(</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="at">min_score =</span> <span class="dv">1</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="at">max_score =</span> <span class="dv">7</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="at">baseline_wave =</span> <span class="dv">0</span>,  <span class="co"># Keep baseline as observed</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  <span class="at">shift_wave =</span> <span class="dv">1</span>      <span class="co"># Apply shift at wave 1</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>)</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="co"># Use in simulation</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>sim_data <span class="ot">&lt;-</span> <span class="fu">margot_simulate</span>(</span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>  <span class="at">n =</span> <span class="dv">500</span>,</span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>  <span class="at">waves =</span> <span class="dv">2</span>,</span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a>  <span class="at">exposure_type =</span> <span class="st">&quot;continuous&quot;</span>,</span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a>  <span class="at">intervention =</span> shifts<span class="sc">$</span>shift_up,</span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a>  <span class="at">seed =</span> <span class="dv">123</span></span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a>)</span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a></span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a><span class="co"># Check the intervention worked</span></span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Mean exposure at baseline:&quot;</span>, <span class="fu">mean</span>(sim_data<span class="sc">$</span>t0_a), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a><span class="co">#&gt; Mean exposure at baseline: 0.02591688</span></span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Mean exposure at wave 1:&quot;</span>, <span class="fu">mean</span>(sim_data<span class="sc">$</span>t1_a), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a><span class="co">#&gt; Mean exposure at wave 1: 0.9589388</span></span></code></pre></div>
+</div>
+<div id="advanced-shift-patterns" class="section level2">
+<h2>Advanced Shift Patterns</h2>
+<div id="threshold-based-shifts" class="section level3">
+<h3>Threshold-Based Shifts</h3>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Shift everyone below score 3 up to 3</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>threshold_shift <span class="ot">&lt;-</span> <span class="fu">create_threshold_shift</span>(</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="at">threshold =</span> <span class="dv">3</span>,</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>  <span class="at">shift_to =</span> <span class="dv">3</span>,</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>  <span class="at">direction =</span> <span class="st">&quot;up&quot;</span>,</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>  <span class="at">start_wave =</span> <span class="dv">1</span></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>)</span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a><span class="co"># Simulate</span></span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>sim_threshold <span class="ot">&lt;-</span> <span class="fu">margot_simulate</span>(</span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>  <span class="at">n =</span> <span class="dv">500</span>,</span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>  <span class="at">waves =</span> <span class="dv">2</span>,</span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a>  <span class="at">exposure_type =</span> <span class="st">&quot;continuous&quot;</span>,</span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a>  <span class="at">intervention =</span> threshold_shift,</span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a>  <span class="at">seed =</span> <span class="dv">456</span></span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a>)</span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a></span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a><span class="co"># Verify no one below 3 at wave 1</span></span>
+<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Proportion below 3 at wave 1:&quot;</span>, </span>
+<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a>    <span class="fu">mean</span>(sim_threshold<span class="sc">$</span>t1_a <span class="sc">&lt;</span> <span class="dv">3</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a><span class="co">#&gt; Proportion below 3 at wave 1: 0</span></span></code></pre></div>
+</div>
+<div id="wave-specific-shifts" class="section level3">
+<h3>Wave-Specific Shifts</h3>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># Different interventions at different waves</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>wave_interventions <span class="ot">&lt;-</span> <span class="fu">create_wave_specific_shift</span>(</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="at">wave_shifts =</span> <span class="fu">list</span>(</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>    <span class="st">&quot;0&quot;</span> <span class="ot">=</span> <span class="cf">function</span>(x) x,                    <span class="co"># No change at baseline</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>    <span class="st">&quot;1&quot;</span> <span class="ot">=</span> <span class="cf">function</span>(x) <span class="fu">pmin</span>(x <span class="sc">+</span> <span class="dv">1</span>, <span class="dv">7</span>),       <span class="co"># Shift up by 1</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>    <span class="st">&quot;2&quot;</span> <span class="ot">=</span> <span class="cf">function</span>(x) <span class="fu">pmax</span>(x <span class="sc">-</span> <span class="fl">0.5</span>, <span class="dv">1</span>)      <span class="co"># Shift down by 0.5</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>  )</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>)</span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="co"># Simulate</span></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>sim_waves <span class="ot">&lt;-</span> <span class="fu">margot_simulate</span>(</span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>  <span class="at">n =</span> <span class="dv">500</span>,</span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>  <span class="at">waves =</span> <span class="dv">2</span>,</span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a>  <span class="at">exposure_type =</span> <span class="st">&quot;continuous&quot;</span>,</span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a>  <span class="at">intervention =</span> wave_interventions,</span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a>  <span class="at">seed =</span> <span class="dv">789</span></span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+</div>
+<div id="practical-considerations" class="section level2">
+<h2>Practical Considerations</h2>
+<div id="single-point-interventions" class="section level3">
+<h3>1. Single Point Interventions</h3>
+<p>For studies with a single intervention point (common in many
+applications):</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># Intervention only at wave 1, natural elsewhere</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>single_point_shift <span class="ot">&lt;-</span> <span class="cf">function</span>(data, time, trt) {</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  <span class="cf">if</span> (time <span class="sc">==</span> <span class="dv">1</span>) {</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>    <span class="co"># Apply your shift logic here</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>    values <span class="ot">&lt;-</span> data[[trt]]</span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">pmin</span>(values <span class="sc">+</span> <span class="dv">1</span>, max_score))</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>    <span class="co"># Natural values at all other times</span></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>    <span class="fu">return</span>(data[[trt]])</span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>  }</span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+<div id="handling-binary-exposures" class="section level3">
+<h3>2. Handling Binary Exposures</h3>
+<p>For binary exposures, shifts might involve probability changes:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Increase probability of treatment by 20%</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>prob_shift <span class="ot">&lt;-</span> <span class="cf">function</span>(data, time, trt) {</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  <span class="cf">if</span> (time <span class="sc">==</span> <span class="dv">0</span>) <span class="fu">return</span>(data[[trt]])</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>  </span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>  <span class="co"># Get current treatment probability</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>  current_prob <span class="ot">&lt;-</span> <span class="fu">mean</span>(data[[trt]])</span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>  </span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>  <span class="co"># Increase by 20% (bounded by 1)</span></span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>  new_prob <span class="ot">&lt;-</span> <span class="fu">min</span>(current_prob <span class="sc">*</span> <span class="fl">1.2</span>, <span class="dv">1</span>)</span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a>  </span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a>  <span class="co"># Resample with new probability</span></span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a>  <span class="fu">rbinom</span>(<span class="fu">nrow</span>(data), <span class="dv">1</span>, new_prob)</span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+<div id="incorporating-covariates" class="section level3">
+<h3>3. Incorporating Covariates</h3>
+<p>Shifts can depend on covariates:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># Shift based on confounder value</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>smart_shift <span class="ot">&lt;-</span> <span class="cf">function</span>(data, time, trt) {</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>  <span class="cf">if</span> (time <span class="sc">==</span> <span class="dv">0</span>) <span class="fu">return</span>(data[[trt]])</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>  </span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>  <span class="co"># Get time-varying confounder</span></span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>  l_var <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">&quot;t&quot;</span>, time, <span class="st">&quot;_l&quot;</span>)</span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>  </span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a>  <span class="cf">if</span> (l_var <span class="sc">%in%</span> <span class="fu">names</span>(data)) {</span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a>    <span class="co"># Shift more for high-risk individuals (L &gt; 0)</span></span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a>    values <span class="ot">&lt;-</span> data[[trt]]</span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a>    high_risk <span class="ot">&lt;-</span> data[[l_var]] <span class="sc">&gt;</span> <span class="dv">0</span></span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a>    </span>
+<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a>    <span class="co"># Larger shift for high-risk</span></span>
+<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a>    values[high_risk] <span class="ot">&lt;-</span> <span class="fu">pmin</span>(values[high_risk] <span class="sc">+</span> <span class="dv">2</span>, max_score)</span>
+<span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a>    values[<span class="sc">!</span>high_risk] <span class="ot">&lt;-</span> <span class="fu">pmin</span>(values[<span class="sc">!</span>high_risk] <span class="sc">+</span> <span class="dv">1</span>, max_score)</span>
+<span id="cb9-16"><a href="#cb9-16" tabindex="-1"></a>    </span>
+<span id="cb9-17"><a href="#cb9-17" tabindex="-1"></a>    <span class="fu">return</span>(values)</span>
+<span id="cb9-18"><a href="#cb9-18" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb9-19"><a href="#cb9-19" tabindex="-1"></a>    <span class="fu">return</span>(data[[trt]])</span>
+<span id="cb9-20"><a href="#cb9-20" tabindex="-1"></a>  }</span>
+<span id="cb9-21"><a href="#cb9-21" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+</div>
+<div id="comparison-with-natural-course" class="section level2">
+<h2>Comparison with Natural Course</h2>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co"># Run simulation comparing interventions</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>comparison_results <span class="ot">&lt;-</span> <span class="fu">margot_simulate_causal</span>(</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>  <span class="at">n =</span> <span class="dv">1000</span>,</span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>  <span class="at">waves =</span> <span class="dv">3</span>,</span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>  <span class="at">treatments =</span> <span class="st">&quot;a&quot;</span>,</span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a>  <span class="at">interventions =</span> <span class="fu">list</span>(</span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a>    <span class="at">natural =</span> <span class="cf">function</span>(data, time, trt) data[[trt]],</span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a>    <span class="at">shift_up_1 =</span> <span class="fu">create_shift_intervention</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">7</span>, <span class="at">start_wave =</span> <span class="dv">1</span>),</span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a>    <span class="at">shift_up_2 =</span> <span class="fu">create_shift_intervention</span>(<span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">7</span>, <span class="at">start_wave =</span> <span class="dv">1</span>),</span>
+<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a>    <span class="at">threshold_3 =</span> <span class="fu">create_threshold_shift</span>(<span class="dv">3</span>, <span class="dv">3</span>, <span class="st">&quot;up&quot;</span>, <span class="at">start_wave =</span> <span class="dv">1</span>)</span>
+<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a>  ),</span>
+<span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a>  <span class="at">common_params =</span> <span class="fu">list</span>(</span>
+<span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a>    <span class="at">params =</span> <span class="fu">list</span>(<span class="at">a_lag_y_coef =</span> <span class="fl">0.3</span>)</span>
+<span id="cb10-14"><a href="#cb10-14" tabindex="-1"></a>  ),</span>
+<span id="cb10-15"><a href="#cb10-15" tabindex="-1"></a>  <span class="at">seed =</span> <span class="dv">999</span></span>
+<span id="cb10-16"><a href="#cb10-16" tabindex="-1"></a>)</span>
+<span id="cb10-17"><a href="#cb10-17" tabindex="-1"></a></span>
+<span id="cb10-18"><a href="#cb10-18" tabindex="-1"></a><span class="co"># Extract and compare effects</span></span>
+<span id="cb10-19"><a href="#cb10-19" tabindex="-1"></a>effects <span class="ot">&lt;-</span> comparison_results<span class="sc">$</span>effects<span class="sc">$</span>estimate</span>
+<span id="cb10-20"><a href="#cb10-20" tabindex="-1"></a><span class="fu">names</span>(effects) <span class="ot">&lt;-</span> comparison_results<span class="sc">$</span>effects<span class="sc">$</span>contrast</span>
+<span id="cb10-21"><a href="#cb10-21" tabindex="-1"></a></span>
+<span id="cb10-22"><a href="#cb10-22" tabindex="-1"></a><span class="fu">print</span>(effects)</span>
+<span id="cb10-23"><a href="#cb10-23" tabindex="-1"></a><span class="co">#&gt;     shift_up_1_vs_natural     shift_up_2_vs_natural    threshold_3_vs_natural </span></span>
+<span id="cb10-24"><a href="#cb10-24" tabindex="-1"></a><span class="co">#&gt;                 0.5215263                 1.0604024                 1.2067413 </span></span>
+<span id="cb10-25"><a href="#cb10-25" tabindex="-1"></a><span class="co">#&gt;  shift_up_2_vs_shift_up_1 threshold_3_vs_shift_up_1 threshold_3_vs_shift_up_2 </span></span>
+<span id="cb10-26"><a href="#cb10-26" tabindex="-1"></a><span class="co">#&gt;                 0.5388761                 0.6852150                 0.1463389</span></span></code></pre></div>
+</div>
+<div id="summary" class="section level2">
+<h2>Summary</h2>
+<p>The <code>margot.sim</code> package supports flexible shift
+interventions that:</p>
+<ol style="list-style-type: decimal">
+<li><strong>Match lmtp-style shifts</strong>: Keep baseline natural,
+shift at specific waves</li>
+<li><strong>Handle bounds</strong>: Respect minimum/maximum values</li>
+<li><strong>Support complex policies</strong>: Wave-specific,
+threshold-based, covariate-dependent</li>
+<li><strong>Work with any exposure type</strong>: Binary or
+continuous</li>
+</ol>
+<p>The key is that intervention functions receive: - <code>data</code>:
+The current dataset - <code>time</code>: The current wave (0, 1, 2, …) -
+<code>trt</code>: The treatment variable name</p>
+<p>This allows complete flexibility in defining modified treatment
+policies.</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

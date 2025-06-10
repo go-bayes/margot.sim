@@ -42,6 +42,15 @@
     <li><a class="dropdown-item" href="articles/applying-shadows.html">Applying Observational Shadows</a></li>
     <li><a class="dropdown-item" href="articles/monte-carlo-simple.html">Monte Carlo Evaluation</a></li>
     <li><a class="dropdown-item" href="articles/shift-interventions.html">Shift Interventions</a></li>
+    <li><a class="dropdown-item" href="articles/transport-weights-shadows.html">Transport Weights and Shadows</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Practical Applications</h6></li>
+    <li><a class="dropdown-item" href="articles/shift-weights.html">Shift Interventions with Sampling Weights</a></li>
+    <li><a class="dropdown-item" href="articles/censoring-effect-mod.html">Censoring and Effect Modification</a></li>
+    <li><a class="dropdown-item" href="articles/heterogeneous-effects.html">Heterogeneous Treatment Effects</a></li>
+    <li><a class="dropdown-item" href="articles/advanced-shift-interventions.html">Advanced Shift Interventions</a></li>
+    <li><a class="dropdown-item" href="articles/misclassification-bias.html">Misclassification Bias</a></li>
+    <li><a class="dropdown-item" href="articles/practical-workflow.html">Complete Analysis Workflow</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
@@ -293,15 +302,48 @@
 <span><span class="op">?</span><span class="va">create_shadow</span></span>
 <span><span class="op">?</span><span class="va">margot_monte_carlo</span></span>
 <span><span class="op">?</span><span class="va">margot_simulate</span></span>
+<span><span class="op">?</span><span class="va">simulate_ate_data_with_weights</span></span>
 <span></span>
-<span><span class="co"># Examples</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/example.html" class="external-link">example</a></span><span class="op">(</span><span class="va">create_shadow</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/example.html" class="external-link">example</a></span><span class="op">(</span><span class="va">margot_monte_carlo</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co"># Vignettes</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html" class="external-link">vignette</a></span><span class="op">(</span><span class="st">"basic-simulation"</span>, package <span class="op">=</span> <span class="st">"margot.sim"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html" class="external-link">vignette</a></span><span class="op">(</span><span class="st">"applying-shadows"</span>, package <span class="op">=</span> <span class="st">"margot.sim"</span><span class="op">)</span> </span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html" class="external-link">vignette</a></span><span class="op">(</span><span class="st">"monte-carlo-simple"</span>, package <span class="op">=</span> <span class="st">"margot.sim"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html" class="external-link">vignette</a></span><span class="op">(</span><span class="st">"transport-weights-shadows"</span>, package <span class="op">=</span> <span class="st">"margot.sim"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="transport-weights-example">Transport Weights Example<a class="anchor" aria-label="anchor" href="#transport-weights-example"></a>
+</h2>
+<p>margot.sim supports transportability analyses where you need to generalize from a study sample to a target population:</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Simulate data where effect modifier distribution differs</span></span>
+<span><span class="co"># between sample (10% elderly) and population (50% elderly)</span></span>
+<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/simulate_ate_data_with_weights.html">simulate_ate_data_with_weights</a></span><span class="op">(</span></span>
+<span>  n_sample <span class="op">=</span> <span class="fl">1000</span>,</span>
+<span>  p_z_sample <span class="op">=</span> <span class="fl">0.1</span>,      <span class="co"># 10% elderly in sample</span></span>
+<span>  p_z_population <span class="op">=</span> <span class="fl">0.5</span>,   <span class="co"># 50% elderly in population  </span></span>
+<span>  beta_a <span class="op">=</span> <span class="fl">1</span>,            <span class="co"># base treatment effect</span></span>
+<span>  beta_az <span class="op">=</span> <span class="fl">2</span>,           <span class="co"># treatment works better in elderly</span></span>
+<span>  seed <span class="op">=</span> <span class="fl">2025</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Compare effects</span></span>
+<span><span class="va">sample_ate</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">sample_data</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">y_sample</span><span class="op">[</span><span class="va">a_sample</span> <span class="op">==</span> <span class="fl">1</span><span class="op">]</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">y_sample</span><span class="op">[</span><span class="va">a_sample</span> <span class="op">==</span> <span class="fl">0</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">weighted_ate</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">sample_data</span>, <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/weighted.mean.html" class="external-link">weighted.mean</a></span><span class="op">(</span><span class="va">y_sample</span><span class="op">[</span><span class="va">a_sample</span> <span class="op">==</span> <span class="fl">1</span><span class="op">]</span>, <span class="va">weights</span><span class="op">[</span><span class="va">a_sample</span> <span class="op">==</span> <span class="fl">1</span><span class="op">]</span><span class="op">)</span> <span class="op">-</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/weighted.mean.html" class="external-link">weighted.mean</a></span><span class="op">(</span><span class="va">y_sample</span><span class="op">[</span><span class="va">a_sample</span> <span class="op">==</span> <span class="fl">0</span><span class="op">]</span>, <span class="va">weights</span><span class="op">[</span><span class="va">a_sample</span> <span class="op">==</span> <span class="fl">0</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Sample ATE:"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">sample_ate</span>, <span class="fl">2</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Sample ATE: 1.16</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Population ATE (weighted):"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">weighted_ate</span>, <span class="fl">2</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Population ATE (weighted): 1.83</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
 </h2>
-<p>Contributions are welcome! Please:</p>
+<p>Contributions are welcome. Please:</p>
 <ol style="list-style-type: decimal">
 <li>Fork the repository</li>
 <li>Create a feature branch</li>
@@ -320,15 +362,23 @@
 <p>If you use margot.sim in your research, please cite:</p>
 </div>
 <div class="section level2">
-<h2 id="note">Note<a class="anchor" aria-label="anchor" href="#note"></a>
+<h2 id="why-do-we-need-a-beefed-up-simulator">Why do we need a beefed-up simulator?<a class="anchor" aria-label="anchor" href="#why-do-we-need-a-beefed-up-simulator"></a>
 </h2>
-<p>Observational data is often a poor reflection of reality. The <code>margot.sim</code> package provides a simulation framework to quantify how statistical estimators perform when the data they are fed are <em>shadows</em> of a true causal process. This concept is nods to Plato’s Allegory of the Cave, where prisoners mistake shadows for real forms (Bloom, Kirsch, et al. 1968). <code>margot.sim</code> allows researchers to generate data from a known causal truth and then systematically distort it with “shadows” to see how well an estimator can glimpse the ground truth (or underlying forms).</p>
-<p>The framework’s power comes from its consistent architecture. Recurring observational challenges—such as item-level missingness that creates more realistic missing data patterns, and positivity violations that test the boundaries of causal identification—are both implemented as distinct shadows. This modular design maintains **a clean separation between the true data-generating process and the distorted data that investigators observe, allowing for principled evaluation of statistical methods in the face of real-world data limitations (Bulbulia 2024).</p>
+<p>Real studies seldom hand us tidy, truth-telling data. Instead we get scratches and dents: * Missing answers. People skip survey items or drop out of follow-ups. * Blurred measurements. Blood-pressure cuffs mis-read, self-reports round up or down. * Uneven treatment chances. Some groups are far more (or far less) likely to receive the exposure we’re studying, making “apples-with-apples” comparisons tricky.</p>
+<p>Traditional toy simulations gloss over these hassles, so a method that looks brilliant on paper can wilt in practice. Here we:</p>
+<ol style="list-style-type: decimal">
+<li>Mirror the messiness. Simulating truth and then adding “shadows” let us layer on realistic missing data, measurement error, and selection bias. That means our virtual datasets behave more like the ones sitting on an analyst’s desk.</li>
+<li>Stress-test causal tools. We can ask, “Does this method still give the right answer if half the blood-pressure readings are off by 5 mmHg? If drop-out is twice as common among the treated?” Running thousands of such scenarios in silico is faster, cheaper, and safer than discovering the problem after a costly field study.</li>
+<li>Keep truth separate from distortion. By generating the “clean” data first and then adding each shadow, we always know the ground truth. That makes it painless to check how far an estimator strays once the smoke and mirrors appear.</li>
+<li>Plug in any causal question so that users can tailor simulations to the exact claim they plan to make.</li>
+<li>Build confidence. Showing that a method works under sharp, realistic tests—especially can gives us (and journal referees) fewer reasons to worry.</li>
+</ol>
+<p>The <code>margot.sim</code> package provides a simulation framework to quantify how statistical estimators perform when the data they are fed are <em>shadows</em> of a true causal process. This concept nods to Plato’s “Allegory of the Cave,” where prisoners mistake shadows cast on walls for reality (Bloom, Kirsch, et al. 1968). <code>margot.sim</code> gives us access to simulated ground truth so that we can evaluate how far our data and modelling choices can mislead us. The framework’s power comes from its consistent architecture that maintains <strong>a clean separation between the true data-generating process and the distorted data that investigators observe</strong>, allowing for principled evaluation of statistical methods in the face of data limitations that inevitably arise in science (Bulbulia 2024).</p>
 </div>
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/citation.html" class="external-link">citation</a></span><span class="op">(</span><span class="st">"margot.sim"</span><span class="op">)</span></span></code></pre></div>
 <div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
 <div id="ref-bloom1968republic" class="csl-entry">
@@ -378,6 +428,7 @@ Bulbulia, J. A. 2024. “Methods in Causal Inference Part 3: Measurement Error a
 <li><a href="https://opensource.org/licenses/MIT" class="external-link"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a></li>
 <li><a href="https://app.codecov.io/gh/go-bayes/margot.sim" class="external-link"><img src="https://codecov.io/gh/go-bayes/margot.sim/graph/badge.svg" alt="Codecov test coverage"></a></li>
 <li><a href="https://github.com/go-bayes/margot.sim" class="external-link"><img src="https://img.shields.io/github/stars/go-bayes/margot.sim?style=social" alt="GitHub stars"></a></li>
+<li><a href="https://github.com/go-bayes/margot.sim/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/go-bayes/margot.sim/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
 </ul>
 </div>
 

@@ -8,3 +8,87 @@ knitr::opts_chunk$set(
 library(margot.sim)
 set.seed(2024)
 
+## ----basic-example------------------------------------------------------------
+# Define a simple regression estimator
+simple_regression <- function(data) {
+  # Check if we have the required variables
+  if (!all(c("t3_y", "t2_a", "b1", "b2", "b3") %in% names(data))) {
+    return(list(estimate = NA, se = NA, converged = FALSE))
+  }
+  
+  # Fit model
+  fit <- lm(t3_y ~ t2_a + b1 + b2 + b3, data = data)
+  
+  # Extract coefficient
+  if ("t2_a" %in% rownames(coef(summary(fit)))) {
+    coef_summary <- summary(fit)$coefficients["t2_a", ]
+    return(list(
+      estimate = coef_summary["Estimate"],
+      se = coef_summary["Std. Error"],
+      converged = TRUE
+    ))
+  } else {
+    return(list(estimate = NA, se = NA, converged = FALSE))
+  }
+}
+
+# Run Monte Carlo simulation
+mc_results <- margot_monte_carlo(
+  n_reps = 100,
+  n_per_rep = 500,
+  dgp_params = list(
+    waves = 2,
+    treatments = "a",
+    interventions = list(natural = function(data, time, trt) data[[trt]]),
+    params = list(a_y_coef = 0.5)
+  ),
+  estimator_fn = simple_regression,
+  seed = 123
+)
+
+# View results
+print(mc_results)
+
+## ----with-shadows-------------------------------------------------------------
+# Create measurement error shadow
+me_shadow <- create_shadow(
+  type = "measurement_error",
+  params = list(
+    error_type = "classical",
+    variables = "t2_a",
+    sigma = 0.3
+  )
+)
+
+# Run with shadow
+mc_with_error <- margot_monte_carlo(
+  n_reps = 100,
+  n_per_rep = 500,
+  dgp_params = list(
+    waves = 2,
+    treatments = "a",
+    interventions = list(natural = function(data, time, trt) data[[trt]]),
+    params = list(a_y_coef = 0.5)
+  ),
+  shadows = list(me_shadow),
+  estimator_fn = simple_regression,
+  seed = 456
+)
+
+# Compare results
+cat("Without measurement error:\n")
+if (!is.null(mc_results$performance$bias)) {
+  cat("  Bias:", round(mc_results$performance$bias, 3), "\n")
+  cat("  RMSE:", round(mc_results$performance$rmse, 3), "\n\n")
+} else {
+  cat("  Mean estimate:", round(mc_results$performance$mean_estimate, 3), "\n\n")
+}
+
+cat("With measurement error:\n")
+if (!is.null(mc_with_error$performance$bias)) {
+  cat("  Bias:", round(mc_with_error$performance$bias, 3), "\n")
+  cat("  RMSE:", round(mc_with_error$performance$rmse, 3), "\n")
+} else {
+  cat("  Mean estimate:", round(mc_with_error$performance$mean_estimate, 3), "\n")
+}
+

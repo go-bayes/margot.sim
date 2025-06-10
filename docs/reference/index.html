@@ -25,6 +25,15 @@
     <li><a class="dropdown-item" href="../articles/applying-shadows.html">Applying Observational Shadows</a></li>
     <li><a class="dropdown-item" href="../articles/monte-carlo-simple.html">Monte Carlo Evaluation</a></li>
     <li><a class="dropdown-item" href="../articles/shift-interventions.html">Shift Interventions</a></li>
+    <li><a class="dropdown-item" href="../articles/transport-weights-shadows.html">Transport Weights and Shadows</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Practical Applications</h6></li>
+    <li><a class="dropdown-item" href="../articles/shift-weights.html">Shift Interventions with Sampling Weights</a></li>
+    <li><a class="dropdown-item" href="../articles/censoring-effect-mod.html">Censoring and Effect Modification</a></li>
+    <li><a class="dropdown-item" href="../articles/heterogeneous-effects.html">Heterogeneous Treatment Effects</a></li>
+    <li><a class="dropdown-item" href="../articles/advanced-shift-interventions.html">Advanced Shift Interventions</a></li>
+    <li><a class="dropdown-item" href="../articles/misclassification-bias.html">Misclassification Bias</a></li>
+    <li><a class="dropdown-item" href="../articles/practical-workflow.html">Complete Analysis Workflow</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://github.com/go-bayes/margot.sim" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
@@ -192,6 +201,30 @@
 
         </dt>
         <dd>Print shadow effects</dd>
+      </dl><dl><dt>
+
+          <code><a href="print.margot_effects.html">print(<i>&lt;margot_effects&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Print Method for Margot Effects</dd>
+      </dl><dl><dt>
+
+          <code><a href="print.margot_shadow_result.html">print(<i>&lt;margot_shadow_result&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Print Method for Shadow Result</dd>
+      </dl><dl><dt>
+
+          <code><a href="print.shadow_bias_comparison.html">print(<i>&lt;shadow_bias_comparison&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Print Method for Shadow Bias Comparison</dd>
+      </dl><dl><dt>
+
+          <code><a href="print.shadow_effect_comparison.html">print(<i>&lt;shadow_effect_comparison&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Print Method for Shadow Effect Comparison</dd>
       </dl></div><div class="section level2">
       <h2 id="shadow-methods">Shadow Methods<a class="anchor" aria-label="anchor" href="#shadow-methods"></a></h2>
 
@@ -239,6 +272,59 @@
 
         </dt>
         <dd>Apply selection bias shadow</dd>
+      </dl></div><div class="section level2">
+      <h2 id="causal-effects-and-transport">Causal Effects and Transport<a class="anchor" aria-label="anchor" href="#causal-effects-and-transport"></a></h2>
+
+      <div class="section-desc"><p>Functions for computing and comparing causal effects with transport weights</p></div>
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="compute_causal_effects.html">compute_causal_effects()</a></code>
+
+        </dt>
+        <dd>Compute Causal Effects from Data</dd>
+      </dl><dl><dt>
+
+          <code><a href="compute_effects_from_sim.html">compute_effects_from_sim()</a></code>
+
+        </dt>
+        <dd>Compute Causal Effects from Margot Simulation Data</dd>
+      </dl><dl><dt>
+
+          <code><a href="compare_shadow_bias.html">compare_shadow_bias()</a></code>
+
+        </dt>
+        <dd>Compare Shadow Bias in Causal Effects</dd>
+      </dl><dl><dt>
+
+          <code><a href="compare_shadow_effects.html">compare_shadow_effects()</a></code>
+
+        </dt>
+        <dd>Compare Effects Before and After Shadows</dd>
+      </dl><dl><dt>
+
+          <code><a href="apply_shadows_with_truth.html">apply_shadows_with_truth()</a></code>
+
+        </dt>
+        <dd>Wrapper for Shadow Application with Dual Data Architecture</dd>
+      </dl><dl><dt>
+
+          <code><a href="simulate_ate_data_with_weights.html">simulate_ate_data_with_weights()</a></code>
+
+        </dt>
+        <dd>Direct Replacement for simulate_ate_data_with_weights</dd>
+      </dl><dl><dt>
+
+          <code><a href="margot_transport_analysis.html">margot_transport_analysis()</a></code>
+
+        </dt>
+        <dd>Enhanced Version Using margot.sim Shadow Framework</dd>
       </dl></div><div class="section level2">
       <h2 id="monte-carlo-framework">Monte Carlo Framework<a class="anchor" aria-label="anchor" href="#monte-carlo-framework"></a></h2>
 
@@ -447,6 +533,18 @@
         <dd>Practical example: Impact of measurement error on different estimators</dd>
       </dl><dl><dt>
 
+          <code><a href="example_shadow_bias_analysis.html">example_shadow_bias_analysis()</a></code>
+
+        </dt>
+        <dd>Example: Shadow Bias Analysis Workflow</dd>
+      </dl><dl><dt>
+
+          <code><a href="example_shadow_scenarios.html">example_shadow_scenarios()</a></code>
+
+        </dt>
+        <dd>Example: Multiple Shadow Scenarios</dd>
+      </dl><dl><dt>
+
           <code><a href="example_shadows.html">example_shadows()</a></code>
 
         </dt>
@@ -457,6 +555,12 @@
 
         </dt>
         <dd>Example: Test censoring indicators</dd>
+      </dl><dl><dt>
+
+          <code><a href="example_weighted_shadow_analysis.html">example_weighted_shadow_analysis()</a></code>
+
+        </dt>
+        <dd>Example: Shadow Bias Analysis with Sampling Weights</dd>
       </dl><dl><dt>
 
           <code><a href="run_all_examples.html">run_all_examples()</a></code>

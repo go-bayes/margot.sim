@@ -37,6 +37,15 @@ for causal inference. Supports:
     <li><a class="dropdown-item" href="../articles/applying-shadows.html">Applying Observational Shadows</a></li>
     <li><a class="dropdown-item" href="../articles/monte-carlo-simple.html">Monte Carlo Evaluation</a></li>
     <li><a class="dropdown-item" href="../articles/shift-interventions.html">Shift Interventions</a></li>
+    <li><a class="dropdown-item" href="../articles/transport-weights-shadows.html">Transport Weights and Shadows</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Practical Applications</h6></li>
+    <li><a class="dropdown-item" href="../articles/shift-weights.html">Shift Interventions with Sampling Weights</a></li>
+    <li><a class="dropdown-item" href="../articles/censoring-effect-mod.html">Censoring and Effect Modification</a></li>
+    <li><a class="dropdown-item" href="../articles/heterogeneous-effects.html">Heterogeneous Treatment Effects</a></li>
+    <li><a class="dropdown-item" href="../articles/advanced-shift-interventions.html">Advanced Shift Interventions</a></li>
+    <li><a class="dropdown-item" href="../articles/misclassification-bias.html">Misclassification Bias</a></li>
+    <li><a class="dropdown-item" href="../articles/practical-workflow.html">Complete Analysis Workflow</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://github.com/go-bayes/margot.sim" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
@@ -126,7 +135,11 @@ have signature function(data, time, trt) and return treatment values</p></dd>
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>Object of class "margot_causal_sim" containing:
   - data: List of datasets under each intervention
+  - data_true: Complete data before any shadows (if shadows applied)
+  - data_observed: Data after shadows applied (if shadows applied)
   - effects: True causal effects (if multiple interventions)
+  - effects_true: Effects computed from true data
+  - effects_observed: Effects computed from observed data
   - censoring_bias: Bias induced by censoring (if apply_censoring = TRUE)
   - metadata: Simulation metadata</p>
     </div>
@@ -159,15 +172,7 @@ have signature function(data, time, trt) and return treatment values</p></dd>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> simulating under intervention: never_treat</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Positivity violation at time 0 for t0_a: 0.0% treated (threshold: 1.0%)</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Positivity violation at time 1 for t1_a: 0.0% treated (threshold: 1.0%)</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Positivity violation at time 2 for t2_a: 0.0% treated (threshold: 1.0%)</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Positivity violation at time 3 for t3_a: 0.0% treated (threshold: 1.0%)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> simulating under intervention: always_treat</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Positivity violation at time 0 for t0_a: 100.0% treated (threshold: 1.0%)</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Positivity violation at time 1 for t1_a: 100.0% treated (threshold: 1.0%)</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Positivity violation at time 2 for t2_a: 100.0% treated (threshold: 1.0%)</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Positivity violation at time 3 for t3_a: 100.0% treated (threshold: 1.0%)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> simulating under intervention: natural</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

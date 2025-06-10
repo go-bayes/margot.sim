@@ -26,7 +26,6 @@
 #' @importFrom dplyr group_by mutate ungroup select rename_at vars
 #' @importFrom fastDummies dummy_cols
 #' @importFrom cli cli_h1 cli_h2 cli_alert_info cli_alert_success
-#' @export
 margot_process_longitudinal_data_wider <- function(
     df_wide,
     relationship_id             = "NULL",
