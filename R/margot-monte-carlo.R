@@ -214,17 +214,27 @@ margot_monte_carlo <- function(
                   n_reps, n_cores))
     }
 
-    cl <- parallel::makeCluster(n_cores)
-    on.exit(parallel::stopCluster(cl))
+    # Check if parallel backend is already registered
+    if (!requireNamespace("doParallel", quietly = TRUE)) {
+      warning("doParallel package not available. Falling back to sequential processing.")
+      parallel <- FALSE
+    } else {
+      # Set up parallel backend
+      cl <- parallel::makeCluster(n_cores)
+      on.exit(parallel::stopCluster(cl))
+      doParallel::registerDoParallel(cl)
+      
+      # Export necessary objects to cluster
+      parallel::clusterExport(cl, c("margot_simulate", "margot_simulate_causal",
+                                    "apply_shadows", "apply_shadow"),
+                              envir = environment())
 
-    # Export necessary objects to cluster
-    parallel::clusterExport(cl, c("margot_simulate", "margot_simulate_causal",
-                                  "apply_shadows", "apply_shadow"),
-                            envir = environment())
-
-    results_list <- parallel::parLapply(cl, 1:n_reps, run_one_rep)
-
-  } else {
+      results_list <- parallel::parLapply(cl, 1:n_reps, run_one_rep)
+    }
+  }
+  
+  # Run sequentially if parallel is FALSE (either originally or due to missing package)
+  if (!parallel) {
     results_list <- lapply(1:n_reps, run_one_rep)
   }
 

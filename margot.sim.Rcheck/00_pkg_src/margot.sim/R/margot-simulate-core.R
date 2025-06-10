@@ -83,7 +83,15 @@
 #' @param outcome_type Character. Type of outcome: "continuous" or "binary". Default: "continuous"
 #' @param y_feedback Character. Type of outcome feedback: "full", "y_only", or "none". Default: "full"
 #' @param censoring List. Censoring parameters including rate, exposure_dependence, l_dependence, y_dependence, latent_dependence
-#' @param params List. Named list of model parameters (see defaults in .default_sim_params())
+#' @param params List. Named list of model parameters (see defaults in .default_sim_params()).
+#'   Key heterogeneity parameters include:
+#'   \itemize{
+#'     \item \code{a_b1_y_het}, \code{a_b2_y_het}, \code{a_b3_y_het}: Effect modification by baseline covariates
+#'     \item \code{a_y0_y_het}: Effect modification by baseline outcome (when y_feedback != "none")
+#'     \item \code{a_a0_y_het}: Effect modification by baseline exposure
+#'     \item \code{a_b_y_het}: Legacy parameter for b1 interaction (kept for compatibility)
+#'     \item \code{a_l_y_het}: Effect modification by time-varying confounder
+#'   }
 #' @param seed Integer. Random seed for reproducibility
 #' @param wide Logical. Return data in wide format? Default: TRUE
 #' @param validate_props Logical. Validate that coefficients sum to < 1? Default: TRUE
@@ -237,6 +245,9 @@ margot_simulate <- function(
   b_cor <- 0.3
   sigma_b <- matrix(b_cor, n_baselines, n_baselines)
   diag(sigma_b) <- 1
+  
+  # ensure positive definiteness
+  sigma_b <- check_positive_definite(sigma_b)
 
   # generate initial baseline covariates
   b_mat <- MASS::mvrnorm(n, rep(0, n_baselines), sigma_b)
@@ -290,6 +301,11 @@ margot_simulate <- function(
       time = 0,
       trt = "t0_a"
     )
+    
+    # Check positivity after intervention
+    if (exposure_type == "binary") {
+      check_positivity(df$t0_a, "t0_a", 0)
+    }
   } else {
     df$t0_a <- natural_a0
   }
@@ -298,6 +314,10 @@ margot_simulate <- function(
   if (generate_y) {
     sigma_y <- matrix(p$y_cor, n_outcomes, n_outcomes)
     diag(sigma_y) <- 1
+    
+    # ensure positive definiteness
+    sigma_y <- check_positive_definite(sigma_y)
+    
     eps_y0 <- MASS::mvrnorm(n, rep(0, n_outcomes), sigma_y)
     if (n_outcomes == 1) eps_y0 <- matrix(eps_y0, ncol = 1)
 
@@ -338,7 +358,9 @@ margot_simulate <- function(
       message("  wave ", t, "/", waves)
     }
 
-    # generate l_t for everyone (no censoring applied)
+    # ORDERING: Generate L_t -> A_t -> Y_t to ensure proper causal flow
+    
+    # 1. Generate l_t for everyone (no censoring applied)
     mu_l <- rep(0, n)
 
     b_effects <- c(
@@ -379,7 +401,7 @@ margot_simulate <- function(
 
     df[[paste0("t", t, "_l")]] <- mu_l + rnorm(n)
 
-    # generate a_t for everyone
+    # 2. Generate a_t using the just-generated l_t
     mu_a <- rep(0, n)
 
     if (validate_props) {
@@ -420,11 +442,16 @@ margot_simulate <- function(
         time = t,
         trt = paste0("t", t, "_a")
       )
+      
+      # Check positivity after intervention
+      if (exposure_type == "binary") {
+        check_positivity(df[[paste0("t", t, "_a")]], paste0("t", t, "_a"), t)
+      }
     } else {
       df[[paste0("t", t, "_a")]] <- natural_a
     }
 
-    # generate y_t if needed
+    # 3. Generate y_t using both l_t and a_t
     if (generate_y) {
       eps_y <- MASS::mvrnorm(n, rep(0, n_outcomes), sigma_y)
       if (n_outcomes == 1) eps_y <- matrix(eps_y, ncol = 1)
@@ -451,9 +478,25 @@ margot_simulate <- function(
           y_coefs["l_lag"] * prev_l +
           y_coefs["a_lag"] * prev_a
 
+        # heterogeneous effects (effect modification)
         mu_y <- mu_y +
           shrink * p$a_b_y_het * prev_a * b_mat[, 1] +
           shrink * p$a_l_y_het * prev_a * prev_l
+        
+        # additional heterogeneous effects by all baseline covariates
+        if (n_baselines >= 1) mu_y <- mu_y + shrink * p$a_b1_y_het * prev_a * b_mat[, 1]
+        if (n_baselines >= 2) mu_y <- mu_y + shrink * p$a_b2_y_het * prev_a * b_mat[, 2]
+        if (n_baselines >= 3) mu_y <- mu_y + shrink * p$a_b3_y_het * prev_a * b_mat[, 3]
+        
+        # heterogeneous effect by baseline outcome (if it exists)
+        if (n_outcomes == 1 && "t0_y" %in% names(df)) {
+          mu_y <- mu_y + shrink * p$a_y0_y_het * prev_a * df$t0_y
+        } else if (n_outcomes > 1 && paste0("t0_y", j) %in% names(df)) {
+          mu_y <- mu_y + shrink * p$a_y0_y_het * prev_a * df[[paste0("t0_y", j)]]
+        }
+        
+        # heterogeneous effect by baseline exposure
+        mu_y <- mu_y + shrink * p$a_a0_y_het * prev_a * df$t0_a
 
         prev_y <- if (t == 1) df[[paste0("t0_y", j)]] else df[[paste0("t", t-1, "_y", j)]]
         mu_y <- mu_y + y_coefs["y_lag"] * prev_y
@@ -515,9 +558,28 @@ margot_simulate <- function(
         shrink * p$a_lag_y_coef * df[[paste0("t", waves, "_a")]] +
         p$y_autoreg * df[[paste0("t", waves, "_y", j)]]
 
+      # heterogeneous effects for final outcome
+      final_a <- df[[paste0("t", waves, "_a")]]
+      final_l <- df[[paste0("t", waves, "_l")]]
+      
       mu_y <- mu_y +
-        shrink * p$a_b_y_het * df[[paste0("t", waves, "_a")]] * b_mat[, 1] +
-        shrink * p$a_l_y_het * df[[paste0("t", waves, "_a")]] * df[[paste0("t", waves, "_l")]]
+        shrink * p$a_b_y_het * final_a * b_mat[, 1] +
+        shrink * p$a_l_y_het * final_a * final_l
+      
+      # additional heterogeneous effects by all baseline covariates
+      if (n_baselines >= 1) mu_y <- mu_y + shrink * p$a_b1_y_het * final_a * b_mat[, 1]
+      if (n_baselines >= 2) mu_y <- mu_y + shrink * p$a_b2_y_het * final_a * b_mat[, 2]
+      if (n_baselines >= 3) mu_y <- mu_y + shrink * p$a_b3_y_het * final_a * b_mat[, 3]
+      
+      # heterogeneous effect by baseline outcome
+      if (n_outcomes == 1 && "t0_y" %in% names(df)) {
+        mu_y <- mu_y + shrink * p$a_y0_y_het * final_a * df$t0_y
+      } else if (n_outcomes > 1 && paste0("t0_y", j) %in% names(df)) {
+        mu_y <- mu_y + shrink * p$a_y0_y_het * final_a * df[[paste0("t0_y", j)]]
+      }
+      
+      # heterogeneous effect by baseline exposure
+      mu_y <- mu_y + shrink * p$a_a0_y_het * final_a * df$t0_a
 
       if (j > 1 && n_outcomes > 1) {
         mu_y <- mu_y + p[[paste0("y1_y", j, "_cross")]] * df[[paste0("t", waves, "_y1")]]
@@ -617,6 +679,60 @@ margot_simulate <- function(
 }
 
 # ---- helper functions --------------------------------------------------
+
+#' Check positivity of treatment probabilities
+#' @keywords internal
+check_positivity <- function(treatment_probs, trt_name, time, min_prob = 0.01) {
+  # For binary treatments, check that probabilities are not extreme
+  if (is.numeric(treatment_probs) && all(treatment_probs %in% c(0, 1))) {
+    # Binary treatment values
+    prop_treated <- mean(treatment_probs)
+    
+    if (prop_treated < min_prob || prop_treated > (1 - min_prob)) {
+      warning(sprintf(
+        "Positivity violation at time %d for %s: %.1f%% treated (threshold: %.1f%%)",
+        time, trt_name, prop_treated * 100, min_prob * 100
+      ))
+    }
+  }
+  
+  invisible(NULL)
+}
+
+#' Check and fix positive definiteness of a covariance matrix
+#' @keywords internal
+check_positive_definite <- function(mat, tol = 1e-8) {
+  if (!is.matrix(mat) || nrow(mat) != ncol(mat)) {
+    stop("Input must be a square matrix")
+  }
+  
+  # Check symmetry
+  if (!isSymmetric(mat, tol = tol)) {
+    warning("Covariance matrix is not symmetric, forcing symmetry")
+    mat <- (mat + t(mat)) / 2
+  }
+  
+  # Check positive definiteness via eigenvalues
+  eig <- eigen(mat, symmetric = TRUE)
+  min_eig <- min(eig$values)
+  
+  if (min_eig < tol) {
+    warning(sprintf(
+      "Covariance matrix is not positive definite (min eigenvalue: %.2e). Adjusting...",
+      min_eig
+    ))
+    
+    # Fix by setting negative eigenvalues to small positive value
+    eig$values[eig$values < tol] <- tol
+    mat <- eig$vectors %*% diag(eig$values) %*% t(eig$vectors)
+    
+    # Ensure symmetry after reconstruction
+    mat <- (mat + t(mat)) / 2
+  }
+  
+  mat
+}
+
 #' Default simulation parameter values
 #' @keywords internal
 .default_sim_params <- function() {
@@ -657,6 +773,13 @@ margot_simulate <- function(
     # heterogeneous treatment effects
     a_b_y_het       = 0.10,  # a * b interaction ->> y
     a_l_y_het       = 0.05,  # a * l interaction ->> y
+    
+    # additional heterogeneous effects by baseline
+    a_b1_y_het      = 0.10,  # a * b1 interaction ->> y
+    a_b2_y_het      = 0.08,  # a * b2 interaction ->> y  
+    a_b3_y_het      = 0.06,  # a * b3 interaction ->> y
+    a_y0_y_het      = 0.15,  # a * y0 interaction ->> y (if baseline outcome exists)
+    a_a0_y_het      = 0.12,  # a * a0 interaction ->> y (baseline exposure)
 
     # multiple outcome parameters
     y_cor           = 0.5,   # correlation between outcomes

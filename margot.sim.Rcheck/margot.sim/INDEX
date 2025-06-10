@@ -1,5 +1,7 @@
 analyse_shadow_effects
                         Compare data before and after shadowing
+analyze_heterogeneity   Analyze heterogeneous effects from simulation
+                        output
 apply_censoring_post_hoc
                         Apply censoring to complete data
 apply_shadow            Apply a shadow to data
@@ -36,6 +38,9 @@ example_complete_workflow
                         Integrated Examples for margot Extensions
 example_flexible_distributions
                         Example: Simulate with different distributions
+example_heterogeneous_effects
+                        Example: Heterogeneous Treatment Effects by
+                        Baseline Characteristics
 example_mc_measurement_error
                         Example: Evaluate estimator under measurement
                         error

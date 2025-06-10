@@ -133,7 +133,13 @@ This mirrors counterfactual notation: \(A_k \to A_k^g, C_k \equiv 0, Y_K^{g,C=0}
 
 
 <dt id="arg-params">params<a class="anchor" aria-label="anchor" href="#arg-params"></a></dt>
-<dd><p>List. Named list of model parameters (see defaults in .default_sim_params())</p></dd>
+<dd><p>List. Named list of model parameters (see defaults in .default_sim_params()).
+Key heterogeneity parameters include:</p><ul><li><p><code>a_b1_y_het</code>, <code>a_b2_y_het</code>, <code>a_b3_y_het</code>: Effect modification by baseline covariates</p></li>
+<li><p><code>a_y0_y_het</code>: Effect modification by baseline outcome (when y_feedback != "none")</p></li>
+<li><p><code>a_a0_y_het</code>: Effect modification by baseline exposure</p></li>
+<li><p><code>a_b_y_het</code>: Legacy parameter for b1 interaction (kept for compatibility)</p></li>
+<li><p><code>a_l_y_het</code>: Effect modification by time-varying confounder</p></li>
+</ul></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
@@ -284,6 +290,9 @@ Boca Raton: Chapman &amp; Hall/CRC.</p>
 <span class="r-in"><span>  <span class="op">}</span>,</span></span>
 <span class="r-in"><span>  seed <span class="op">=</span> <span class="fl">2025</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Positivity violation at time 1 for t1_a: 100.0% treated (threshold: 1.0%)</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Positivity violation at time 2 for t2_a: 100.0% treated (threshold: 1.0%)</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Positivity violation at time 3 for t3_a: 100.0% treated (threshold: 1.0%)</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># the estimand E[Y_K^{g,C=0}] can be computed as mean(dat_g$t4_y)</span></span></span>
 <span class="r-in"><span></span></span>

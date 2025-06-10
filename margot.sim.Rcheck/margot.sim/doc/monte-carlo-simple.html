@@ -398,16 +398,16 @@ performance.</p>
 <span id="cb2-44"><a href="#cb2-44" tabindex="-1"></a><span class="co">#&gt; [1] 100</span></span>
 <span id="cb2-45"><a href="#cb2-45" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb2-46"><a href="#cb2-46" tabindex="-1"></a><span class="co">#&gt; $mean_estimate</span></span>
-<span id="cb2-47"><a href="#cb2-47" tabindex="-1"></a><span class="co">#&gt; [1] 0.3223036</span></span>
+<span id="cb2-47"><a href="#cb2-47" tabindex="-1"></a><span class="co">#&gt; [1] 0.3783291</span></span>
 <span id="cb2-48"><a href="#cb2-48" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb2-49"><a href="#cb2-49" tabindex="-1"></a><span class="co">#&gt; $sd_estimate</span></span>
-<span id="cb2-50"><a href="#cb2-50" tabindex="-1"></a><span class="co">#&gt; [1] 0.1218182</span></span>
+<span id="cb2-50"><a href="#cb2-50" tabindex="-1"></a><span class="co">#&gt; [1] 0.1212455</span></span>
 <span id="cb2-51"><a href="#cb2-51" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb2-52"><a href="#cb2-52" tabindex="-1"></a><span class="co">#&gt; $avg_retention</span></span>
 <span id="cb2-53"><a href="#cb2-53" tabindex="-1"></a><span class="co">#&gt; [1] 0.70518</span></span>
 <span id="cb2-54"><a href="#cb2-54" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb2-55"><a href="#cb2-55" tabindex="-1"></a><span class="co">#&gt; $avg_computation_time</span></span>
-<span id="cb2-56"><a href="#cb2-56" tabindex="-1"></a><span class="co">#&gt; [1] 0.002874992</span></span>
+<span id="cb2-56"><a href="#cb2-56" tabindex="-1"></a><span class="co">#&gt; [1] 0.002952683</span></span>
 <span id="cb2-57"><a href="#cb2-57" tabindex="-1"></a></span>
 <span id="cb2-58"><a href="#cb2-58" tabindex="-1"></a><span class="co"># View results</span></span>
 <span id="cb2-59"><a href="#cb2-59" tabindex="-1"></a><span class="fu">print</span>(mc_results)</span>
@@ -470,16 +470,16 @@ estimator:</p>
 <span id="cb3-32"><a href="#cb3-32" tabindex="-1"></a><span class="co">#&gt; [1] 100</span></span>
 <span id="cb3-33"><a href="#cb3-33" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb3-34"><a href="#cb3-34" tabindex="-1"></a><span class="co">#&gt; $mean_estimate</span></span>
-<span id="cb3-35"><a href="#cb3-35" tabindex="-1"></a><span class="co">#&gt; [1] 0.2144799</span></span>
+<span id="cb3-35"><a href="#cb3-35" tabindex="-1"></a><span class="co">#&gt; [1] 0.2562884</span></span>
 <span id="cb3-36"><a href="#cb3-36" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb3-37"><a href="#cb3-37" tabindex="-1"></a><span class="co">#&gt; $sd_estimate</span></span>
-<span id="cb3-38"><a href="#cb3-38" tabindex="-1"></a><span class="co">#&gt; [1] 0.1015156</span></span>
+<span id="cb3-38"><a href="#cb3-38" tabindex="-1"></a><span class="co">#&gt; [1] 0.1069397</span></span>
 <span id="cb3-39"><a href="#cb3-39" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb3-40"><a href="#cb3-40" tabindex="-1"></a><span class="co">#&gt; $avg_retention</span></span>
 <span id="cb3-41"><a href="#cb3-41" tabindex="-1"></a><span class="co">#&gt; [1] 0.70722</span></span>
 <span id="cb3-42"><a href="#cb3-42" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb3-43"><a href="#cb3-43" tabindex="-1"></a><span class="co">#&gt; $avg_computation_time</span></span>
-<span id="cb3-44"><a href="#cb3-44" tabindex="-1"></a><span class="co">#&gt; [1] 0.002795553</span></span>
+<span id="cb3-44"><a href="#cb3-44" tabindex="-1"></a><span class="co">#&gt; [1] 0.00291085</span></span>
 <span id="cb3-45"><a href="#cb3-45" tabindex="-1"></a></span>
 <span id="cb3-46"><a href="#cb3-46" tabindex="-1"></a><span class="co"># Compare results</span></span>
 <span id="cb3-47"><a href="#cb3-47" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Without measurement error:</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
@@ -490,7 +490,7 @@ estimator:</p>
 <span id="cb3-52"><a href="#cb3-52" tabindex="-1"></a>} <span class="cf">else</span> {</span>
 <span id="cb3-53"><a href="#cb3-53" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;  Mean estimate:&quot;</span>, <span class="fu">round</span>(mc_results<span class="sc">$</span>performance<span class="sc">$</span>mean_estimate, <span class="dv">3</span>), <span class="st">&quot;</span><span class="sc">\n\n</span><span class="st">&quot;</span>)</span>
 <span id="cb3-54"><a href="#cb3-54" tabindex="-1"></a>}</span>
-<span id="cb3-55"><a href="#cb3-55" tabindex="-1"></a><span class="co">#&gt;   Mean estimate: 0.322</span></span>
+<span id="cb3-55"><a href="#cb3-55" tabindex="-1"></a><span class="co">#&gt;   Mean estimate: 0.378</span></span>
 <span id="cb3-56"><a href="#cb3-56" tabindex="-1"></a></span>
 <span id="cb3-57"><a href="#cb3-57" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;With measurement error:</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
 <span id="cb3-58"><a href="#cb3-58" tabindex="-1"></a><span class="co">#&gt; With measurement error:</span></span>
@@ -500,7 +500,7 @@ estimator:</p>
 <span id="cb3-62"><a href="#cb3-62" tabindex="-1"></a>} <span class="cf">else</span> {</span>
 <span id="cb3-63"><a href="#cb3-63" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;  Mean estimate:&quot;</span>, <span class="fu">round</span>(mc_with_error<span class="sc">$</span>performance<span class="sc">$</span>mean_estimate, <span class="dv">3</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
 <span id="cb3-64"><a href="#cb3-64" tabindex="-1"></a>}</span>
-<span id="cb3-65"><a href="#cb3-65" tabindex="-1"></a><span class="co">#&gt;   Mean estimate: 0.214</span></span></code></pre></div>
+<span id="cb3-65"><a href="#cb3-65" tabindex="-1"></a><span class="co">#&gt;   Mean estimate: 0.256</span></span></code></pre></div>
 </div>
 <div id="summary" class="section level2">
 <h2>Summary</h2>

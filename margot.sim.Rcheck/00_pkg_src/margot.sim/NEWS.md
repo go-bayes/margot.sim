@@ -1,5 +1,28 @@
 # NEWS
 
+# margot.sim 0.1.1 (2025-06-10)
+
+## Bug fixes
+
+* Fixed vignette errors in `applying-shadows.Rmd` and `monte-carlo-simple.Rmd`
+* Corrected function signatures for `create_positivity_shadow()` and `analyse_shadow_effects()`
+* Fixed pkgdown accessibility warning by adding aria-label to GitHub icon
+
+## New features
+
+* Added temporal order validation for shadow dependencies
+  - Shadows can only depend on variables from the same time point or earlier
+  - Prevents future information from affecting past measurements
+  - Added internal functions `get_time_index()` and `validate_temporal_order()`
+  - Comprehensive tests ensure temporal causality is maintained
+
+## Improvements
+
+* Added GitHub Actions workflows for R CMD check and code coverage
+* Added badges for lifecycle, license, R CMD check, code coverage, and GitHub stars
+* Cleaned up internal function documentation
+
+
 # [2025-06-10] margot.sim 0.1.0
 
 ## New

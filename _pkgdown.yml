@@ -103,6 +103,7 @@ reference:
   - margot_convert_format
   - margot_extract_var
   - margot_missingness_summary
+  - analyze_heterogeneity
 - title: Examples
   desc: Example functions demonstrating package features
   contents:

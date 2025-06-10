@@ -316,6 +316,12 @@ margot_simulate_flex <- function(
     b_cor <- 0.3
     sigma_b <- matrix(b_cor, n_baselines, n_baselines)
     diag(sigma_b) <- 1
+    
+    # ensure positive definiteness
+    if (exists("check_positive_definite", mode = "function")) {
+      sigma_b <- check_positive_definite(sigma_b)
+    }
+    
     b_mat <- MASS::mvrnorm(n, rep(0, n_baselines), sigma_b)
   } else {
     # Generate independent baselines with specified distribution

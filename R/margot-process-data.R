@@ -5,6 +5,33 @@
 #' Processes longitudinal data in wide format across multiple waves,
 #' handling censoring indicators and optional scaling.
 #'
+#' @details
+#' ## Censoring Propagation
+#' 
+#' This function enforces monotonic missingness patterns:
+#' - Once a subject is lost (has no data at wave k), they remain lost
+#' - All future waves are set to NA for consistency
+#' - This prevents "resurrections" where subjects reappear after being lost
+#' 
+#' ## Not-Lost Indicators
+#' 
+#' For each wave k, the indicator `tk_not_lost_following_wave` is created:
+#' - Value = 1: Subject has at least some data at wave k+1
+#' - Value = 0: Subject has no data at wave k+1 (censored)
+#' 
+#' These indicators are essential for:
+#' - Constructing inverse probability weights
+#' - Defining the at-risk set for each wave
+#' - Implementing proper survival analysis methods
+#' 
+#' ## No Carry-Forward
+#' 
+#' This function does NOT implement last observation carried forward (LOCF).
+#' Missing values due to censoring remain as NA. This is intentional because:
+#' - LOCF can introduce bias in longitudinal causal inference
+#' - Modern methods (IPCW, g-computation) handle missingness more appropriately
+#' - Carrying forward values can mask the true censoring pattern
+#'
 #' @param df_wide Wide-format data frame containing time-prefixed columns (e.g., `t0_x`)
 #' @param exposure_vars Character vector of exposure base names (without time prefixes)
 #' @param outcome_vars Character vector of outcome base names (without time prefixes)
@@ -13,7 +40,9 @@
 #' @param not_lost_suffix Suffix for the not-lost indicator. Default: "not_lost_following_wave"
 #' @param time_point_regex Regex pattern to identify time-point prefixes. Default: "^(t\\d+)_.*$"
 #'
-#' @return A data frame with processed columns and censoring indicators
+#' @return A data frame with processed columns and censoring indicators. Future waves
+#'   are set to NA for censored subjects (no carry-forward).
+#'   
 #' @keywords internal
 margot_process_longitudinal <- function(
     df_wide,

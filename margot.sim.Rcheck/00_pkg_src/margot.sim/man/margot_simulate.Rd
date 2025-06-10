@@ -43,7 +43,15 @@ margot_simulate(
 
 \item{censoring}{List. Censoring parameters including rate, exposure_dependence, l_dependence, y_dependence, latent_dependence}
 
-\item{params}{List. Named list of model parameters (see defaults in .default_sim_params())}
+\item{params}{List. Named list of model parameters (see defaults in .default_sim_params()).
+Key heterogeneity parameters include:
+\itemize{
+  \item \code{a_b1_y_het}, \code{a_b2_y_het}, \code{a_b3_y_het}: Effect modification by baseline covariates
+  \item \code{a_y0_y_het}: Effect modification by baseline outcome (when y_feedback != "none")
+  \item \code{a_a0_y_het}: Effect modification by baseline exposure
+  \item \code{a_b_y_het}: Legacy parameter for b1 interaction (kept for compatibility)
+  \item \code{a_l_y_het}: Effect modification by time-varying confounder
+}}
 
 \item{seed}{Integer. Random seed for reproducibility}
 
