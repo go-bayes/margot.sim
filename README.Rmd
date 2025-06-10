@@ -28,6 +28,7 @@ knitr::opts_chunk$set(
 [![Downloads](https://cranlogs.r-pkg.org/badges/margot.sim)](https://cran.r-project.org/package=margot.sim)
 [![Total Downloads](https://cranlogs.r-pkg.org/badges/grand-total/margot.sim)](https://cran.r-project.org/package=margot.sim)
 -->
+[![R-CMD-check](https://github.com/go-bayes/margot.sim/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/go-bayes/margot.sim/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 R package for simulating longitudinal data with realistic observational shadows (measurement error, missingness, selection bias) and evaluating causal inference methods via Monte Carlo simulation.

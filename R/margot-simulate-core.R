@@ -301,13 +301,14 @@ margot_simulate <- function(
       time = 0,
       trt = "t0_a"
     )
+    # No positivity check for interventions - they intentionally modify the distribution
+  } else {
+    df$t0_a <- natural_a0
     
-    # Check positivity after intervention
+    # Check positivity only for natural treatment assignment
     if (exposure_type == "binary") {
       check_positivity(df$t0_a, "t0_a", 0)
     }
-  } else {
-    df$t0_a <- natural_a0
   }
 
   # generate t0 outcomes if needed
@@ -442,13 +443,14 @@ margot_simulate <- function(
         time = t,
         trt = paste0("t", t, "_a")
       )
+      # No positivity check for interventions - they intentionally modify the distribution
+    } else {
+      df[[paste0("t", t, "_a")]] <- natural_a
       
-      # Check positivity after intervention
+      # Check positivity only for natural treatment assignment
       if (exposure_type == "binary") {
         check_positivity(df[[paste0("t", t, "_a")]], paste0("t", t, "_a"), t)
       }
-    } else {
-      df[[paste0("t", t, "_a")]] <- natural_a
     }
 
     # 3. Generate y_t using both l_t and a_t
