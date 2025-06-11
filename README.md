@@ -472,5 +472,5 @@ underlying truths.
 ## References
 
 ``` r
-# Key references will be added via bibliography
+# TBA
 ```

@@ -447,5 +447,5 @@ The shadow metaphor draws inspiration from Plato's Allegory of the Cave, remindi
 ## References
 
 ```{r refs, eval=FALSE}
-# Key references will be added via bibliography
+# TBA
 ```
