@@ -402,11 +402,11 @@ covid_scenario <- create_scenario(
         variables = "t2_y",  # COVID diagnosis
         error_type = "differential",
         differential_var = "t1_a",
-        differential_fn = function(data, var) {
+        differential_fn = function(modifier_values) {
           # vaccinated more likely to test
-          ifelse(data$t1_a == 1, 
-                 rnorm(nrow(data), 0, 0.1),
-                 rnorm(nrow(data), 0, 0.3))
+          ifelse(modifier_values == 1, 
+                 rnorm(length(modifier_values), 0, 0.1),
+                 rnorm(length(modifier_values), 0, 0.3))
         }
       ),
       name = "Differential testing"

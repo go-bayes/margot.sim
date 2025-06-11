@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">margot.sim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -23,6 +23,7 @@
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Advanced Topics</h6></li>
     <li><a class="dropdown-item" href="../articles/applying-shadows.html">Applying Observational Shadows</a></li>
+    <li><a class="dropdown-item" href="../articles/truncation-coarsening.html">Truncation and Coarsening</a></li>
     <li><a class="dropdown-item" href="../articles/monte-carlo-simple.html">Monte Carlo Evaluation</a></li>
     <li><a class="dropdown-item" href="../articles/shift-interventions.html">Shift Interventions</a></li>
     <li><a class="dropdown-item" href="../articles/transport-weights-shadows.html">Transport Weights and Shadows</a></li>
@@ -33,6 +34,7 @@
     <li><a class="dropdown-item" href="../articles/heterogeneous-effects.html">Heterogeneous Treatment Effects</a></li>
     <li><a class="dropdown-item" href="../articles/advanced-shift-interventions.html">Advanced Shift Interventions</a></li>
     <li><a class="dropdown-item" href="../articles/misclassification-bias.html">Misclassification Bias</a></li>
+    <li><a class="dropdown-item" href="../articles/scenario-sensitivity.html">Scenario-Based Sensitivity Analysis</a></li>
     <li><a class="dropdown-item" href="../articles/practical-workflow.html">Complete Analysis Workflow</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -191,6 +193,24 @@
         <dd>Create positivity violation shadow</dd>
       </dl><dl><dt>
 
+          <code><a href="create_truncation_shadow.html">create_truncation_shadow()</a></code>
+
+        </dt>
+        <dd>Extended Shadow Types for margot</dd>
+      </dl><dl><dt>
+
+          <code><a href="create_coarsening_shadow.html">create_coarsening_shadow()</a></code>
+
+        </dt>
+        <dd>Create a coarsening shadow</dd>
+      </dl><dl><dt>
+
+          <code><a href="create_mode_effects_shadow.html">create_mode_effects_shadow()</a></code>
+
+        </dt>
+        <dd>Create a mode effects shadow</dd>
+      </dl><dl><dt>
+
           <code><a href="diagnose_shadowing.html">diagnose_shadowing()</a></code>
 
         </dt>
@@ -225,6 +245,143 @@
 
         </dt>
         <dd>Print Method for Shadow Effect Comparison</dd>
+      </dl></div><div class="section level2">
+      <h2 id="scenario-framework">Scenario Framework<a class="anchor" aria-label="anchor" href="#scenario-framework"></a></h2>
+
+      <div class="section-desc"><p>Functions for scenario-based sensitivity analysis</p></div>
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="create_scenario.html">create_scenario()</a></code>
+
+        </dt>
+        <dd>Scenario Framework for margot</dd>
+      </dl><dl><dt>
+
+          <code><a href="apply_scenario.html">apply_scenario()</a></code>
+
+        </dt>
+        <dd>Apply a scenario to data</dd>
+      </dl><dl><dt>
+
+          <code><a href="compare_scenarios.html">compare_scenarios()</a></code>
+
+        </dt>
+        <dd>Compare causal effects across scenarios</dd>
+      </dl><dl><dt>
+
+          <code><a href="sensitivity_analysis.html">sensitivity_analysis()</a></code>
+
+        </dt>
+        <dd>Perform sensitivity analysis across scenarios</dd>
+      </dl><dl><dt>
+
+          <code><a href="scenario_oracle.html">scenario_oracle()</a></code>
+
+        </dt>
+        <dd>Simple Pre-built Scenario Library for margot</dd>
+      </dl><dl><dt>
+
+          <code><a href="scenario_rct_typical.html">scenario_rct_typical()</a></code>
+
+        </dt>
+        <dd>Create typical RCT scenario</dd>
+      </dl><dl><dt>
+
+          <code><a href="scenario_rct_pragmatic.html">scenario_rct_pragmatic()</a></code>
+
+        </dt>
+        <dd>Create pragmatic RCT scenario</dd>
+      </dl><dl><dt>
+
+          <code><a href="scenario_ehr_typical.html">scenario_ehr_typical()</a></code>
+
+        </dt>
+        <dd>Create typical EHR scenario</dd>
+      </dl><dl><dt>
+
+          <code><a href="scenario_survey_typical.html">scenario_survey_typical()</a></code>
+
+        </dt>
+        <dd>Create survey study scenario</dd>
+      </dl><dl><dt>
+
+          <code><a href="scenario_registry_typical.html">scenario_registry_typical()</a></code>
+
+        </dt>
+        <dd>Create registry data scenario</dd>
+      </dl><dl><dt>
+
+          <code><a href="scenario_pessimistic.html">scenario_pessimistic()</a></code>
+
+        </dt>
+        <dd>Create pessimistic scenario</dd>
+      </dl><dl><dt>
+
+          <code><a href="scenario_collection.html">scenario_collection()</a></code>
+
+        </dt>
+        <dd>Get standard scenario collection</dd>
+      </dl><dl><dt>
+
+          <code><a href="scenario_from_template.html">scenario_from_template()</a></code>
+
+        </dt>
+        <dd>Create custom scenario from template</dd>
+      </dl><dl><dt>
+
+          <code><a href="scenario_rct_simple.html">scenario_rct_simple()</a></code>
+
+        </dt>
+        <dd>Create simple RCT scenario</dd>
+      </dl><dl><dt>
+
+          <code><a href="scenario_observational_simple.html">scenario_observational_simple()</a></code>
+
+        </dt>
+        <dd>Create simple observational study scenario</dd>
+      </dl><dl><dt>
+
+          <code><a href="scenario_collection_simple.html">scenario_collection_simple()</a></code>
+
+        </dt>
+        <dd>Get simple scenario collection</dd>
+      </dl><dl><dt>
+
+          <code><a href="print.margot_scenario.html">print(<i>&lt;margot_scenario&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Print method for scenario objects</dd>
+      </dl><dl><dt>
+
+          <code><a href="print.margot_scenario_result.html">print(<i>&lt;margot_scenario_result&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Print method for scenario results</dd>
+      </dl><dl><dt>
+
+          <code><a href="print.margot_scenario_comparison.html">print(<i>&lt;margot_scenario_comparison&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Print method for scenario comparisons</dd>
+      </dl><dl><dt>
+
+          <code><a href="plot.margot_scenario_comparison.html">plot(<i>&lt;margot_scenario_comparison&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Plot scenario comparison</dd>
+      </dl><dl><dt>
+
+          <code><a href="summary.margot_sensitivity_analysis.html">summary(<i>&lt;margot_sensitivity_analysis&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Summarise sensitivity analysis results</dd>
       </dl></div><div class="section level2">
       <h2 id="shadow-methods">Shadow Methods<a class="anchor" aria-label="anchor" href="#shadow-methods"></a></h2>
 
@@ -272,6 +429,24 @@
 
         </dt>
         <dd>Apply selection bias shadow</dd>
+      </dl><dl><dt>
+
+          <code><a href="apply_shadow.truncation_shadow.html">apply_shadow(<i>&lt;truncation_shadow&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Apply truncation shadow</dd>
+      </dl><dl><dt>
+
+          <code><a href="apply_shadow.coarsening_shadow.html">apply_shadow(<i>&lt;coarsening_shadow&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Apply coarsening shadow</dd>
+      </dl><dl><dt>
+
+          <code><a href="apply_shadow.mode_effects_shadow.html">apply_shadow(<i>&lt;mode_effects_shadow&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Apply mode effects shadow</dd>
       </dl></div><div class="section level2">
       <h2 id="causal-effects-and-transport">Causal Effects and Transport<a class="anchor" aria-label="anchor" href="#causal-effects-and-transport"></a></h2>
 

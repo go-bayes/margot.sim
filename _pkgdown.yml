@@ -130,6 +130,9 @@ reference:
   - scenario_pessimistic
   - scenario_collection
   - scenario_from_template
+  - scenario_rct_simple
+  - scenario_observational_simple
+  - scenario_collection_simple
   - print.margot_scenario
   - print.margot_scenario_result
   - print.margot_scenario_comparison

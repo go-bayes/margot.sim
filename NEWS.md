@@ -1,6 +1,6 @@
 # NEWS
 
-# margot.sim 0.1.3 (development version)
+# margot.sim 0.1.3 (2025-06-12 development version)
 
 ## Major New Features
 
