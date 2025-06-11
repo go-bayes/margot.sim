@@ -37,7 +37,8 @@ Suggests:
     parallel,
     doParallel,
     moments,
-    lme4
+    lme4,
+    patchwork
 Config/testthat/edition: 3
 RoxygenNote: 7.3.2
 VignetteBuilder: knitr
