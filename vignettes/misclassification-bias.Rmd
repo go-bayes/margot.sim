@@ -1,8 +1,8 @@
 ---
-title: "Misclassification Bias: Plain vs Differential"
+title: "Misclassification Bias: When Binary Variables Are Measured with Error"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Misclassification Bias: Plain vs Differential}
+  %\VignetteIndexEntry{Misclassification Bias: When Binary Variables Are Measured with Error}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

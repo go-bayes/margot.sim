@@ -35,81 +35,115 @@ You can install the development version of margot.sim from
 devtools::install_github("go-bayes/margot.sim")
 ```
 
-## What’s New in v0.1.2
+## What’s New in v0.1.2 (January 2025)
 
-- **6 new comprehensive vignettes** covering shift interventions,
-  censoring, heterogeneous effects, and practical workflows
-- **Shadow bias comparison framework** for evaluating how observational
-  distortions affect causal estimates
-- **Transport weights integration** for generalizing from samples to
-  target populations
-- **Enhanced documentation** with complete examples for all major
-  functions
+### Major Enhancements
+
+- **Scenario Framework**: Bundle observational challenges into coherent
+  scenarios for systematic sensitivity analysis
+- **New Shadow Types**: Truncation, coarsening, and mode effects shadows
+  for realistic data limitations
+- **Enhanced Documentation**: 12 comprehensive vignettes covering all
+  major features
+- **Improved Architecture**: Dual data design preserves true and
+  observed data throughout analysis
+
+### Key New Features
+
+``` r
+# Create scenarios for sensitivity analysis
+scenarios <- list(
+  oracle = scenario_oracle(),  # Perfect measurement
+  rct = scenario_rct_simple(),  # Typical RCT conditions
+  observational = scenario_observational_simple(),  # Real-world messiness
+  pessimistic = scenario_pessimistic()  # Worst-case scenario
+)
+
+# Compare effects across scenarios
+comparison <- compare_scenarios(
+  data = my_data,
+  scenarios = scenarios,
+  exposure = "treatment",
+  outcome = "outcome"
+)
+
+# New shadow types
+truncation <- create_truncation_shadow(
+  variables = "income",
+  upper = 200000  # Top-coding
+)
+
+coarsening <- create_coarsening_shadow(
+  variables = "age",
+  breaks = c(0, 30, 50, 70, 100),
+  type = "heaping"  # Realistic rounding patterns
+)
+```
 
 ## Overview
 
-margot.sim extends the `margot` package with:
+margot.sim helps researchers understand how well their statistical
+methods work when data are imperfect. The package provides:
 
-1.  **Shadowing Framework** - Apply observational distortions
-    (measurement error, missingness, selection bias)
-2.  **Monte Carlo Framework** - Systematically evaluate statistical
-    estimators  
-3.  **Flexible Distributions** - Specify non-normal distributions
-4.  **Integrated Workflows** - Complete simulation studies
+1.  **Shadowing Framework** - Apply realistic observational distortions
+2.  **Scenario Framework** - Bundle shadows into documented research
+    contexts
+3.  **Monte Carlo Framework** - Systematically evaluate estimator
+    performance
+4.  **Transport Weights** - Generalize from samples to populations
+5.  **Flexible Distributions** - Model non-normal data
 
 ## Quick Start
 
 ``` r
 library(margot.sim)
 
-# Generate data with measurement error
-shadow <- create_shadow(
-  type = "measurement_error",
-  params = list(
-    variables = c("t1_l", "t2_l"),
-    error_type = "classical",
-    sigma = 0.5
-  )
+# 1. Generate data with a typical observational scenario
+obs_scenario <- scenario_observational_simple()
+sim_data <- margot_simulate(n = 1000, waves = 2)
+observed_data <- apply_scenario(sim_data, obs_scenario)
+
+# 2. Compare true vs observed effects
+true_effects <- compute_causal_effects(
+  observed_data$data_true,
+  exposure = "t1_a",
+  outcome = "t2_y"
 )
 
-dat <- margot_simulate(
-  n = 1000,
-  waves = 3,
-  shadows = shadow
+biased_effects <- compute_causal_effects(
+  observed_data$data_observed,
+  exposure = "t1_a", 
+  outcome = "t2_y"
 )
 
-# Run Monte Carlo evaluation
-mc_results <- margot_monte_carlo(
-  n_reps = 100,
-  n_per_rep = 500,
-  dgp_params = list(waves = 2),
-  shadows = list(shadow),
-  estimator_fn = function(data) {
-    fit <- lm(t3_y ~ t2_a + t1_l + b1, data = data)
-    list(
-      estimate = coef(fit)["t2_a"],
-      se = sqrt(diag(vcov(fit)))["t2_a"]
-    )
-  }
+# 3. Run sensitivity analysis across scenarios
+scenarios <- scenario_collection_simple()
+comparison <- compare_scenarios(
+  sim_data,
+  scenarios,
+  exposure = "t1_a",
+  outcome = "t2_y"
 )
 
-print(mc_results)
+print(comparison)
+plot(comparison)
 ```
 
-## Shadowing Framework
+## Core Features
 
-### Available Shadow Types
+### 1. Shadowing Framework
 
-**Measurement Error:** - Classical error (continuous variables) -
-Misclassification (binary variables) - Differential error -
-Dichotomization - Correlated errors
+The package implements a comprehensive set of observational “shadows”
+that distort true data:
+
+**Measurement Error:**
 
 ``` r
-# Classical measurement error
+# Classical error for continuous variables
 me_shadow <- create_shadow(
   type = "measurement_error",
   params = list(
-    variables = "t1_l",
+    variables = c("blood_pressure", "cholesterol"),
     error_type = "classical",
     sigma = 0.5
   )
@@ -119,10 +153,56 @@ me_shadow <- create_shadow(
 misclass_shadow <- create_shadow(
   type = "measurement_error", 
   params = list(
-    variables = "t1_a",
+    variables = "treatment",
     error_type = "misclassification",
-    sensitivity = 0.85,  # P(observed=1|true=1)
-    specificity = 0.90   # P(observed=0|true=0)
+    sensitivity = 0.85,  # 85% of treated correctly identified
+    specificity = 0.90   # 90% of untreated correctly identified
+  )
+)
+
+# Differential error (depends on other variables)
+diff_shadow <- create_shadow(
+  type = "measurement_error",
+  params = list(
+    variables = "self_reported_health",
+    error_type = "differential",
+    differential_var = "education",
+    differential_fn = function(edu_values) {
+      # More educated report health more accurately
+      rnorm(length(edu_values), 0, 0.5 - 0.1 * edu_values)
+    }
+  )
+)
+```
+
+**Data Limitations:**
+
+``` r
+# Truncation (values beyond limits not observed)
+truncation <- create_truncation_shadow(
+  variables = "biomarker",
+  lower = 0,      # Detection limit
+  upper = 1000,   # Equipment maximum
+  type = "boundary"  # Values pile up at boundaries
+)
+
+# Coarsening (continuous data in categories)
+coarsening <- create_coarsening_shadow(
+  variables = "age",
+  breaks = c(0, 18, 35, 50, 65, 100),
+  type = "heaping",     # People round to 5s and 0s
+  heaping_digits = c(0, 5),
+  heaping_prob = 0.7
+)
+
+# Mode effects (measurement varies by collection method)
+mode_effect <- create_mode_effects_shadow(
+  variables = c("depression_score", "anxiety_score"),
+  mode_var = "survey_mode",  # phone/web/in-person
+  effects = list(
+    phone = function(x) x + rnorm(length(x), -0.5, 0.2),
+    web = function(x) x,
+    in_person = function(x) x + rnorm(length(x), 0.3, 0.1)
   )
 )
 ```
@@ -130,12 +210,12 @@ misclass_shadow <- create_shadow(
 **Missing Data:**
 
 ``` r
-# Item-level missingness
+# Item-level missingness with different mechanisms
 miss_shadow <- create_item_missingness_shadow(
-  variables = c("t1_l", "t2_l"),
+  variables = c("income", "health_status"),
+  missing_mechanism = "MAR",  # or "MCAR", "MNAR"
   missing_rate = 0.2,
-  missing_mechanism = "MAR",
-  dependent_vars = "b1"
+  dependent_vars = c("age", "education")
 )
 ```
 
@@ -144,263 +224,253 @@ miss_shadow <- create_item_missingness_shadow(
 ``` r
 # Positivity violations
 pos_shadow <- create_positivity_shadow(
-  exposure_var = "t1_a",
+  exposure_var = "treatment",
   filter_fn = function(data) {
-    # Treatment only possible if risk score <= 2
-    data$b1 + data$b2 <= 2
+    # Treatment only available to low-risk patients
+    data$risk_score <= 0.7
   }
 )
 ```
 
-### Combining Shadows
+### 2. Scenario Framework
+
+Scenarios bundle shadows with documentation for systematic sensitivity
+analysis:
 
 ``` r
-# Apply multiple shadows
-shadows <- list(me_shadow, miss_shadow)
-dat <- margot_simulate(n = 1000, waves = 3, shadows = shadows)
+# Create a COVID vaccine effectiveness scenario
+covid_scenario <- create_scenario(
+  name = "COVID Vaccine Study",
+  shadows = list(
+    # Vaccination status misclassified
+    vaccine_misclass = create_shadow(
+      type = "measurement_error",
+      params = list(
+        variables = "vaccinated",
+        error_type = "misclassification",
+        sensitivity = 0.95,
+        specificity = 0.98
+      )
+    ),
+    # Differential testing by vaccination status
+    testing_bias = create_shadow(
+      type = "measurement_error",
+      params = list(
+        variables = "covid_positive",
+        error_type = "differential",
+        differential_var = "vaccinated",
+        differential_fn = function(vax) {
+          # Vaccinated more likely to test
+          ifelse(vax == 1, 
+                 rnorm(length(vax), 0, 0.1),
+                 rnorm(length(vax), 0, 0.3))
+        }
+      )
+    )
+  ),
+  description = "COVID-19 vaccine effectiveness with real-world biases",
+  justification = "Testing behavior and record-keeping vary by vaccination status",
+  references = c("Lipsitch M, et al. NEJM 2021", "Hernan MA, et al. Ann Intern Med 2021")
+)
 
-# Or apply post-hoc
-shadowed_data <- apply_shadows(dat, shadows)
+# Use pre-built scenario library
+scenarios <- scenario_collection_simple()
+# Includes: oracle, rct, observational, pessimistic
 ```
 
-## Monte Carlo Framework
+### 3. Monte Carlo Framework
 
-Evaluate estimator performance under various conditions:
+Systematically evaluate estimator performance:
 
 ``` r
 # Define estimator
 ipw_estimator <- function(data) {
-  # Fit propensity score model
-  ps_model <- glm(t1_a ~ b1 + b2 + t0_l, 
-                  data = data, 
-                  family = binomial)
+  # Propensity score model
+  ps_model <- glm(treatment ~ age + gender + baseline_health, 
+                  data = data, family = binomial)
   ps <- predict(ps_model, type = "response")
   
-  # Calculate weights
-  weights <- ifelse(data$t1_a == 1, 1/ps, 1/(1-ps))
+  # IPW weights
+  weights <- ifelse(data$treatment == 1, 1/ps, 1/(1-ps))
   
   # Outcome model
-  fit <- lm(t2_y ~ t1_a, weights = weights, data = data)
+  fit <- lm(outcome ~ treatment, weights = weights, data = data)
   
   list(
-    estimate = coef(fit)["t1_a"],
-    se = sqrt(diag(vcov(fit)))["t1_a"],
+    estimate = coef(fit)["treatment"],
+    se = sqrt(diag(vcov(fit)))["treatment"],
     converged = TRUE
   )
 }
 
-# Run simulation
-results <- margot_monte_carlo(
-  n_reps = 500,
-  n_per_rep = 1000,
+# Run Monte Carlo evaluation
+mc_results <- margot_monte_carlo(
+  n_reps = 1000,
+  n_per_rep = 500,
   dgp_params = list(
     waves = 2,
-    params = list(a_lag_y_coef = 0.3)  # True effect
+    params = list(a_y_coef = 0.5)  # True effect
   ),
-  shadows = list(me_shadow, miss_shadow),
+  shadows = list(misclass_shadow, miss_shadow),
   estimator_fn = ipw_estimator,
-  truth_fn = function(data) 0.3,
+  truth_fn = function(data) 0.5,
   parallel = TRUE,
   n_cores = 4
 )
 
-# View results
-print(results)
-plot(results, type = "histogram")
+# Automatic performance metrics
+print(mc_results)
+# - Bias: -0.12 (24% relative bias)
+# - RMSE: 0.18
+# - Coverage: 0.87 (nominal 0.95)
+# - Power: 0.73
 ```
 
-### Performance Metrics
+### 4. Transport Weights
 
-The framework automatically calculates: - Bias and relative bias -
-Variance and MSE - Coverage of confidence intervals - Convergence
-rates - Sample size retention
-
-## Complete Example
+Generalize from study samples to target populations:
 
 ``` r
-# Compare estimators under measurement error
-comparison <- example_measurement_error_comparison()
-
-# Full workflow demonstration
-results <- example_complete_workflow()
-```
-
-## Advanced Usage
-
-### Custom Shadows
-
-Create your own shadow types:
-
-``` r
-# Define apply method
-apply_shadow.my_custom_shadow <- function(data, shadow, ...) {
-  # Your shadowing logic here
-  data
-}
-
-# Use it
-shadow <- structure(
-  list(type = "my_custom", params = list(...)),
-  class = c("my_custom_shadow", "margot_shadow")
-)
-```
-
-### Flexible Distributions
-
-``` r
-# Non-normal baseline
-gamma_dist <- create_distribution(
-  "gamma",
-  params = list(shape = 2, rate = 1)
+# When your sample doesn't match your target population
+transport_analysis <- margot_transport_analysis(
+  sample_data = trial_data,
+  population_data = registry_data,
+  transport_vars = c("age", "comorbidity", "ses"),
+  exposure = "treatment", 
+  outcome = "mortality",
+  shadows = list(
+    # Registry data has measurement error
+    create_shadow(
+      type = "measurement_error",
+      params = list(
+        variables = "comorbidity",
+        error_type = "misclassification",
+        sensitivity = 0.85,
+        specificity = 0.95
+      )
+    )
+  )
 )
 
-# Use in simulation
-dat <- margot_simulate_flex(
-  n = 1000,
-  distributions = list(baseline = gamma_dist)
-)
+print(transport_analysis$comparison)
+# Sample ATE: 0.15 (trial participants)
+# Population ATE: 0.08 (real-world patients)
+# Transport bias: -0.07
 ```
 
 ## Documentation
 
-For detailed documentation, see:
+Comprehensive vignettes cover all major features:
 
 ``` r
-# Package documentation
-?margot.sim
+# Core functionality
+vignette("basic-simulation")           # Getting started
+vignette("applying-shadows")           # Shadow framework
+vignette("scenario-sensitivity")       # NEW: Scenario-based analysis
+vignette("monte-carlo-simple")         # Evaluating estimators
 
-# Key functions
-?create_shadow
-?margot_monte_carlo
-?margot_simulate
-?simulate_ate_data_with_weights
+# Advanced topics
+vignette("truncation-coarsening")      # NEW: Data limitations
+vignette("misclassification-bias")     # Binary variable errors
+vignette("shift-interventions")        # Modified treatment policies
+vignette("transport-weights-shadows")  # Generalizing to populations
 
-# Vignettes
-vignette("basic-simulation", package = "margot.sim")
-vignette("applying-shadows", package = "margot.sim") 
-vignette("monte-carlo-simple", package = "margot.sim")
-vignette("shift-interventions", package = "margot.sim")
-vignette("shift-weights", package = "margot.sim")
-vignette("censoring-effect-mod", package = "margot.sim")
-vignette("heterogeneous-effects", package = "margot.sim")
-vignette("advanced-shift-interventions", package = "margot.sim")
-vignette("misclassification-bias", package = "margot.sim")
-vignette("practical-workflow", package = "margot.sim")
-vignette("transport-weights-shadows", package = "margot.sim")
+# Practical applications
+vignette("heterogeneous-effects")      # Effect modification
+vignette("censoring-effect-mod")       # Dropout and effect moderation
+vignette("practical-workflow")         # Complete analysis workflow
 ```
 
-## Transport Weights Example
+## Future Directions
 
-margot.sim supports transportability analyses where you need to
-generalize from a study sample to a target population:
+### Near-term (Q1-Q2 2025)
 
-``` r
-# Simulate data where effect modifier distribution differs
-# between sample (10% elderly) and population (50% elderly)
-data <- simulate_ate_data_with_weights(
-  n_sample = 1000,
-  p_z_sample = 0.1,      # 10% elderly in sample
-  p_z_population = 0.5,   # 50% elderly in population  
-  beta_a = 1,            # base treatment effect
-  beta_az = 2,           # treatment works better in elderly
-  seed = 2025
-)
+- **Causal method integration**: Direct support for `lmtp`, `grf`, and
+  TMLE packages
+- **Enhanced HTE framework**: Systematic heterogeneous treatment effect
+  discovery
+- **Diagnostic visualizations**: Balance plots, positivity checks,
+  shadow validation
+- **Performance optimizations**: Faster simulation for large-scale
+  studies
 
-# Compare effects
-sample_ate <- with(data$sample_data,
-  mean(y_sample[a_sample == 1]) - mean(y_sample[a_sample == 0]))
+### Medium-term (2025)
 
-weighted_ate <- with(data$sample_data, {
-  weighted.mean(y_sample[a_sample == 1], weights[a_sample == 1]) -
-  weighted.mean(y_sample[a_sample == 0], weights[a_sample == 0])
-})
+- **Interactive tools**: Shiny apps for exploring shadow impacts
+- **Batch estimation**: Simultaneous evaluation of multiple estimators
+- **Cross-package validation**: Compare results across causal inference
+  ecosystems
+- **Educational platform**: Interactive tutorials and case studies
 
-cat("Sample ATE:", round(sample_ate, 2), "\n")
-cat("Population ATE (weighted):", round(weighted_ate, 2), "\n")
-```
+### Long-term Vision
+
+- **Comprehensive bias catalog**: Library of validated shadow parameters
+  from literature
+- **Automated sensitivity analysis**: Smart defaults based on study
+  design
+- **Integration hub**: Bridge between simulation and applied causal
+  inference
+- **Community repository**: User-contributed scenarios and shadows
+
+## Why margot.sim?
+
+Real studies rarely provide clean data. Instead, researchers face: -
+Missing responses when participants skip questions or drop out -
+Measurement errors from imperfect instruments or self-reports  
+- Selection biases when treatment assignment isn’t random
+
+Traditional simulations often ignore these challenges. margot.sim:
+
+1.  **Mirrors reality** - Generates clean data then adds realistic
+    distortions
+2.  **Stress-tests methods** - Evaluates if your approach works when
+    assumptions fail
+3.  **Maintains truth** - Always knows ground truth for principled
+    evaluation
+4.  **Supports any estimator** - Flexible framework works with any
+    statistical method
+5.  **Builds confidence** - Demonstrates robustness before costly field
+    studies
+
+The framework’s power comes from maintaining **a clean separation
+between true data-generating processes and observed data**, enabling
+principled evaluation of statistical methods under realistic conditions.
 
 ## Contributing
 
-Contributions are welcome. Please:
+We welcome contributions! Please:
 
 1.  Fork the repository
-2.  Create a feature branch
+2.  Create a feature branch (`git checkout -b feature/amazing-feature`)
 3.  Add tests for new functionality
-4.  Submit a pull request
+4.  Ensure all tests pass (`devtools::test()`)
+5.  Submit a pull request
 
-## License
-
-MIT License
+Priority areas for contribution: - Additional shadow types for
+domain-specific biases - Pre-built scenarios for different research
+fields - Integration with causal inference packages - Performance
+optimizations
 
 ## Citation
 
 If you use margot.sim in your research, please cite:
 
-## Why do we need a beefed-up simulator?
-
-Real studies seldom hand us tidy, truth-telling data. Instead we get
-scratches and dents: \* Missing answers. People skip survey items or
-drop out of follow-ups. \* Blurred measurements. Blood-pressure cuffs
-mis-read, self-reports round up or down. \* Uneven treatment chances.
-Some groups are far more (or far less) likely to receive the exposure
-we’re studying, making “apples-with-apples” comparisons tricky.
-
-Traditional toy simulations gloss over these hassles, so a method that
-looks brilliant on paper can wilt in practice. Here we:
-
-1.  Mirror the messiness. Simulating truth and then adding “shadows” let
-    us layer on realistic missing data, measurement error, and selection
-    bias. That means our virtual datasets behave more like the ones
-    sitting on an analyst’s desk.
-2.  Stress-test causal tools. We can ask, “Does this method still give
-    the right answer if half the blood-pressure readings are off by 5
-    mmHg? If drop-out is twice as common among the treated?” Running
-    thousands of such scenarios in silico is faster, cheaper, and safer
-    than discovering the problem after a costly field study.
-3.  Keep truth separate from distortion. By generating the “clean” data
-    first and then adding each shadow, we always know the ground truth.
-    That makes it painless to check how far an estimator strays once the
-    smoke and mirrors appear.
-4.  Plug in any causal question so that users can tailor simulations to
-    the exact claim they plan to make.
-5.  Build confidence. Showing that a method works under sharp, realistic
-    tests—especially can gives us (and journal referees) fewer reasons
-    to worry.
-
-The `margot.sim` package provides a simulation framework to quantify how
-statistical estimators perform when the data they are fed are *shadows*
-of a true causal process. This concept nods to Plato’s “Allegory of the
-Cave,” where prisoners mistake shadows cast on walls for reality (Bloom,
-Kirsch, et al. 1968). `margot.sim` gives us access to simulated ground
-truth so that we can evaluate how far our data and modelling choices can
-mislead us. The framework’s power comes from its consistent architecture
-that maintains **a clean separation between the true data-generating
-process and the distorted data that investigators observe**, allowing
-for principled evaluation of statistical methods in the face of data
-limitations that inevitably arise in science (Bulbulia 2024).
-
-## References
-
 ``` r
 citation("margot.sim")
 ```
 
-<div id="refs" class="references csl-bib-body hanging-indent"
-entry-spacing="0">
+## License
 
-<div id="ref-bloom1968republic" class="csl-entry">
+MIT License - see [LICENSE.md](LICENSE.md) for details
 
-Bloom, Allan, Adam Kirsch, et al. 1968. *The Republic of Plato*. Vol. 2.
-Basic Books New York.
+## Acknowledgments
 
-</div>
+The shadow metaphor draws inspiration from Plato’s Allegory of the Cave,
+reminding us that observed data are often distorted reflections of
+underlying truths.
 
-<div id="ref-bulbulia2024wierd" class="csl-entry">
+## References
 
-Bulbulia, J. A. 2024. “Methods in Causal Inference Part 3: Measurement
-Error and External Validity Threats.” *Evolutionary Human Sciences* 6:
-e42. <https://doi.org/10.1017/ehs.2024.33>.
-
-</div>
-
-</div>
+``` r
+# Key references will be added via bibliography
+```

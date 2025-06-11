@@ -41,7 +41,7 @@
 #'     specificity = 0.90   # 90% of true negatives correctly classified
 #'   )
 #' )
-create_shadow <- function(type = c("censoring", "measurement_error", "selection", "item_missingness", "positivity"),
+create_shadow <- function(type = c("censoring", "measurement_error", "selection", "item_missingness", "positivity", "truncation", "coarsening", "mode_effects"),
                         params = list(),
                         name = NULL) {
   type <- match.arg(type)
@@ -139,6 +139,34 @@ validate_shadow_params <- function(type, params) {
            defaults <- list(
              exposure_var = character(),
              filter_fn = NULL
+           )
+         },
+         truncation = {
+           defaults <- list(
+             variables = character(),
+             lower = -Inf,
+             upper = Inf,
+             type = "simple"
+           )
+         },
+         coarsening = {
+           defaults <- list(
+             variables = character(),
+             breaks = numeric(),
+             labels = NULL,
+             type = "midpoint",
+             heaping_digits = c(0, 5),
+             heaping_prob = 0.7,
+             include_lowest = TRUE,
+             right = TRUE
+           )
+         },
+         mode_effects = {
+           defaults <- list(
+             variables = character(),
+             mode_var = character(),
+             effect_specs = list(),
+             reference_mode = NULL
            )
          }
   )

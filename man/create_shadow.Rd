@@ -6,7 +6,7 @@
 \usage{
 create_shadow(
   type = c("censoring", "measurement_error", "selection", "item_missingness",
-    "positivity"),
+    "positivity", "truncation", "coarsening", "mode_effects"),
   params = list(),
   name = NULL
 )

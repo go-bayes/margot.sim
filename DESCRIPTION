@@ -1,7 +1,7 @@
 Package: margot.sim
 Type: Package
 Title: Simulate Longitudinal Data with Observational Shadows and Monte Carlo Evaluation
-Version: 0.1.2
+Version: 0.1.3
 Authors@R: 
     person("Joseph", "Bulbulia", email = "joseph.bulbulia@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-5861-2056"))

@@ -10,6 +10,7 @@ articles:
   - title: "Advanced Topics"  
     contents:
     - applying-shadows
+    - truncation-coarsening
     - monte-carlo-simple
     - shift-interventions
     - transport-weights-shadows
@@ -20,6 +21,7 @@ articles:
     - heterogeneous-effects
     - advanced-shift-interventions
     - misclassification-bias
+    - scenario-sensitivity
     - practical-workflow
 navbar:
   structure:
@@ -47,6 +49,8 @@ navbar:
       - text: Advanced Topics
       - text: Applying Observational Shadows
         href: articles/applying-shadows.html
+      - text: Truncation and Coarsening
+        href: articles/truncation-coarsening.html
       - text: Monte Carlo Evaluation
         href: articles/monte-carlo-simple.html
       - text: Shift Interventions
@@ -65,6 +69,8 @@ navbar:
         href: articles/advanced-shift-interventions.html
       - text: Misclassification Bias
         href: articles/misclassification-bias.html
+      - text: Scenario-Based Sensitivity Analysis
+        href: articles/scenario-sensitivity.html
       - text: Complete Analysis Workflow
         href: articles/practical-workflow.html
     github:
@@ -99,12 +105,36 @@ reference:
   - analyse_shadow_effects
   - create_item_missingness_shadow
   - create_positivity_shadow
+  - create_truncation_shadow
+  - create_coarsening_shadow
+  - create_mode_effects_shadow
   - diagnose_shadowing
   - print.shadow_effects
   - print.margot_effects
   - print.margot_shadow_result
   - print.shadow_bias_comparison
   - print.shadow_effect_comparison
+- title: Scenario Framework
+  desc: Functions for scenario-based sensitivity analysis
+  contents:
+  - create_scenario
+  - apply_scenario
+  - compare_scenarios
+  - sensitivity_analysis
+  - scenario_oracle
+  - scenario_rct_typical
+  - scenario_rct_pragmatic
+  - scenario_ehr_typical
+  - scenario_survey_typical
+  - scenario_registry_typical
+  - scenario_pessimistic
+  - scenario_collection
+  - scenario_from_template
+  - print.margot_scenario
+  - print.margot_scenario_result
+  - print.margot_scenario_comparison
+  - plot.margot_scenario_comparison
+  - summary.margot_sensitivity_analysis
 - title: Shadow Methods
   desc: S3 methods for specific shadow types
   contents:
@@ -114,6 +144,11 @@ reference:
   - apply_shadow.measurement_error_shadow
   - apply_shadow.positivity_shadow
   - apply_shadow.selection_shadow
+  - apply_shadow.truncation_shadow
+  - apply_shadow.coarsening_shadow
+  - apply_shadow.mode_effects_shadow
+  - apply_shadow.truncation_shadow
+  - apply_shadow.coarsening_shadow
 - title: Causal Effects and Transport
   desc: Functions for computing and comparing causal effects with transport weights
   contents:
