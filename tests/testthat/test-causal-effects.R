@@ -61,9 +61,9 @@ test_that("compute_causal_effects validates inputs", {
   
   # non-binary treatment
   data$a <- c(0.5, 0.7)
-  expect_error(
+  expect_warning(
     compute_causal_effects(data, exposure = "a", outcome = "y"),
-    "binary treatments"
+    "Non-binary treatment detected"
   )
 })
 
