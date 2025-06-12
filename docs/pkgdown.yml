@@ -15,7 +15,7 @@ articles:
   shift-weights: shift-weights.html
   transport-weights-shadows: transport-weights-shadows.html
   truncation-coarsening: truncation-coarsening.html
-last_built: 2025-06-11T15:39Z
+last_built: 2025-06-12T11:46Z
 urls:
   reference: https://go-bayes.github.io/margot.sim/reference
   article: https://go-bayes.github.io/margot.sim/articles

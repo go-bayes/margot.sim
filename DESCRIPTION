@@ -10,7 +10,14 @@ Description: Extensions to the margot package for simulating longitudinal data
     for applying various observational shadows (measurement error, missingness, 
     selection bias) to simulated data, running Monte Carlo simulations to evaluate 
     statistical estimators, supporting flexible non-normal distributions, and creating 
-    a unified framework for causal inference method evaluation.
+    a unified framework for causal inference method evaluation. The shadow framework 
+    is inspired by Plato's Allegory of the Cave, representing observed data as 
+    distorted reflections of true causal processes. Key methodological foundations 
+    include: Pearl (2009) <doi:10.1017/CBO9780511803161> "Causality: Models, 
+    Reasoning, and Inference"; Hernán and Robins (2020) <https://www.hsph.harvard.edu/miguel-hernan/causal-inference-book/> 
+    "Causal Inference: What If"; Little and Rubin (2002) <doi:10.1002/9781119013563> 
+    "Statistical Analysis with Missing Data"; Carroll et al. (2006) <doi:10.1201/9781420010138> 
+    "Measurement Error in Nonlinear Models".
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
