@@ -171,6 +171,14 @@ reference:
   - print.margot_mc_results
   - summary.margot_mc_results
   - print.mc_comparison
+  - create_rng_streams
+  - validate_rng_reproducibility
+  - diagnose_rng_streams
+  - create_data_summarizer
+  - create_memory_monitor
+  - create_mc_streamer
+  - resume_monte_carlo
+  - get_memory_stats
 - title: Distribution Specifications
   desc: Functions for flexible distributions
   contents:
@@ -181,6 +189,42 @@ reference:
   - margot_distributions
   - generate_from_dist.custom_distribution
   - generate_from_dist.parametric_distribution
+- title: S3 Object System
+  desc: S3 constructors, validators, and methods
+  contents:
+  - new_shadow
+  - new_scenario
+  - validate_shadow
+  - validate_scenario
+  - is_shadow
+  - is_scenario
+  - as_shadow
+  - as_scenario
+  - c.margot_shadow
+  - sub-.shadow_list
+  - sub-.margot_scenario
+  - length.margot_scenario
+  - names.margot_scenario
+  - as.data.frame.margot_shadow
+  - as.data.frame.margot_scenario
+  - print.margot_shadow
+  - print.shadow_list
+  - summary.margot_shadow
+  - plot.margot_shadow
+  - plot_shadow_type
+  - plot_shadow_type.default
+- title: Diagnostics and Validation
+  desc: Functions for diagnosing assumptions and validating results
+  contents:
+  - margot_check_positivity
+  - create_positivity_shadow_from_diagnostic
+  - diagnose_all_shadows
+  - check_shadow_ordering
+  - reorder_shadows
+  - update_shadow_params
+  - apply_shadows_with_dependencies
+  - visualize_shadow_dependencies
+  - diagnose_shadowing
 - title: Utilities and Documentation
   desc: Helper functions and documentation
   contents:

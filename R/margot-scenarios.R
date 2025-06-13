@@ -94,20 +94,18 @@ create_scenario <- function(name,
     stop("All elements in shadows list must be margot_shadow objects")
   }
   
-  # create scenario object
-  scenario <- structure(
-    list(
-      name = name,
-      shadows = shadows,
-      population = population,
-      description = description,
-      justification = justification,
-      references = references,
-      created = Sys.time(),
-      n_shadows = length(shadows)
-    ),
-    class = "margot_scenario"
+  # create scenario using S3 constructor
+  scenario <- new_scenario(
+    name = name,
+    shadows = shadows,
+    description = description,
+    justification = justification,
+    references = references,
+    population = population
   )
+  
+  # validate the scenario
+  validate_scenario(scenario)
   
   return(scenario)
 }

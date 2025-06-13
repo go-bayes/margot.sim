@@ -10,6 +10,7 @@ new_scenario(
   description = "",
   justification = "",
   references = NULL,
+  population = NULL,
   ...
 )
 }

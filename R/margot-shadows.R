@@ -46,17 +46,20 @@ create_shadow <- function(type = c("censoring", "measurement_error", "selection"
                         name = NULL) {
   type <- match.arg(type)
 
-  # Validate params based on type
+  # validate params based on type
   params <- validate_shadow_params(type, params)
 
-  structure(
-    list(
-      type = type,
-      params = params,
-      name = name %||% paste0(type, "_shadow")
-    ),
-    class = c(paste0(type, "_shadow"), "margot_shadow")
+  # create shadow using S3 constructor
+  shadow <- new_shadow(
+    type = type,
+    params = params,
+    name = name
   )
+  
+  # validate the shadow
+  validate_shadow(shadow)
+  
+  return(shadow)
 }
 
 #' Extract time index from variable name

@@ -16,7 +16,10 @@ margot_monte_carlo(
   n_cores = NULL,
   seed = NULL,
   verbose = TRUE,
-  save_data = FALSE
+  save_data = FALSE,
+  memory_limit = NULL,
+  summarize_fn = NULL,
+  checkpoint_dir = NULL
 )
 }
 \arguments{

@@ -59,7 +59,10 @@ margot_monte_carlo <- function(
     n_cores = NULL,
     seed = NULL,
     verbose = TRUE,
-    save_data = FALSE
+    save_data = FALSE,
+    memory_limit = NULL,
+    summarize_fn = NULL,
+    checkpoint_dir = NULL
 ) {
 
   # Input validation
@@ -71,14 +74,42 @@ margot_monte_carlo <- function(
     shadows <- list(shadows)
   }
 
-  # Set seed for reproducibility
-  if (!is.null(seed)) {
-    set.seed(seed)
-  }
-
   # Store start time
   start_time <- Sys.time()
+  
+  # Create RNG streams for reproducible parallel execution
+  rng_streams <- if (!is.null(seed)) {
+    create_rng_streams(n_reps, seed = seed)
+  } else {
+    NULL
+  }
 
+  # Set up checkpointing if requested
+  checkpoint_counter <- 0
+  if (!is.null(checkpoint_dir)) {
+    if (!dir.exists(checkpoint_dir)) {
+      dir.create(checkpoint_dir, recursive = TRUE)
+    }
+  }
+  
+  # Set up memory management
+  if (!is.null(memory_limit)) {
+    # check memory periodically
+    check_memory <- function() {
+      mem_used <- as.numeric(gc()[2, 2])  # memory used in MB
+      if (mem_used > memory_limit) {
+        gc()  # force garbage collection
+        mem_used_after <- as.numeric(gc()[2, 2])
+        if (mem_used_after > memory_limit * 0.9) {
+          warning(sprintf("Memory usage (%.1f MB) approaching limit (%.1f MB)", 
+                         mem_used_after, memory_limit))
+        }
+      }
+    }
+  } else {
+    check_memory <- function() {}  # no-op
+  }
+  
   # Create progress bar if verbose
   if (verbose && !parallel) {
     pb <- txtProgressBar(min = 0, max = n_reps, style = 3)
@@ -86,9 +117,9 @@ margot_monte_carlo <- function(
 
   # Function for one replication
   run_one_rep <- function(rep_id) {
-    # Set seed for this replication
-    if (!is.null(seed)) {
-      set.seed(seed + rep_id)
+    # Set RNG stream for this replication if streams are available
+    if (!is.null(rng_streams)) {
+      set_rng_stream(rng_streams[[rep_id]])
     }
 
     # Track timing
@@ -187,12 +218,30 @@ margot_monte_carlo <- function(
       extra_info
     )
 
-    # Optionally save data
-    if (save_data) {
+    # Optionally save data or summarize
+    if (save_data && is.null(summarize_fn)) {
       result$data <- list(
         complete = complete_data,
         shadowed = shadowed_data
       )
+    } else if (!is.null(summarize_fn)) {
+      # apply summary function to reduce memory usage
+      result$data_summary <- summarize_fn(
+        complete = complete_data,
+        shadowed = shadowed_data
+      )
+    }
+    
+    # Checkpoint if requested
+    if (!is.null(checkpoint_dir) && rep_id %% 100 == 0) {
+      checkpoint_file <- file.path(checkpoint_dir, 
+                                 sprintf("checkpoint_%06d.rds", rep_id))
+      saveRDS(result, checkpoint_file)
+    }
+    
+    # Check memory
+    if (rep_id %% 10 == 0) {
+      check_memory()
     }
 
     # Update progress bar
@@ -226,7 +275,8 @@ margot_monte_carlo <- function(
       
       # Export necessary objects to cluster
       parallel::clusterExport(cl, c("margot_simulate", "margot_simulate_causal",
-                                    "apply_shadows", "apply_shadow"),
+                                    "apply_shadows", "apply_shadow", 
+                                    "set_rng_stream", "rng_streams"),
                               envir = environment())
 
       results_list <- parallel::parLapply(cl, 1:n_reps, run_one_rep)
@@ -246,8 +296,19 @@ margot_monte_carlo <- function(
   results_df <- do.call(rbind, lapply(results_list, function(x) {
     # Remove data element if present
     x$data <- NULL
+    x$data_summary <- NULL
     as.data.frame(x, stringsAsFactors = FALSE)
   }))
+  
+  # Clean up checkpoints if successful
+  if (!is.null(checkpoint_dir)) {
+    checkpoint_files <- list.files(checkpoint_dir, pattern = "checkpoint_.*\\.rds", 
+                                 full.names = TRUE)
+    if (length(checkpoint_files) > 0) {
+      message(sprintf("Cleaning up %d checkpoint files", length(checkpoint_files)))
+      file.remove(checkpoint_files)
+    }
+  }
 
   # Calculate performance metrics
   performance <- calculate_performance_metrics(results_df)
@@ -266,9 +327,20 @@ margot_monte_carlo <- function(
         dgp_params = dgp_params,
         shadows = shadows,
         seed = seed,
-        computation_time = total_time
+        computation_time = total_time,
+        memory_limit = memory_limit,
+        checkpoint_dir = checkpoint_dir
       ),
-      data = if (save_data) lapply(results_list, "[[", "data") else NULL
+      data = if (save_data && is.null(summarize_fn)) {
+        lapply(results_list, "[[", "data")
+      } else {
+        NULL
+      },
+      data_summaries = if (!is.null(summarize_fn)) {
+        lapply(results_list, function(x) x$data_summary)
+      } else {
+        NULL
+      }
     ),
     class = "margot_mc_results"
   )
