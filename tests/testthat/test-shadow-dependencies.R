@@ -150,3 +150,109 @@ test_that("Circular dependencies are handled", {
   
   expect_true(check_cycles(deps))
 })
+
+test_that("visualize_shadow_dependencies works", {
+  shadows <- list(
+    create_shadow("measurement_error", 
+                 params = list(variables = "x", error_type = "classical", sigma = 1)),
+    create_shadow("truncation", 
+                 params = list(variables = "x", lower = 0))
+  )
+  
+  # capture output
+  output <- capture.output(visualize_shadow_dependencies(shadows))
+  
+  expect_true(any(grepl("Shadow Dependency Graph", output)))
+  expect_true(any(grepl("measurement_error depends on: truncation", output)))
+  expect_true(any(grepl("Current shadow ordering", output)))
+})
+
+test_that("Shadow dependencies handle missing dependent variables", {
+  # create shadow with non-existent dependent variable
+  shadow <- create_shadow("measurement_error",
+                         params = list(variables = "x", error_type = "classical", sigma = 1))
+  
+  # should work without dependencies
+  updated <- update_shadow_params(shadow, list())
+  expect_equal(updated$params$sigma, 1)
+})
+
+test_that("Complex shadow ordering works", {
+  # create a complex set of shadows with multiple dependencies
+  shadows <- list(
+    create_shadow("selection", params = list()),  # depends on censoring, truncation, positivity
+    create_shadow("measurement_error", 
+                 params = list(variables = "x", error_type = "classical", sigma = 1)), # depends on truncation
+    create_shadow("item_missingness", 
+                 params = list(variables = "y", rate = 0.1, mechanism = "MAR")), # depends on measurement_error
+    create_shadow("truncation", params = list(variables = "x", lower = 0)),
+    create_shadow("censoring", params = list(rate = 0.1, mechanism = "MAR")),
+    create_shadow("positivity", 
+                 params = list(exposure_var = "a", filter_fn = function(d) rep(TRUE, nrow(d))))
+  )
+  
+  # reorder
+  reordered <- reorder_shadows(shadows)
+  types <- sapply(reordered, function(s) s$type)
+  
+  # check critical orderings
+  # truncation before measurement_error
+  expect_lt(which(types == "truncation"), which(types == "measurement_error"))
+  # measurement_error before item_missingness
+  expect_lt(which(types == "measurement_error"), which(types == "item_missingness"))
+  # censoring before selection
+  expect_lt(which(types == "censoring"), which(types == "selection"))
+  # positivity before selection
+  expect_lt(which(types == "positivity"), which(types == "selection"))
+})
+
+test_that("Shadow parameter updates handle edge cases", {
+  # test with NULL parameters
+  shadow <- create_shadow("measurement_error",
+                         params = list(variables = "x", error_type = "classical", sigma = NULL))
+  
+  truncation <- create_shadow("truncation", 
+                            params = list(variables = "x", lower = NULL, upper = NULL))
+  
+  # should handle NULL gracefully
+  updated <- update_shadow_params(shadow, list(truncation))
+  expect_null(updated$params$sigma)
+})
+
+test_that("apply_shadows_with_dependencies produces correct output", {
+  set.seed(789)
+  data <- data.frame(
+    x = rnorm(100),
+    y = rnorm(100),
+    a = rbinom(100, 1, 0.5)
+  )
+  
+  shadows <- list(
+    create_shadow("measurement_error", 
+                 params = list(variables = "x", error_type = "classical", sigma = 0.5)),
+    create_shadow("truncation", 
+                 params = list(variables = "x", lower = -2, upper = 2))
+  )
+  
+  # apply with dependency management but no reordering (wrong order)
+  result_no_reorder <- suppressMessages(
+    apply_shadows_with_dependencies(data, shadows, reorder = FALSE, update_params = FALSE)
+  )
+  
+  # apply with full dependency management
+  result_full <- suppressMessages(
+    apply_shadows_with_dependencies(data, shadows, reorder = TRUE, update_params = TRUE)
+  )
+  
+  # check structure
+  expect_true("data" %in% names(result_full))
+  expect_true("diagnostics" %in% names(result_full))
+  expect_true("shadow_order" %in% names(result_full))
+  
+  # with reordering, truncation should be first
+  expect_equal(result_full$shadow_order[1], "truncation")
+  
+  # check diagnostics structure
+  expect_equal(length(result_full$diagnostics), length(shadows))
+  expect_true(all(sapply(result_full$diagnostics, function(d) "type" %in% names(d))))
+})

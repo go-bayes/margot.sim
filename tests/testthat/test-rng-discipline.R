@@ -23,6 +23,62 @@ test_that("RNG streams are independent", {
   }
 })
 
+test_that("RNG streams work with different kinds", {
+  # test with default L'Ecuyer
+  streams1 <- create_rng_streams(5, seed = 456, kind = "L'Ecuyer-CMRG")
+  expect_equal(length(streams1), 5)
+  
+  # test state restoration
+  old_seed <- .Random.seed
+  old_kind <- RNGkind()[1]
+  
+  streams <- create_rng_streams(3, seed = 789)
+  
+  # check that RNG state is restored
+  expect_equal(RNGkind()[1], old_kind)
+})
+
+test_that("set_rng_stream sets state correctly", {
+  streams <- create_rng_streams(3, seed = 111)
+  
+  # set first stream
+  set_rng_stream(streams[[1]])
+  vals1 <- runif(5)
+  
+  # set different stream
+  set_rng_stream(streams[[2]])
+  vals2 <- runif(5)
+  
+  # go back to first stream - should get same values
+  set_rng_stream(streams[[1]])
+  vals1_repeat <- runif(5)
+  
+  expect_equal(vals1, vals1_repeat)
+  expect_false(identical(vals1, vals2))
+})
+
+test_that("run_mc_replication uses streams correctly", {
+  test_fn <- function(rep_id, n = 100) {
+    list(
+      rep_id = rep_id,
+      mean = mean(rnorm(n)),
+      max = max(runif(n))
+    )
+  }
+  
+  streams <- create_rng_streams(5, seed = 222)
+  
+  # run replications
+  results <- lapply(1:5, function(i) {
+    run_mc_replication(i, streams[[i]], test_fn, n = 50)
+  })
+  
+  expect_equal(length(results), 5)
+  expect_equal(results[[1]]$rep_id, 1)
+  expect_true(is.numeric(results[[1]]$mean))
+  expect_true(is.numeric(results[[1]]$max))
+})
+
 test_that("RNG streams are reproducible", {
   # create streams twice with same seed
   streams1 <- create_rng_streams(5, seed = 456)
@@ -94,4 +150,87 @@ test_that("diagnose_rng_streams provides useful diagnostics", {
   expect_false(diag$has_duplicates)
   expect_true(diag$appears_independent)
   expect_lt(diag$max_correlation, 0.1)
+})
+
+test_that("RNG discipline works in margot_monte_carlo", {
+  skip_if_not_installed("doParallel")
+  
+  # simple estimator for testing
+  test_estimator <- function(data) {
+    list(
+      estimate = mean(data$t2_y),
+      se = sd(data$t2_y) / sqrt(nrow(data)),
+      converged = TRUE
+    )
+  }
+  
+  # run MC with seed
+  mc_result <- margot_monte_carlo(
+    n_reps = 10,
+    n_per_rep = 100,
+    dgp_params = list(waves = 2),
+    estimator_fn = test_estimator,
+    seed = 333,
+    verbose = FALSE
+  )
+  
+  expect_s3_class(mc_result, "margot_mc_results")
+  expect_equal(nrow(mc_result$results), 10)
+  
+  # run again with same seed - should get same results
+  mc_result2 <- margot_monte_carlo(
+    n_reps = 10,
+    n_per_rep = 100,
+    dgp_params = list(waves = 2),
+    estimator_fn = test_estimator,
+    seed = 333,
+    verbose = FALSE
+  )
+  
+  expect_equal(mc_result$results$estimate, mc_result2$results$estimate)
+})
+
+test_that("Parallel MC produces same results as sequential", {
+  skip_if_not_installed("doParallel")
+  skip_on_cran() # parallel tests can be slow
+  
+  test_estimator <- function(data) {
+    list(
+      estimate = mean(data$t2_y),
+      se = sd(data$t2_y) / sqrt(nrow(data)),
+      converged = TRUE
+    )
+  }
+  
+  # sequential
+  set.seed(444)
+  mc_seq <- margot_monte_carlo(
+    n_reps = 20,
+    n_per_rep = 100,
+    dgp_params = list(waves = 2),
+    estimator_fn = test_estimator,
+    seed = 555,
+    parallel = FALSE,
+    verbose = FALSE
+  )
+  
+  # parallel
+  set.seed(444)
+  mc_par <- margot_monte_carlo(
+    n_reps = 20,
+    n_per_rep = 100,
+    dgp_params = list(waves = 2),
+    estimator_fn = test_estimator,
+    seed = 555,
+    parallel = TRUE,
+    n_cores = 2,
+    verbose = FALSE
+  )
+  
+  # results should be identical
+  expect_equal(
+    sort(mc_seq$results$estimate),
+    sort(mc_par$results$estimate),
+    tolerance = 1e-10
+  )
 })

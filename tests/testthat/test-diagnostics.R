@@ -206,3 +206,162 @@ test_that("diagnose_all_shadows provides comprehensive diagnostics", {
   }
   expect_equal(diag$data_loss$n_original, nrow(data))
 })
+
+test_that("Positivity diagnostics handle non-binary treatments", {
+  set.seed(444)
+  n <- 500
+  
+  # create data with multi-level treatment
+  x <- rnorm(n)
+  data <- data.frame(
+    x = x,
+    a = sample(0:2, n, replace = TRUE, prob = c(0.3, 0.4, 0.3)),
+    y = rnorm(n)
+  )
+  
+  # check positivity
+  pos_check <- margot_check_positivity(
+    data = data,
+    treatment = "a",
+    covariates = "x",
+    threshold = 0.1,
+    method = "empirical"
+  )
+  
+  expect_s3_class(pos_check, "margot_positivity_diagnostic")
+  expect_equal(length(pos_check$metadata$treatment_levels), 3)
+})
+
+test_that("Model-based positivity handles perfect separation", {
+  set.seed(555)
+  n <- 200
+  
+  # create data with near-perfect separation
+  x <- rnorm(n)
+  data <- data.frame(
+    x = x,
+    a = as.numeric(x > 0),  # perfect separation at x = 0
+    y = rnorm(n)
+  )
+  
+  # add a few violations to avoid complete separation
+  data$a[sample(which(data$x > 0), 5)] <- 0
+  data$a[sample(which(data$x <= 0), 5)] <- 1
+  
+  expect_warning(
+    pos_check <- margot_check_positivity(
+      data = data,
+      treatment = "a", 
+      covariates = "x",
+      method = "model-based"
+    ),
+    NA  # expect no warnings
+  )
+  
+  expect_true(pos_check$model_based$n_violations > 0)
+})
+
+test_that("Positivity check works with multiple covariates", {
+  set.seed(666)
+  n <- 1000
+  
+  x1 <- rnorm(n)
+  x2 <- rnorm(n)
+  x3 <- rbinom(n, 1, 0.5)
+  
+  data <- data.frame(
+    x1 = x1,
+    x2 = x2, 
+    x3 = x3,
+    a = rbinom(n, 1, plogis(x1 + 0.5 * x2 - 2 * x3)),
+    y = rnorm(n)
+  )
+  
+  pos_check <- margot_check_positivity(
+    data = data,
+    treatment = "a",
+    covariates = c("x1", "x2", "x3"),
+    threshold = 0.05,
+    method = "both"
+  )
+  
+  # check both methods ran
+  expect_true(!is.null(pos_check$empirical))
+  expect_true(!is.null(pos_check$model_based))
+  
+  # check covariate balance summary
+  expect_equal(length(pos_check$summary$covariate_balance), 3)
+  expect_true("standardized_diff" %in% names(pos_check$summary$covariate_balance$x1))
+})
+
+test_that("create_positivity_shadow_from_diagnostic handles no violations", {
+  set.seed(777)
+  data <- data.frame(
+    x = rnorm(100),
+    a = rbinom(100, 1, 0.5),  # no association with x
+    y = rnorm(100)
+  )
+  
+  diag <- margot_check_positivity(data, "a", "x", method = "model-based", threshold = 0.01)
+  
+  if (diag$model_based$n_violations == 0) {
+    expect_message(
+      shadow <- create_positivity_shadow_from_diagnostic(diag, method = "trim"),
+      "No positivity violations found"
+    )
+    expect_null(shadow)
+  }
+})
+
+test_that("Positivity diagnostics plotting works", {
+  skip_if_not_installed("ggplot2")
+  
+  set.seed(888)
+  x <- rnorm(200)
+  data <- data.frame(
+    x = x,
+    a = rbinom(200, 1, plogis(2 * x)),
+    y = rnorm(200)
+  )
+  
+  pos_check <- margot_check_positivity(data, "a", "x", method = "model-based")
+  
+  # test plot creation
+  p <- plot(pos_check, type = "propensity")
+  expect_s3_class(p, "ggplot")
+  
+  # test unsupported plot type
+  expect_message(
+    plot(pos_check, type = "balance"),
+    "not yet implemented"
+  )
+})
+
+test_that("summarize_positivity calculates correct statistics", {
+  set.seed(999)
+  n <- 300
+  
+  # create data with known properties
+  x1 <- rnorm(n, mean = 0, sd = 1)
+  x2 <- factor(sample(c("A", "B", "C"), n, replace = TRUE))
+  a <- c(rep(0, 150), rep(1, 150))  # balanced treatment
+  
+  data <- data.frame(x1 = x1, x2 = x2, a = a)
+  
+  # offset x1 by treatment for known standardized difference
+  data$x1[data$a == 1] <- data$x1[data$a == 1] + 0.5
+  
+  summary_stats <- summarize_positivity(data, "a", c("x1", "x2"), c(0, 1))
+  
+  # check structure
+  expect_equal(summary_stats$n, n)
+  expect_equal(as.numeric(summary_stats$treatment_distribution), c(0.5, 0.5))
+  
+  # check standardized difference calculation
+  std_diff <- summary_stats$covariate_balance$x1$standardized_diff
+  expect_true(abs(std_diff - 0.5) < 0.1)  # should be close to 0.5
+  
+  # check categorical variable handling
+  expect_equal(summary_stats$covariate_balance$x2$type, "categorical")
+  expect_true(is.matrix(summary_stats$covariate_balance$x2$proportions))
+})
