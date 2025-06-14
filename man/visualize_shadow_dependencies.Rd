@@ -4,14 +4,16 @@
 \alias{visualize_shadow_dependencies}
 \title{Visualize shadow dependencies}
 \usage{
-visualize_shadow_dependencies(shadows = NULL)
+visualize_shadow_dependencies(shadows = NULL, show_all = FALSE)
 }
 \arguments{
 \item{shadows}{List of shadow objects (optional)}
+
+\item{show_all}{Show all possible shadow types and dependencies}
 }
 \value{
-Prints dependency graph
+A plot object (if igraph is available) or a text representation
 }
 \description{
-Visualize shadow dependencies
+Creates a visualization of shadow dependencies as a directed graph.
 }

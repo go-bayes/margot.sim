@@ -2,7 +2,7 @@
 % Please edit documentation in R/margot-s3-methods.R
 \name{is_scenario}
 \alias{is_scenario}
-\title{Test if object is a scenario}
+\title{Check if object is a scenario}
 \usage{
 is_scenario(x)
 }
@@ -10,8 +10,8 @@ is_scenario(x)
 \item{x}{Object to test}
 }
 \value{
-Logical indicating if x is a margot_scenario
+Logical
 }
 \description{
-Test if object is a scenario
+Check if object is a scenario
 }

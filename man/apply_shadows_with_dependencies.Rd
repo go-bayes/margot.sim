@@ -7,22 +7,42 @@
 apply_shadows_with_dependencies(
   data,
   shadows,
-  reorder = TRUE,
-  update_params = TRUE
+  check_dependencies = TRUE,
+  verbose = FALSE
 )
 }
 \arguments{
-\item{data}{Data to apply shadows to}
+\item{data}{Data frame to apply shadows to}
 
 \item{shadows}{List of shadow objects}
 
-\item{reorder}{Logical, whether to reorder shadows by dependencies}
+\item{check_dependencies}{Whether to check and reorder based on dependencies}
 
-\item{update_params}{Logical, whether to update parameters based on dependencies}
+\item{verbose}{Print progress messages}
 }
 \value{
-List with shadowed data and diagnostics
+Data with shadows applied
 }
 \description{
-Apply shadows with dependency management
+Applies a list of shadows to data while respecting dependencies
+and updating parameters as needed.
+}
+\examples{
+\dontrun{
+# shadows will be automatically reordered
+shadows <- list(
+  create_shadow("measurement_error", list(
+    variables = "y",
+    error_type = "classical",
+    sigma = 0.5
+  )),
+  create_shadow("truncation", list(
+    variables = "y",
+    lower = -2,
+    upper = 2
+  ))
+)
+
+data_shadowed <- apply_shadows_with_dependencies(data, shadows)
+}
 }

@@ -6,6 +6,14 @@
 \usage{
 \method{print}{shadow_list}(x, ...)
 }
+\arguments{
+\item{x}{A shadow_list object}
+
+\item{...}{Additional arguments (unused)}
+}
+\value{
+The object invisibly
+}
 \description{
 Print method for shadow lists
 }

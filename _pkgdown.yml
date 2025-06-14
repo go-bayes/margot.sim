@@ -99,6 +99,11 @@ reference:
   desc: Functions for applying observational distortions
   contents:
   - create_shadow
+  - new_shadow
+  - new_shadow_list
+  - is_shadow
+  - as_shadow
+  - validate_shadow
   - apply_shadow
   - apply_shadows
   - combine_shadows
@@ -118,6 +123,10 @@ reference:
   desc: Functions for scenario-based sensitivity analysis
   contents:
   - create_scenario
+  - new_scenario
+  - is_scenario
+  - as_scenario
+  - validate_scenario
   - apply_scenario
   - compare_scenarios
   - sensitivity_analysis
@@ -200,7 +209,9 @@ reference:
   - is_scenario
   - as_shadow
   - as_scenario
-  - c.margot_shadow
+  - new_shadow_list
+  - c.margot_scenario
+  - c.shadow_list
   - "`[.shadow_list`"
   - "`[.margot_scenario`"
   - length.margot_scenario
@@ -212,7 +223,6 @@ reference:
   - summary.margot_shadow
   - plot.margot_shadow
   - plot_shadow_type
-  - plot_shadow_type.default
 - title: Diagnostics and Validation
   desc: Functions for diagnosing assumptions and validating results
   contents:

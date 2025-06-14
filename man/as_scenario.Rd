@@ -2,16 +2,18 @@
 % Please edit documentation in R/margot-s3-methods.R
 \name{as_scenario}
 \alias{as_scenario}
-\title{Convert old-style scenario to S3}
+\title{Convert objects to scenarios}
 \usage{
-as_scenario(old_scenario)
+as_scenario(x, ...)
 }
 \arguments{
-\item{old_scenario}{List-based scenario from old interface}
+\item{x}{Object to convert}
+
+\item{...}{Additional arguments passed to methods}
 }
 \value{
-A validated margot_scenario S3 object
+A margot_scenario object
 }
 \description{
-Converts scenarios created with the old interface to proper S3 objects
+Convert objects to scenarios
 }

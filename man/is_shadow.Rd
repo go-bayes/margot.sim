@@ -2,7 +2,7 @@
 % Please edit documentation in R/margot-s3-methods.R
 \name{is_shadow}
 \alias{is_shadow}
-\title{Test if object is a shadow}
+\title{Check if object is a shadow}
 \usage{
 is_shadow(x)
 }
@@ -10,8 +10,8 @@ is_shadow(x)
 \item{x}{Object to test}
 }
 \value{
-Logical indicating if x is a margot_shadow
+Logical
 }
 \description{
-Test if object is a shadow
+Check if object is a shadow
 }

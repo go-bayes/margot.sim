@@ -9,8 +9,9 @@
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![License:
 MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![R-CMD-check](https://github.com/go-bayes/margot.sim/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/go-bayes/margot.sim/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
-coverage](https://codecov.io/gh/go-bayes/margot.sim/branch/main/graph/badge.svg)](https://app.codecov.io/gh/go%20-bayes/margot.sim?branch=main)
+coverage](https://codecov.io/gh/go-bayes/margot.sim/branch/main/graph/badge.svg)](https://app.codecov.io/gh/go-bayes/margot.sim?branch=main)
 
 <!-- [![GitHub stars](https://img.shields.io/github/stars/go-bayes/margot.sim?style=social)](https://github.com/go-bayes/margot.sim) -->
 
@@ -20,7 +21,6 @@ coverage](https://codecov.io/gh/go-bayes/margot.sim/branch/main/graph/badge.svg)
 [![Total Downloads](https://cranlogs.r-pkg.org/badges/grand-total/margot.sim)](https://cran.r-project.org/package=margot.sim)
 -->
 
-[![R-CMD-check](https://github.com/go-bayes/margot.sim/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/go-bayes/margot.sim/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 R package for simulating longitudinal data with realistic observational

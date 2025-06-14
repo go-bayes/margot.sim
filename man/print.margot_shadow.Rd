@@ -12,7 +12,7 @@
 \item{...}{Additional arguments (unused)}
 }
 \value{
-Invisibly returns the object
+The object invisibly
 }
 \description{
 Print method for shadow objects

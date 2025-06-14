@@ -2,18 +2,18 @@
 % Please edit documentation in R/margot-s3-methods.R
 \name{validate_scenario}
 \alias{validate_scenario}
-\title{Validator for margot_scenario objects}
+\title{Validate a scenario object}
 \usage{
 validate_scenario(x, ...)
 }
 \arguments{
-\item{x}{An object to validate}
+\item{x}{A scenario object to validate}
 
 \item{...}{Additional arguments}
 }
 \value{
-The validated object (invisibly)
+The validated scenario object (invisibly)
 }
 \description{
-Validator for margot_scenario objects
+Validate a scenario object
 }

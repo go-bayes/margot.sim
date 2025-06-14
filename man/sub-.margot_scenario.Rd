@@ -2,10 +2,20 @@
 % Please edit documentation in R/margot-s3-methods.R
 \name{[.margot_scenario}
 \alias{[.margot_scenario}
-\title{Subset shadows from a scenario}
+\title{Extract shadows from a scenario}
 \usage{
-\method{[}{margot_scenario}(x, i)
+\method{[}{margot_scenario}(x, i, ...)
+}
+\arguments{
+\item{x}{A margot_scenario object}
+
+\item{i}{Index or indices of shadows to extract}
+
+\item{...}{Additional arguments (unused)}
+}
+\value{
+A shadow object or list of shadow objects
 }
 \description{
-Subset shadows from a scenario
+Extract shadows from a scenario
 }

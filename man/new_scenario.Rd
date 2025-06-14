@@ -2,36 +2,34 @@
 % Please edit documentation in R/margot-s3-methods.R
 \name{new_scenario}
 \alias{new_scenario}
-\title{Constructor for margot_scenario objects}
+\title{Create a margot scenario object}
 \usage{
-new_scenario(
-  name,
-  shadows = list(),
-  description = "",
-  justification = "",
-  references = NULL,
-  population = NULL,
-  ...
-)
+new_scenario(name, description = "", shadows = list(), ...)
 }
 \arguments{
 \item{name}{Character string naming the scenario}
 
-\item{shadows}{List of shadow objects}
+\item{description}{Character string describing the scenario}
 
-\item{description}{Character description}
+\item{shadows}{List of shadow objects or a single shadow}
 
-\item{justification}{Character justification}
-
-\item{references}{Character vector of references}
-
-\item{...}{Additional attributes}
+\item{...}{Additional metadata}
 }
 \value{
-A margot_scenario object
+An object of class "margot_scenario"
 }
 \description{
-Low-level constructor for scenario objects. Users should typically use
-create_scenario() instead.
+Create a margot scenario object
 }
-\keyword{internal}
+\examples{
+shadow1 <- new_shadow(
+  type = "measurement_error",
+  params = list(variables = "x", error_type = "classical", sigma = 0.5)
+)
+
+scenario <- new_scenario(
+  name = "Measurement Error Study",
+  description = "Examining impact of measurement error on estimates",
+  shadows = shadow1
+)
+}

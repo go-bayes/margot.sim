@@ -2,16 +2,18 @@
 % Please edit documentation in R/margot-s3-methods.R
 \name{as_shadow}
 \alias{as_shadow}
-\title{Convert old-style shadow to S3}
+\title{Convert objects to shadows}
 \usage{
-as_shadow(old_shadow)
+as_shadow(x, ...)
 }
 \arguments{
-\item{old_shadow}{List-based shadow from old interface}
+\item{x}{Object to convert}
+
+\item{...}{Additional arguments passed to methods}
 }
 \value{
-A validated margot_shadow S3 object
+A margot_shadow object
 }
 \description{
-Converts shadows created with the old interface to proper S3 objects
+Convert objects to shadows
 }

@@ -2,18 +2,18 @@
 % Please edit documentation in R/margot-s3-methods.R
 \name{summary.margot_shadow}
 \alias{summary.margot_shadow}
-\title{Summary method for margot objects}
+\title{Summary method for shadow objects}
 \usage{
 \method{summary}{margot_shadow}(object, ...)
 }
 \arguments{
-\item{object}{A margot object}
+\item{object}{A margot_shadow object}
 
-\item{...}{Additional arguments}
+\item{...}{Additional arguments (unused)}
 }
 \value{
-Summary information
+A summary list
 }
 \description{
-Summary method for margot objects
+Summary method for shadow objects
 }

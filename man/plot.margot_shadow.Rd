@@ -2,20 +2,20 @@
 % Please edit documentation in R/margot-s3-methods.R
 \name{plot.margot_shadow}
 \alias{plot.margot_shadow}
-\title{Plot method for shadow objects}
+\title{Plot shadow distributions}
 \usage{
-plot.margot_shadow(x, data = NULL, ...)
+\method{plot}{margot_shadow}(x, data = NULL, ...)
 }
 \arguments{
 \item{x}{A margot_shadow object}
 
-\item{data}{Optional data to show shadow effects on}
+\item{data}{Optional data to show impact on}
 
-\item{...}{Additional arguments}
+\item{...}{Additional arguments passed to plotting functions}
 }
 \value{
-A plot (base R or ggplot2)
+A ggplot2 object
 }
 \description{
-Plot method for shadow objects
+Plot shadow distributions
 }

@@ -52,11 +52,13 @@ create_shadow <- function(type = c("censoring", "measurement_error", "selection"
   # create shadow using S3 constructor
   shadow <- new_shadow(
     type = type,
-    params = params,
-    name = name
+    params = params
   )
   
-  # validate the shadow
+  # add name if provided
+  shadow$name <- name %||% paste0(type, "_shadow")
+  
+  # validate the shadow  
   validate_shadow(shadow)
   
   return(shadow)

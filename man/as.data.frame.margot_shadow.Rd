@@ -2,18 +2,18 @@
 % Please edit documentation in R/margot-s3-methods.R
 \name{as.data.frame.margot_shadow}
 \alias{as.data.frame.margot_shadow}
-\title{Convert shadow to data frame for summary}
+\title{Convert shadow to data frame}
 \usage{
 \method{as.data.frame}{margot_shadow}(x, ...)
 }
 \arguments{
 \item{x}{A margot_shadow object}
 
-\item{...}{Additional arguments}
+\item{...}{Additional arguments (unused)}
 }
 \value{
-A data frame with shadow information
+A data frame representation
 }
 \description{
-Convert shadow to data frame for summary
+Convert shadow to data frame
 }

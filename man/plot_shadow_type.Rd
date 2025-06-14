@@ -2,11 +2,20 @@
 % Please edit documentation in R/margot-s3-methods.R
 \name{plot_shadow_type}
 \alias{plot_shadow_type}
-\title{Default plot for shadows}
+\title{Generic shadow plotting function}
 \usage{
-plot_shadow_type(x, ...)
+plot_shadow_type(x, data = NULL, ...)
+}
+\arguments{
+\item{x}{A shadow object}
+
+\item{data}{Optional data}
+
+\item{...}{Additional arguments}
+}
+\value{
+A plot object
 }
 \description{
-Default plot for shadows
+Generic shadow plotting function
 }
-\keyword{internal}

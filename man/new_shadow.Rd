@@ -2,29 +2,31 @@
 % Please edit documentation in R/margot-s3-methods.R
 \name{new_shadow}
 \alias{new_shadow}
-\title{S3 Methods for margot Objects}
+\title{Create a margot shadow object}
 \usage{
-new_shadow(type, params = list(), name = NULL, ...)
+new_shadow(type, params, ...)
 }
 \arguments{
-\item{type}{Character string specifying shadow type}
+\item{type}{Character string specifying the shadow type}
 
-\item{params}{List of parameters for the shadow}
+\item{params}{List of parameters specific to the shadow type}
 
-\item{name}{Character string naming the shadow}
-
-\item{...}{Additional attributes}
+\item{...}{Additional arguments passed to shadow-specific constructors}
 }
 \value{
-A margot_shadow object with appropriate subclass
+An object of class "margot_shadow" and "{type}_shadow"
 }
 \description{
-This file implements the formal S3 object system for margot.sim,
-providing standardised constructors, validators, and methods for
-shadows and scenarios.
-Constructor for margot_shadow objects
-
-Low-level constructor for shadow objects. Users should typically use
-create_shadow() instead.
+Create a margot shadow object
 }
-\keyword{internal}
+\examples{
+# create a measurement error shadow
+shadow <- new_shadow(
+  type = "measurement_error",
+  params = list(
+    variables = "x",
+    error_type = "classical",
+    sigma = 0.5
+  )
+)
+}

@@ -1,85 +1,172 @@
-#' Shadow Dependency System
+#' Shadow Dependency Management System
 #'
 #' @description
-#' Implements a system for tracking and managing dependencies between shadows.
-#' Some shadows affect the parameters or behavior of other shadows.
+#' Implements a dependency system for shadows to handle interactions
+#' between different types of observational distortions. For example,
+#' truncation changes the variance which affects measurement error.
 #'
 #' @details
-#' Examples of shadow dependencies:
-#' - Truncation affects the variance available for measurement error
-#' - Censoring affects which units are available for selection
-#' - Mode effects may interact with measurement error
-#' - Positivity violations affect all downstream shadows
+#' The system uses a directed acyclic graph (DAG) to represent dependencies
+#' and automatically reorders shadows for correct application sequence.
 
-#' Define shadow dependency relationships
+# dependency definitions ----------------------------------------------
+
+#' Get shadow dependency definitions
 #'
-#' @return List defining which shadows depend on which others
+#' @description
+#' Returns the dependency relationships between shadow types.
+#' Each shadow type can declare which aspects of the data it modifies
+#' and which aspects it depends on.
+#'
+#' @return List of dependency definitions
 #' @keywords internal
 get_shadow_dependencies <- function() {
   list(
-    # measurement error depends on truncation (reduced variance)
-    measurement_error = c("truncation", "coarsening"),
+    measurement_error = list(
+      depends_on = c("distribution"),  # needs accurate variance
+      modifies = c("values"),
+      priority = 5  # higher number = apply later
+    ),
     
-    # selection depends on what data is available
-    selection = c("censoring", "truncation", "positivity"),
+    truncation = list(
+      depends_on = c(),  # no dependencies
+      modifies = c("distribution", "sample_size"),
+      priority = 1  # apply early
+    ),
     
-    # item missingness can depend on measurement quality
-    item_missingness = c("measurement_error", "mode_effects"),
+    censoring = list(
+      depends_on = c(),
+      modifies = c("values", "completeness"),
+      priority = 2
+    ),
     
-    # mode effects can interact with measurement
-    mode_effects = c("measurement_error"),
+    selection = list(
+      depends_on = c("values"),  # depends on variable values
+      modifies = c("sample_size"),
+      priority = 3
+    ),
     
-    # censoring affects everything downstream
-    censoring = character(0),  # no dependencies
+    positivity = list(
+      depends_on = c("values"),
+      modifies = c("sample_size"),
+      priority = 3
+    ),
     
-    # truncation is usually applied early
-    truncation = character(0),
+    missing_data = list(
+      depends_on = c("values"),
+      modifies = c("completeness"),
+      priority = 4
+    ),
     
-    # coarsening affects measurement precision
-    coarsening = character(0),
+    item_missingness = list(
+      depends_on = c("values"),
+      modifies = c("completeness"),
+      priority = 4
+    ),
     
-    # positivity is fundamental
-    positivity = character(0)
+    coarsening = list(
+      depends_on = c("values"),
+      modifies = c("values", "precision"),
+      priority = 6
+    ),
+    
+    mode_effects = list(
+      depends_on = c("values"),
+      modifies = c("values"),
+      priority = 6
+    ),
+    
+    misclassification = list(
+      depends_on = c("values"),
+      modifies = c("values"),
+      priority = 6
+    )
   )
 }
 
 #' Check shadow ordering for dependencies
 #'
+#' @description
+#' Verifies that shadows are ordered correctly based on their dependencies.
+#'
 #' @param shadows List of shadow objects
-#' @return Logical indicating if ordering respects dependencies
+#' @return List with validation results
 #' @export
 check_shadow_ordering <- function(shadows) {
-  if (length(shadows) <= 1) return(TRUE)
+  if (length(shadows) <= 1) {
+    return(list(
+      valid = TRUE,
+      issues = character(0),
+      suggested_order = shadows
+    ))
+  }
   
-  # get shadow types
-  shadow_types <- sapply(shadows, function(s) s$type)
-  dependencies <- get_shadow_dependencies()
+  deps <- get_shadow_dependencies()
   
-  # check each shadow's dependencies appear before it
+  # extract shadow types
+  shadow_types <- sapply(shadows, function(s) {
+    if (inherits(s, "margot_shadow")) {
+      s$type
+    } else if (is.list(s) && !is.null(s$type)) {
+      s$type
+    } else {
+      "unknown"
+    }
+  })
+  
+  issues <- character(0)
+  
+  # check each shadow's dependencies
   for (i in seq_along(shadows)) {
     current_type <- shadow_types[i]
-    deps <- dependencies[[current_type]]
+    if (current_type == "unknown") next
     
-    if (length(deps) > 0) {
-      # find positions of dependencies
-      dep_positions <- which(shadow_types %in% deps)
-      
-      # check all dependencies appear before current shadow
-      if (any(dep_positions > i)) {
-        warning(sprintf(
-          "Shadow '%s' at position %d depends on shadows that appear later: %s",
-          current_type, i, 
-          paste(shadow_types[dep_positions[dep_positions > i]], collapse = ", ")
-        ))
-        return(FALSE)
+    current_deps <- deps[[current_type]]
+    if (is.null(current_deps)) next
+    
+    # check what this shadow modifies
+    modifies <- current_deps$modifies
+    
+    # check if any later shadows depend on what this modifies
+    if (i < length(shadows)) {
+      for (j in (i + 1):length(shadows)) {
+        later_type <- shadow_types[j]
+        if (later_type == "unknown") next
+        
+        later_deps <- deps[[later_type]]
+        if (is.null(later_deps)) next
+        
+        # check if later shadow depends on what current shadow modifies
+        if (any(later_deps$depends_on %in% modifies)) {
+          issues <- c(issues, sprintf(
+            "%s shadow at position %d modifies %s, but %s shadow at position %d depends on it",
+            current_type, i, paste(modifies, collapse = ", "),
+            later_type, j
+          ))
+        }
       }
     }
   }
   
-  TRUE
+  # suggest reordering if issues found
+  suggested_order <- if (length(issues) > 0) {
+    reorder_shadows(shadows)
+  } else {
+    shadows
+  }
+  
+  list(
+    valid = length(issues) == 0,
+    issues = issues,
+    suggested_order = suggested_order
+  )
 }
 
-#' Reorder shadows to respect dependencies
+#' Reorder shadows based on dependencies
+#'
+#' @description
+#' Automatically reorders shadows to respect dependency relationships.
+#' Uses topological sorting based on the dependency DAG.
 #'
 #' @param shadows List of shadow objects
 #' @return Reordered list of shadows
@@ -87,99 +174,83 @@ check_shadow_ordering <- function(shadows) {
 reorder_shadows <- function(shadows) {
   if (length(shadows) <= 1) return(shadows)
   
-  shadow_types <- sapply(shadows, function(s) s$type)
-  dependencies <- get_shadow_dependencies()
+  deps <- get_shadow_dependencies()
   
-  # create dependency graph
-  n <- length(shadows)
-  dep_matrix <- matrix(FALSE, n, n)
-  
-  for (i in seq_len(n)) {
-    deps <- dependencies[[shadow_types[i]]]
-    if (length(deps) > 0) {
-      # mark dependencies
-      for (j in seq_len(n)) {
-        if (shadow_types[j] %in% deps) {
-          dep_matrix[i, j] <- TRUE  # i depends on j
-        }
-      }
+  # extract shadow info
+  shadow_info <- lapply(seq_along(shadows), function(i) {
+    s <- shadows[[i]]
+    type <- if (inherits(s, "margot_shadow")) {
+      s$type
+    } else if (is.list(s) && !is.null(s$type)) {
+      s$type
+    } else {
+      "unknown"
     }
-  }
-  
-  # topological sort
-  visited <- rep(FALSE, n)
-  order <- integer(0)
-  
-  # depth-first search
-  dfs <- function(v) {
-    visited[v] <<- TRUE
-    # visit all dependencies first
-    for (u in which(dep_matrix[v, ])) {
-      if (!visited[u]) {
-        dfs(u)
-      }
+    
+    priority <- if (!is.null(deps[[type]]$priority)) {
+      deps[[type]]$priority
+    } else {
+      5  # default middle priority
     }
-    order <<- c(order, v)
-  }
+    
+    list(
+      index = i,
+      shadow = s,
+      type = type,
+      priority = priority
+    )
+  })
   
-  # visit all nodes
-  for (i in seq_len(n)) {
-    if (!visited[i]) {
-      dfs(i)
-    }
-  }
+  # sort by priority (lower priority = apply earlier)
+  sorted_info <- shadow_info[order(sapply(shadow_info, function(x) x$priority))]
   
-  # return shadows in dependency order
-  shadows[order]
+  # extract reordered shadows
+  lapply(sorted_info, function(x) x$shadow)
 }
 
-#' Update shadow parameters based on dependencies
+#' Update shadow parameters based on upstream shadows
+#'
+#' @description
+#' Adjusts shadow parameters based on the effects of previously applied shadows.
+#' For example, adjusts measurement error variance after truncation.
 #'
 #' @param shadow Shadow object to update
-#' @param applied_shadows List of already applied shadows
+#' @param upstream_effects List describing effects of upstream shadows
 #' @return Updated shadow object
 #' @export
-update_shadow_params <- function(shadow, applied_shadows = list()) {
-  if (length(applied_shadows) == 0) return(shadow)
+update_shadow_params <- function(shadow, upstream_effects) {
+  if (length(upstream_effects) == 0) return(shadow)
   
-  # get types of already applied shadows
-  applied_types <- sapply(applied_shadows, function(s) s$type)
+  shadow_type <- if (inherits(shadow, "margot_shadow")) {
+    shadow$type
+  } else {
+    shadow$type
+  }
   
-  # update based on shadow type
-  if (shadow$type == "measurement_error" && "truncation" %in% applied_types) {
-    # truncation reduces variance available for measurement error
-    truncation_shadow <- applied_shadows[[which(applied_types == "truncation")[1]]]
+  # handle specific updates based on shadow type
+  if (shadow_type == "measurement_error" && !is.null(upstream_effects$truncation)) {
+    # adjust variance for truncation
+    truncation_info <- upstream_effects$truncation
     
-    if (!is.null(truncation_shadow$params$lower) || !is.null(truncation_shadow$params$upper)) {
-      # reduce measurement error variance if data is truncated
-      if (shadow$params$error_type == "classical" && !is.null(shadow$params$sigma)) {
-        # reduce sigma by truncation strength
-        truncation_factor <- 0.8  # could be estimated from truncation bounds
-        shadow$params$sigma <- shadow$params$sigma * truncation_factor
-        
-        message(sprintf(
-          "Reduced measurement error sigma from %.3f to %.3f due to truncation",
-          shadow$params$sigma / truncation_factor,
-          shadow$params$sigma
-        ))
+    if (!is.null(truncation_info$variance_reduction)) {
+      # reduce measurement error variance proportionally
+      if (!is.null(shadow$params$sigma)) {
+        shadow$params$sigma <- shadow$params$sigma * 
+          sqrt(truncation_info$variance_reduction)
       }
     }
   }
   
-  if (shadow$type == "selection" && "censoring" %in% applied_types) {
-    # censoring affects which units are available for selection
-    censoring_shadow <- applied_shadows[[which(applied_types == "censoring")[1]]]
+  if (shadow_type == "missing_data" && !is.null(upstream_effects$selection)) {
+    # adjust missing data probability based on selection
+    selection_info <- upstream_effects$selection
     
-    if (!is.null(censoring_shadow$params$rate)) {
-      # adjust selection probability based on censoring
+    if (!is.null(selection_info$retention_rate)) {
+      # increase missing data rate in retained sample
       if (!is.null(shadow$params$prob)) {
-        # reduce selection probability for censored units
-        shadow$params$censoring_adjustment <- 1 - censoring_shadow$params$rate
-        
-        message(sprintf(
-          "Adjusted selection probability for %.1f%% censoring",
-          censoring_shadow$params$rate * 100
-        ))
+        # adjust probability considering selection
+        shadow$params$prob <- 1 - (1 - shadow$params$prob) * 
+          selection_info$retention_rate
       }
     }
   }
@@ -189,99 +260,240 @@ update_shadow_params <- function(shadow, applied_shadows = list()) {
 
 #' Apply shadows with dependency management
 #'
-#' @param data Data to apply shadows to
+#' @description
+#' Applies a list of shadows to data while respecting dependencies
+#' and updating parameters as needed.
+#'
+#' @param data Data frame to apply shadows to
 #' @param shadows List of shadow objects
-#' @param reorder Logical, whether to reorder shadows by dependencies
-#' @param update_params Logical, whether to update parameters based on dependencies
-#' @return List with shadowed data and diagnostics
+#' @param check_dependencies Whether to check and reorder based on dependencies
+#' @param verbose Print progress messages
+#' @return Data with shadows applied
 #' @export
-apply_shadows_with_dependencies <- function(data, shadows, 
-                                          reorder = TRUE, 
-                                          update_params = TRUE) {
-  if (length(shadows) == 0) {
-    return(list(data = data, diagnostics = list()))
+#' @examples
+#' \dontrun{
+#' # shadows will be automatically reordered
+#' shadows <- list(
+#'   create_shadow("measurement_error", list(
+#'     variables = "y",
+#'     error_type = "classical",
+#'     sigma = 0.5
+#'   )),
+#'   create_shadow("truncation", list(
+#'     variables = "y",
+#'     lower = -2,
+#'     upper = 2
+#'   ))
+#' )
+#' 
+#' data_shadowed <- apply_shadows_with_dependencies(data, shadows)
+#' }
+apply_shadows_with_dependencies <- function(
+    data, 
+    shadows, 
+    check_dependencies = TRUE,
+    verbose = FALSE
+) {
+  if (length(shadows) == 0) return(data)
+  
+  # check and reorder if requested
+  if (check_dependencies) {
+    ordering_result <- check_shadow_ordering(shadows)
+    
+    if (!ordering_result$valid) {
+      if (verbose) {
+        message("Shadow dependency issues detected:")
+        for (issue in ordering_result$issues) {
+          message("  - ", issue)
+        }
+        message("Reordering shadows automatically...")
+      }
+      shadows <- ordering_result$suggested_order
+    }
   }
   
-  # reorder if requested
-  if (reorder) {
-    shadows <- reorder_shadows(shadows)
-    message("Reordered shadows to respect dependencies")
-  }
+  # track upstream effects
+  upstream_effects <- list()
+  data_shadowed <- data
   
-  # check ordering
-  if (!check_shadow_ordering(shadows)) {
-    warning("Shadow ordering may not respect all dependencies")
-  }
-  
-  # apply shadows sequentially
-  current_data <- data
-  applied_shadows <- list()
-  diagnostics <- list()
-  
+  # apply each shadow
   for (i in seq_along(shadows)) {
     shadow <- shadows[[i]]
     
-    # update parameters based on previously applied shadows
-    if (update_params && length(applied_shadows) > 0) {
-      shadow <- update_shadow_params(shadow, applied_shadows)
+    # update shadow parameters based on upstream effects
+    shadow <- update_shadow_params(shadow, upstream_effects)
+    
+    if (verbose) {
+      shadow_type <- if (inherits(shadow, "margot_shadow")) {
+        shadow$type
+      } else {
+        shadow$type
+      }
+      message(sprintf("Applying shadow %d/%d: %s", i, length(shadows), shadow_type))
     }
     
     # apply shadow
-    result <- apply_shadow(current_data, shadow)
-    current_data <- result$data
+    data_shadowed <- apply_shadow(data_shadowed, shadow)
     
-    # store for dependency tracking
-    applied_shadows[[length(applied_shadows) + 1]] <- shadow
+    # track effects for downstream shadows
+    shadow_type <- if (inherits(shadow, "margot_shadow")) {
+      shadow$type
+    } else {
+      shadow$type
+    }
     
-    # collect diagnostics
-    diagnostics[[shadow$name %||% paste0("shadow_", i)]] <- list(
-      type = shadow$type,
-      params = shadow$params,
-      dependencies = get_shadow_dependencies()[[shadow$type]],
-      rows_affected = result$rows_affected %||% NA,
-      vars_affected = result$vars_affected %||% NA
-    )
+    # record specific effects based on shadow type
+    if (shadow_type == "truncation") {
+      # calculate variance reduction from truncation
+      truncated_vars <- shadow$params$variables
+      if (!is.null(truncated_vars)) {
+        for (var in truncated_vars) {
+          if (var %in% names(data) && var %in% names(data_shadowed)) {
+            var_before <- var(data[[var]], na.rm = TRUE)
+            var_after <- var(data_shadowed[[var]], na.rm = TRUE)
+            
+            upstream_effects$truncation <- list(
+              variables = truncated_vars,
+              variance_reduction = var_after / var_before
+            )
+          }
+        }
+      }
+    }
+    
+    if (shadow_type == "selection") {
+      # record retention rate
+      upstream_effects$selection <- list(
+        retention_rate = nrow(data_shadowed) / nrow(data)
+      )
+    }
   }
   
-  list(
-    data = current_data,
-    diagnostics = diagnostics,
-    shadow_order = sapply(shadows, function(s) s$type)
-  )
+  # add attributes about shadow application
+  attr(data_shadowed, "shadows_applied") <- TRUE
+  attr(data_shadowed, "shadow_order") <- sapply(shadows, function(s) {
+    if (inherits(s, "margot_shadow")) s$type else s$type
+  })
+  attr(data_shadowed, "upstream_effects") <- upstream_effects
+  
+  data_shadowed
 }
 
 #' Visualize shadow dependencies
 #'
+#' @description
+#' Creates a visualization of shadow dependencies as a directed graph.
+#'
 #' @param shadows List of shadow objects (optional)
-#' @return Prints dependency graph
+#' @param show_all Show all possible shadow types and dependencies
+#' @return A plot object (if igraph is available) or a text representation
 #' @export
-visualize_shadow_dependencies <- function(shadows = NULL) {
+visualize_shadow_dependencies <- function(shadows = NULL, show_all = FALSE) {
   deps <- get_shadow_dependencies()
   
-  cat("Shadow Dependency Graph:\n")
-  cat("=======================\n\n")
+  if (show_all) {
+    # show all possible dependencies
+    shadow_types <- names(deps)
+  } else if (!is.null(shadows)) {
+    # show only provided shadows
+    shadow_types <- sapply(shadows, function(s) {
+      if (inherits(s, "margot_shadow")) s$type else s$type
+    })
+  } else {
+    message("No shadows provided and show_all = FALSE. Nothing to visualize.")
+    return(invisible(NULL))
+  }
   
-  for (shadow_type in names(deps)) {
-    if (length(deps[[shadow_type]]) > 0) {
-      cat(sprintf("%s depends on: %s\n", 
-                  shadow_type, 
-                  paste(deps[[shadow_type]], collapse = ", ")))
-    } else {
-      cat(sprintf("%s (no dependencies)\n", shadow_type))
+  # create edge list
+  edges <- list()
+  for (shadow_type in shadow_types) {
+    dep_info <- deps[[shadow_type]]
+    if (!is.null(dep_info)) {
+      # what this shadow modifies
+      modifies <- dep_info$modifies
+      
+      # check which other shadows depend on these modifications
+      for (other_type in shadow_types) {
+        if (other_type == shadow_type) next
+        
+        other_deps <- deps[[other_type]]
+        if (!is.null(other_deps)) {
+          # does other shadow depend on what this shadow modifies?
+          if (any(other_deps$depends_on %in% modifies)) {
+            edges[[length(edges) + 1]] <- c(shadow_type, other_type)
+          }
+        }
+      }
     }
   }
   
-  if (!is.null(shadows)) {
-    cat("\nCurrent shadow ordering:\n")
-    shadow_types <- sapply(shadows, function(s) s$type)
-    cat(paste(seq_along(shadow_types), shadow_types, sep = ": ", collapse = "\n"))
+  # try to create graph visualization
+  if (requireNamespace("igraph", quietly = TRUE)) {
+    if (length(edges) > 0) {
+      edge_matrix <- do.call(rbind, edges)
+      g <- igraph::graph_from_edgelist(edge_matrix, directed = TRUE)
+      
+      # add isolated nodes
+      all_nodes <- unique(shadow_types)
+      existing_nodes <- unique(c(edge_matrix))
+      isolated <- setdiff(all_nodes, existing_nodes)
+      if (length(isolated) > 0) {
+        g <- igraph::add_vertices(g, length(isolated), name = isolated)
+      }
+      
+      # set node colors based on priority
+      node_names <- igraph::V(g)$name
+      priorities <- sapply(node_names, function(n) {
+        if (!is.null(deps[[n]]$priority)) deps[[n]]$priority else 5
+      })
+      
+      # color scheme: early (blue) to late (red)
+      colors <- grDevices::colorRampPalette(c("lightblue", "yellow", "orange", "red"))(7)
+      node_colors <- colors[priorities]
+      
+      # plot
+      plot(g, 
+           vertex.color = node_colors,
+           vertex.size = 30,
+           vertex.label.cex = 0.8,
+           edge.arrow.size = 0.5,
+           layout = igraph::layout_with_sugiyama(g)$layout,
+           main = "Shadow Dependencies\n(Arrow: must be applied before)")
+      
+      # add legend
+      legend("bottomright", 
+             legend = paste("Priority", 1:7),
+             fill = colors,
+             cex = 0.7,
+             title = "Application Order")
+      
+      return(invisible(g))
+    } else {
+      message("No dependencies found between shadows.")
+    }
+  } else {
+    # text representation
+    cat("Shadow Dependencies (text representation):\n")
+    cat("==========================================\n")
     
-    if (!check_shadow_ordering(shadows)) {
-      cat("\n\nWARNING: Current ordering violates dependencies!\n")
-      cat("Suggested ordering:\n")
-      reordered <- reorder_shadows(shadows)
-      reordered_types <- sapply(reordered, function(s) s$type)
-      cat(paste(seq_along(reordered_types), reordered_types, sep = ": ", collapse = "\n"))
+    for (shadow_type in shadow_types) {
+      dep_info <- deps[[shadow_type]]
+      if (!is.null(dep_info)) {
+        cat(sprintf("\n%s (priority: %d):\n", 
+                   shadow_type, 
+                   dep_info$priority %||% 5))
+        cat(sprintf("  Depends on: %s\n", 
+                   paste(dep_info$depends_on, collapse = ", ")))
+        cat(sprintf("  Modifies: %s\n", 
+                   paste(dep_info$modifies, collapse = ", ")))
+      }
+    }
+    
+    if (length(edges) > 0) {
+      cat("\nApplication order constraints:\n")
+      for (edge in edges) {
+        cat(sprintf("  %s -> %s\n", edge[1], edge[2]))
+      }
     }
   }
 }

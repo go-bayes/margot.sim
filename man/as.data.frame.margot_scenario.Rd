@@ -2,18 +2,18 @@
 % Please edit documentation in R/margot-s3-methods.R
 \name{as.data.frame.margot_scenario}
 \alias{as.data.frame.margot_scenario}
-\title{Convert scenario to data frame for summary}
+\title{Convert scenario to data frame}
 \usage{
 \method{as.data.frame}{margot_scenario}(x, ...)
 }
 \arguments{
 \item{x}{A margot_scenario object}
 
-\item{...}{Additional arguments}
+\item{...}{Additional arguments (unused)}
 }
 \value{
-A data frame with scenario information
+A data frame with one row per shadow
 }
 \description{
-Convert scenario to data frame for summary
+Convert scenario to data frame
 }

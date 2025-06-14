@@ -1,86 +1,160 @@
-# Tests for S3 object system
+# Test S3 methods for margot.sim
+library(margot.sim)
 
-test_that("shadow S3 constructor works", {
-  # create a basic shadow
+# shadow constructor tests --------------------------------------------
+
+test_that("new_shadow creates valid shadow objects", {
+  # basic shadow creation
   shadow <- new_shadow(
     type = "measurement_error",
     params = list(
-      variables = c("x", "y"),
+      variables = "x",
       error_type = "classical",
       sigma = 0.5
-    ),
-    name = "test_shadow"
+    )
   )
   
   expect_s3_class(shadow, "margot_shadow")
   expect_s3_class(shadow, "measurement_error_shadow")
   expect_equal(shadow$type, "measurement_error")
-  expect_equal(shadow$name, "test_shadow")
+  expect_equal(shadow$params$sigma, 0.5)
+  
+  # has metadata
+  expect_true("metadata" %in% names(shadow))
+  expect_true("created" %in% names(shadow$metadata))
+  expect_true("version" %in% names(shadow$metadata))
 })
 
-test_that("shadow validation works", {
-  # valid shadow should pass
+test_that("new_shadow validates shadow types", {
+  expect_error(
+    new_shadow(type = "invalid_type", params = list()),
+    "Invalid shadow type"
+  )
+})
+
+test_that("shadow validation works for measurement error", {
+  # missing required params
+  expect_error(
+    new_shadow(
+      type = "measurement_error",
+      params = list(error_type = "classical")
+    ),
+    "requires 'variables' parameter"
+  )
+  
+  # invalid error type
+  expect_error(
+    new_shadow(
+      type = "measurement_error",
+      params = list(
+        variables = "x",
+        error_type = "invalid"
+      )
+    ),
+    "Invalid error_type"
+  )
+  
+  # missing sigma for classical error
+  expect_error(
+    new_shadow(
+      type = "measurement_error",
+      params = list(
+        variables = "x",
+        error_type = "classical"
+      )
+    ),
+    "requires numeric sigma"
+  )
+  
+  # misclassification validation
+  expect_error(
+    new_shadow(
+      type = "measurement_error",
+      params = list(
+        variables = "x",
+        error_type = "misclassification",
+        sensitivity = 1.5
+      )
+    ),
+    "Sensitivity and specificity must be between 0 and 1"
+  )
+})
+
+test_that("shadow validation works for missing data", {
+  # valid shadow
+  shadow <- new_shadow(
+    type = "missing_data",
+    params = list(
+      mechanism = "MCAR",
+      prob = 0.2
+    )
+  )
+  expect_s3_class(shadow, "missing_data_shadow")
+  
+  # invalid mechanism
+  expect_error(
+    new_shadow(
+      type = "missing_data",
+      params = list(mechanism = "invalid", prob = 0.2)
+    ),
+    "Invalid mechanism"
+  )
+  
+  # invalid probability
+  expect_error(
+    new_shadow(
+      type = "missing_data",
+      params = list(mechanism = "MCAR", prob = 1.5)
+    ),
+    "between 0 and 1"
+  )
+})
+
+test_that("shadow validation works for truncation", {
+  # valid truncation
+  shadow <- new_shadow(
+    type = "truncation",
+    params = list(lower = 0, upper = 10)
+  )
+  expect_s3_class(shadow, "truncation_shadow")
+  
+  # invalid bounds
+  expect_error(
+    new_shadow(
+      type = "truncation",
+      params = list(lower = 10, upper = 5)
+    ),
+    "lower bound must be less than upper"
+  )
+  
+  # missing bounds
+  expect_error(
+    new_shadow(
+      type = "truncation",
+      params = list()
+    ),
+    "at least one of 'lower' or 'upper'"
+  )
+})
+
+test_that("shadow print method works", {
   shadow <- new_shadow(
     type = "measurement_error",
     params = list(
-      variables = c("x", "y"),
+      variables = c("x", "y", "z", "a", "b"),
       error_type = "classical",
       sigma = 0.5
     )
   )
-  expect_silent(validate_shadow(shadow))
   
-  # missing required field should fail
-  bad_shadow <- new_shadow(
-    type = "measurement_error",
-    params = list(
-      error_type = "classical",
-      sigma = 0.5
-    )
-  )
-  expect_error(validate_shadow(bad_shadow), "requires 'variables'")
-  
-  # invalid error type should fail
-  bad_shadow2 <- new_shadow(
-    type = "measurement_error",
-    params = list(
-      variables = "x",
-      error_type = "invalid_type"
-    )
-  )
-  expect_error(validate_shadow(bad_shadow2), "Invalid error_type")
-  
-  # misclassification with invalid sensitivity
-  bad_shadow3 <- new_shadow(
-    type = "measurement_error",
-    params = list(
-      variables = "x",
-      error_type = "misclassification",
-      sensitivity = 1.5,
-      specificity = 0.9
-    )
-  )
-  expect_error(validate_shadow(bad_shadow3), "between 0 and 1")
+  output <- capture.output(print(shadow))
+  expect_match(output[1], "<margot_shadow>")
+  expect_match(output[2], "Type: measurement_error")
+  expect_match(output[4], "variables: x, y, z, ...")  # should truncate
 })
 
-test_that("create_shadow uses S3 system", {
-  # should create and validate
-  shadow <- create_shadow(
-    type = "measurement_error",
-    params = list(
-      variables = "test_var",
-      error_type = "classical",
-      sigma = 1
-    )
-  )
-  
-  expect_s3_class(shadow, "margot_shadow")
-  expect_s3_class(shadow, "measurement_error_shadow")
-})
-
-test_that("scenario S3 constructor works", {
-  # create shadows first
-  shadow1 <- create_shadow(
+test_that("shadow summary method works", {
+  shadow <- new_shadow(
     type = "measurement_error",
     params = list(
       variables = "x",
@@ -89,171 +163,333 @@ test_that("scenario S3 constructor works", {
     )
   )
   
-  shadow2 <- create_shadow(
-    type = "censoring",
-    params = list(rate = 0.2)
+  summary_obj <- summary(shadow)
+  expect_s3_class(summary_obj, "summary.margot_shadow")
+  expect_equal(summary_obj$type, "measurement_error")
+  expect_equal(summary_obj$n_params, 3)
+  expect_equal(summary_obj$param_names, c("variables", "error_type", "sigma"))
+})
+
+# scenario constructor tests ------------------------------------------
+
+test_that("new_scenario creates valid scenario objects", {
+  shadow1 <- new_shadow(
+    type = "measurement_error",
+    params = list(variables = "x", error_type = "classical", sigma = 0.5)
   )
   
-  # create scenario
+  # scenario with single shadow
   scenario <- new_scenario(
     name = "Test Scenario",
-    shadows = list(error = shadow1, censor = shadow2),
     description = "A test scenario",
-    justification = "For testing"
+    shadows = shadow1
   )
   
   expect_s3_class(scenario, "margot_scenario")
   expect_equal(scenario$name, "Test Scenario")
-  expect_equal(scenario$n_shadows, 2)
+  expect_equal(scenario$description, "A test scenario")
+  expect_equal(length(scenario$shadows), 1)
+  
+  # scenario with multiple shadows
+  shadow2 <- new_shadow(
+    type = "missing_data",
+    params = list(mechanism = "MCAR", prob = 0.1)
+  )
+  
+  scenario2 <- new_scenario(
+    name = "Multi Shadow",
+    shadows = list(shadow1, shadow2)
+  )
+  
+  expect_equal(length(scenario2$shadows), 2)
 })
 
 test_that("scenario validation works", {
-  # valid scenario should pass
-  shadow <- create_shadow(
-    type = "censoring",
-    params = list(rate = 0.1)
+  # invalid name
+  expect_error(
+    new_scenario(name = 123),
+    "Scenario name must be a single character string"
+  )
+  
+  # invalid shadows
+  expect_error(
+    new_scenario(name = "Test", shadows = "not a shadow"),
+    "Shadows must be a list"
+  )
+  
+  # non-shadow in list
+  expect_error(
+    new_scenario(name = "Test", shadows = list("not a shadow")),
+    "is not a margot_shadow object"
+  )
+})
+
+test_that("scenario print method works", {
+  shadow1 <- new_shadow(
+    type = "measurement_error",
+    params = list(variables = "x", error_type = "classical", sigma = 0.5)
+  )
+  shadow2 <- new_shadow(
+    type = "missing_data",
+    params = list(mechanism = "MCAR", prob = 0.1)
   )
   
   scenario <- new_scenario(
-    name = "Valid",
-    shadows = list(shadow)
-  )
-  expect_silent(validate_scenario(scenario))
-  
-  # invalid shadow in scenario should fail
-  scenario_bad <- list(
-    name = "Bad",
-    shadows = list("not a shadow"),
-    description = "",
-    justification = "",
-    n_shadows = 1
-  )
-  class(scenario_bad) <- "margot_scenario"
-  
-  expect_error(validate_scenario(scenario_bad), "must be margot_shadow")
-})
-
-test_that("is_shadow and is_scenario work", {
-  shadow <- create_shadow("censoring", list(rate = 0.1))
-  scenario <- create_scenario("Test", list(shadow))
-  
-  expect_true(is_shadow(shadow))
-  expect_false(is_shadow(scenario))
-  expect_false(is_shadow(list()))
-  
-  expect_true(is_scenario(scenario))
-  expect_false(is_scenario(shadow))
-  expect_false(is_scenario(list()))
-})
-
-test_that("print methods work", {
-  shadow <- create_shadow(
-    type = "measurement_error",
-    params = list(
-      variables = c("x", "y"),
-      error_type = "classical",
-      sigma = 0.5
-    ),
-    name = "My Error Shadow"
-  )
-  
-  expect_output(print(shadow), "margot Shadow Object")
-  expect_output(print(shadow), "Type: measurement_error")
-  expect_output(print(shadow), "Name: My Error Shadow")
-})
-
-test_that("shadow collections work", {
-  shadow1 <- create_shadow("censoring", list(rate = 0.1))
-  shadow2 <- create_shadow("censoring", list(rate = 0.2))
-  
-  # combine shadows
-  shadows <- c(shadow1, shadow2)
-  
-  expect_s3_class(shadows, "shadow_list")
-  expect_length(shadows, 2)
-  
-  # extraction should return single shadow
-  extracted <- shadows[1]
-  expect_s3_class(extracted, "margot_shadow")
-})
-
-test_that("as.data.frame methods work", {
-  # shadow to data frame
-  shadow <- create_shadow(
-    type = "measurement_error",
-    params = list(
-      variables = c("x", "y"),
-      error_type = "classical",
-      sigma = 0.5
-    ),
-    name = "error_shadow"
-  )
-  
-  df <- as.data.frame(shadow)
-  expect_equal(nrow(df), 1)
-  expect_equal(df$name, "error_shadow")
-  expect_equal(df$type, "measurement_error")
-  expect_equal(df$error_type, "classical")
-  expect_equal(df$sigma, 0.5)
-  
-  # scenario to data frame
-  scenario <- create_scenario(
     name = "Test Scenario",
-    shadows = list(shadow),
-    description = "A test scenario for conversion"
+    description = "Testing print",
+    shadows = list(shadow1, shadow2)
   )
   
-  df_scenario <- as.data.frame(scenario)
-  expect_equal(nrow(df_scenario), 1)
-  expect_equal(df_scenario$name, "Test Scenario")
-  expect_equal(df_scenario$n_shadows, 1)
+  output <- capture.output(print(scenario))
+  expect_match(output[1], "<margot_scenario>")
+  expect_match(output[2], "Name: Test Scenario")
+  expect_match(output[3], "Description: Testing print")
+  expect_match(output[4], "Number of shadows: 2")
+  expect_match(output[5], "measurement_error, missing_data")
+})
+
+test_that("scenario combination works", {
+  shadow1 <- new_shadow(
+    type = "measurement_error",
+    params = list(variables = "x", error_type = "classical", sigma = 0.5)
+  )
+  shadow2 <- new_shadow(
+    type = "missing_data",
+    params = list(mechanism = "MCAR", prob = 0.1)
+  )
+  
+  scenario1 <- new_scenario(name = "S1", shadows = shadow1)
+  scenario2 <- new_scenario(name = "S2", shadows = shadow2)
+  
+  combined <- c(scenario1, scenario2)
+  
+  expect_s3_class(combined, "margot_scenario")
+  expect_equal(combined$name, "S1 + S2")
+  expect_equal(length(combined$shadows), 2)
 })
 
 test_that("scenario subsetting works", {
-  shadow1 <- create_shadow("censoring", list(rate = 0.1), name = "censor1")
-  shadow2 <- create_shadow("censoring", list(rate = 0.2), name = "censor2")
-  
-  scenario <- create_scenario(
-    "Test",
-    shadows = list(first = shadow1, second = shadow2)
+  shadow1 <- new_shadow(
+    type = "measurement_error",
+    params = list(variables = "x", error_type = "classical", sigma = 0.5)
+  )
+  shadow2 <- new_shadow(
+    type = "missing_data",
+    params = list(mechanism = "MCAR", prob = 0.1)
   )
   
-  # length method
-  expect_equal(length(scenario), 2)
+  scenario <- new_scenario(
+    name = "Test",
+    shadows = list(shadow1, shadow2)
+  )
   
-  # names method
-  expect_equal(names(scenario), c("first", "second"))
+  # extract single shadow
+  single <- scenario[1]
+  expect_s3_class(single, "margot_shadow")
+  expect_equal(single$type, "measurement_error")
   
-  # subset by position
-  sub1 <- scenario[1]
-  expect_length(sub1, 1)
-  
-  # subset by name
-  sub2 <- scenario["first"]
-  expect_length(sub2, 1)
+  # extract multiple shadows as new scenario
+  subset <- scenario[1:2]
+  expect_s3_class(subset, "margot_scenario")
+  expect_equal(length(subset), 2)
 })
 
-test_that("old interface compatibility", {
-  # test as_shadow conversion
-  old_shadow <- list(
-    type = "censoring",
-    params = list(rate = 0.15),
-    name = "old_style_shadow"
+test_that("scenario length and names work", {
+  shadow1 <- new_shadow(
+    type = "measurement_error",
+    params = list(variables = "x", error_type = "classical", sigma = 0.5)
+  )
+  shadow2 <- new_shadow(
+    type = "missing_data",
+    params = list(mechanism = "MCAR", prob = 0.1)
   )
   
-  new_shadow <- as_shadow(old_shadow)
-  expect_s3_class(new_shadow, "margot_shadow")
-  expect_s3_class(new_shadow, "censoring_shadow")
+  scenario <- new_scenario(
+    name = "Test",
+    shadows = list(shadow1, shadow2)
+  )
   
-  # test as_scenario conversion
-  old_scenario <- list(
-    name = "Old Style",
-    shadows = list(old_shadow),
+  expect_equal(length(scenario), 2)
+  expect_equal(names(scenario), c("measurement_error", "missing_data"))
+})
+
+# shadow list tests ---------------------------------------------------
+
+test_that("shadow_list creation and methods work", {
+  shadow1 <- new_shadow(
+    type = "measurement_error",
+    params = list(variables = "x", error_type = "classical", sigma = 0.5)
+  )
+  shadow2 <- new_shadow(
+    type = "missing_data",
+    params = list(mechanism = "MCAR", prob = 0.1)
+  )
+  
+  # create shadow list
+  shadow_list <- new_shadow_list(shadow1, shadow2)
+  
+  expect_s3_class(shadow_list, "shadow_list")
+  expect_equal(length(shadow_list), 2)
+  
+  # print method
+  output <- capture.output(print(shadow_list))
+  expect_match(output[1], "<shadow_list> with 2 shadows")
+  
+  # combining
+  shadow3 <- new_shadow(
+    type = "truncation",
+    params = list(lower = 0, upper = 10)
+  )
+  
+  combined <- c(shadow_list, shadow3)
+  expect_equal(length(combined), 3)
+  
+  # subsetting
+  subset <- shadow_list[1]
+  expect_s3_class(subset, "margot_shadow")
+})
+
+# helper function tests -----------------------------------------------
+
+test_that("is_shadow and is_scenario work", {
+  shadow <- new_shadow(
+    type = "measurement_error",
+    params = list(variables = "x", error_type = "classical", sigma = 0.5)
+  )
+  scenario <- new_scenario(name = "Test", shadows = shadow)
+  
+  expect_true(is_shadow(shadow))
+  expect_false(is_shadow(scenario))
+  expect_false(is_shadow("not a shadow"))
+  
+  expect_true(is_scenario(scenario))
+  expect_false(is_scenario(shadow))
+  expect_false(is_scenario("not a scenario"))
+})
+
+test_that("as_shadow conversions work", {
+  # from shadow (identity)
+  shadow <- new_shadow(
+    type = "measurement_error",
+    params = list(variables = "x", error_type = "classical", sigma = 0.5)
+  )
+  expect_identical(as_shadow(shadow), shadow)
+  
+  # from list
+  shadow_list <- list(
+    type = "measurement_error",
+    params = list(variables = "y", error_type = "classical", sigma = 1)
+  )
+  converted <- as_shadow(shadow_list)
+  expect_s3_class(converted, "margot_shadow")
+  expect_equal(converted$params$variables, "y")
+  
+  # invalid list
+  expect_error(
+    as_shadow(list(params = list())),
+    "must have a 'type' element"
+  )
+})
+
+test_that("as_scenario conversions work", {
+  shadow <- new_shadow(
+    type = "measurement_error",
+    params = list(variables = "x", error_type = "classical", sigma = 0.5)
+  )
+  
+  # from shadow
+  scenario <- as_scenario(shadow, name = "Converted")
+  expect_s3_class(scenario, "margot_scenario")
+  expect_equal(scenario$name, "Converted")
+  expect_equal(length(scenario$shadows), 1)
+  
+  # from list that looks like scenario
+  scenario_list <- list(
+    name = "From List",
     description = "Test",
-    justification = "Testing conversion"
+    shadows = list(shadow)
+  )
+  converted <- as_scenario(scenario_list)
+  expect_equal(converted$name, "From List")
+  expect_equal(converted$description, "Test")
+})
+
+# data frame conversion tests -----------------------------------------
+
+test_that("as.data.frame methods work", {
+  shadow <- new_shadow(
+    type = "measurement_error",
+    params = list(
+      variables = "x",
+      error_type = "classical",
+      sigma = 0.5
+    )
   )
   
-  new_scenario <- as_scenario(old_scenario)
-  expect_s3_class(new_scenario, "margot_scenario")
-  expect_s3_class(new_scenario$shadows[[1]], "margot_shadow")
+  # shadow to data frame
+  df <- as.data.frame(shadow)
+  expect_s3_class(df, "data.frame")
+  expect_equal(df$type, "measurement_error")
+  expect_equal(df$variables, "x")
+  expect_equal(df$sigma, 0.5)
+  
+  # scenario to data frame
+  shadow2 <- new_shadow(
+    type = "missing_data",
+    params = list(mechanism = "MCAR", prob = 0.1)
+  )
+  
+  scenario <- new_scenario(
+    name = "Test Scenario",
+    shadows = list(shadow, shadow2)
+  )
+  
+  scenario_df <- as.data.frame(scenario)
+  expect_equal(nrow(scenario_df), 2)
+  expect_equal(scenario_df$scenario[1], "Test Scenario")
+  expect_equal(scenario_df$shadow_type[1], "measurement_error")
+  expect_equal(scenario_df$shadow_type[2], "missing_data")
+})
+
+# edge cases ----------------------------------------------------------
+
+test_that("empty scenarios handled correctly", {
+  empty_scenario <- new_scenario(name = "Empty")
+  
+  expect_equal(length(empty_scenario), 0)
+  expect_equal(names(empty_scenario), character(0))
+  
+  df <- as.data.frame(empty_scenario)
+  expect_equal(nrow(df), 0)
+})
+
+test_that("special shadow types validate correctly", {
+  # positivity shadow
+  positivity <- new_shadow(
+    type = "positivity",
+    params = list(
+      exposure_var = "treatment",
+      filter_fn = function(data) data$x > 0
+    )
+  )
+  expect_s3_class(positivity, "positivity_shadow")
+  
+  # coarsening shadow
+  coarsening <- new_shadow(
+    type = "coarsening",
+    params = list(
+      coarsen_fn = function(x) round(x)
+    )
+  )
+  expect_s3_class(coarsening, "coarsening_shadow")
+  
+  # item missingness
+  item_miss <- new_shadow(
+    type = "item_missingness",
+    params = list(
+      variables = c("q1", "q2", "q3"),
+      missing_rate = 0.15
+    )
+  )
+  expect_s3_class(item_miss, "item_missingness_shadow")
 })

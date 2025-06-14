@@ -2,23 +2,25 @@
 % Please edit documentation in R/margot-shadow-dependencies.R
 \name{get_shadow_dependencies}
 \alias{get_shadow_dependencies}
-\title{Shadow Dependency System}
+\title{Shadow Dependency Management System}
 \usage{
 get_shadow_dependencies()
 }
 \value{
-List defining which shadows depend on which others
+List of dependency definitions
 }
 \description{
-Implements a system for tracking and managing dependencies between shadows.
-Some shadows affect the parameters or behavior of other shadows.
+Implements a dependency system for shadows to handle interactions
+between different types of observational distortions. For example,
+truncation changes the variance which affects measurement error.
+
+Returns the dependency relationships between shadow types.
+Each shadow type can declare which aspects of the data it modifies
+and which aspects it depends on.
 }
 \details{
-Examples of shadow dependencies:
-- Truncation affects the variance available for measurement error
-- Censoring affects which units are available for selection
-- Mode effects may interact with measurement error
-- Positivity violations affect all downstream shadows
-Define shadow dependency relationships
+The system uses a directed acyclic graph (DAG) to represent dependencies
+and automatically reorders shadows for correct application sequence.
+Get shadow dependency definitions
 }
 \keyword{internal}

@@ -10,8 +10,8 @@ check_shadow_ordering(shadows)
 \item{shadows}{List of shadow objects}
 }
 \value{
-Logical indicating if ordering respects dependencies
+List with validation results
 }
 \description{
-Check shadow ordering for dependencies
+Verifies that shadows are ordered correctly based on their dependencies.
 }

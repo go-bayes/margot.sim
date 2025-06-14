@@ -2,18 +2,19 @@
 % Please edit documentation in R/margot-shadow-dependencies.R
 \name{update_shadow_params}
 \alias{update_shadow_params}
-\title{Update shadow parameters based on dependencies}
+\title{Update shadow parameters based on upstream shadows}
 \usage{
-update_shadow_params(shadow, applied_shadows = list())
+update_shadow_params(shadow, upstream_effects)
 }
 \arguments{
 \item{shadow}{Shadow object to update}
 
-\item{applied_shadows}{List of already applied shadows}
+\item{upstream_effects}{List describing effects of upstream shadows}
 }
 \value{
 Updated shadow object
 }
 \description{
-Update shadow parameters based on dependencies
+Adjusts shadow parameters based on the effects of previously applied shadows.
+For example, adjusts measurement error variance after truncation.
 }

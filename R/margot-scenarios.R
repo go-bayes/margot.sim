@@ -97,8 +97,8 @@ create_scenario <- function(name,
   # create scenario using S3 constructor
   scenario <- new_scenario(
     name = name,
-    shadows = shadows,
     description = description,
+    shadows = shadows,
     justification = justification,
     references = references,
     population = population
@@ -124,7 +124,8 @@ print.margot_scenario <- function(x, ...) {
     cat("Description: ", x$description, "\n", sep = "")
   }
   
-  if (nchar(x$justification) > 0) {
+  # access additional fields
+  if (!is.null(x$justification) && nchar(x$justification) > 0) {
     cat("\nJustification: ", x$justification, "\n", sep = "")
   }
   
@@ -135,8 +136,8 @@ print.margot_scenario <- function(x, ...) {
     }
   }
   
-  cat("\nShadows (", x$n_shadows, "):\n", sep = "")
-  if (x$n_shadows > 0) {
+  cat("\nShadows (", length(x$shadows), "):\n", sep = "")
+  if (length(x$shadows) > 0) {
     shadow_names <- names(x$shadows)
     if (is.null(shadow_names)) {
       shadow_names <- paste0("Shadow ", seq_along(x$shadows))
@@ -352,7 +353,7 @@ compare_scenarios <- function(data,
     results[[name]] <- list(
       scenario = scenario,
       effects = effects,
-      n_shadows = scenario$n_shadows
+      n_shadows = length(scenario$shadows)
     )
   }
   

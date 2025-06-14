@@ -2,10 +2,20 @@
 % Please edit documentation in R/margot-s3-methods.R
 \name{[.shadow_list}
 \alias{[.shadow_list}
-\title{Extract shadow from a list}
+\title{Extract from shadow list}
 \usage{
-\method{[}{shadow_list}(x, i)
+\method{[}{shadow_list}(x, i, ...)
+}
+\arguments{
+\item{x}{A shadow_list object}
+
+\item{i}{Indices to extract}
+
+\item{...}{Additional arguments (unused)}
+}
+\value{
+A shadow or shadow_list
 }
 \description{
-Extract shadow from a list
+Extract from shadow list
 }

@@ -10,7 +10,7 @@
 \item{x}{A margot_scenario object}
 }
 \value{
-Character vector of shadow names
+Character vector of shadow types
 }
 \description{
 Get names of shadows in a scenario

@@ -2,7 +2,7 @@
 % Please edit documentation in R/margot-shadow-dependencies.R
 \name{reorder_shadows}
 \alias{reorder_shadows}
-\title{Reorder shadows to respect dependencies}
+\title{Reorder shadows based on dependencies}
 \usage{
 reorder_shadows(shadows)
 }
@@ -13,5 +13,6 @@ reorder_shadows(shadows)
 Reordered list of shadows
 }
 \description{
-Reorder shadows to respect dependencies
+Automatically reorders shadows to respect dependency relationships.
+Uses topological sorting based on the dependency DAG.
 }

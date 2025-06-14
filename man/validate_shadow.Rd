@@ -2,19 +2,18 @@
 % Please edit documentation in R/margot-s3-methods.R
 \name{validate_shadow}
 \alias{validate_shadow}
-\title{Validator for margot_shadow objects}
+\title{Validate a shadow object}
 \usage{
 validate_shadow(x, ...)
 }
 \arguments{
-\item{x}{An object to validate}
+\item{x}{A shadow object to validate}
 
-\item{...}{Additional arguments passed to specific validators}
+\item{...}{Additional arguments for shadow-specific validation}
 }
 \value{
-The validated object (invisibly)
+The validated shadow object (invisibly)
 }
 \description{
-Validates that a shadow object has the correct structure and
-valid parameters for its type.
+Validate a shadow object
 }

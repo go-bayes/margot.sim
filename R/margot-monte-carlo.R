@@ -273,10 +273,23 @@ margot_monte_carlo <- function(
       on.exit(parallel::stopCluster(cl))
       doParallel::registerDoParallel(cl)
       
-      # Export necessary objects to cluster
-      parallel::clusterExport(cl, c("margot_simulate", "margot_simulate_causal",
-                                    "apply_shadows", "apply_shadow", 
-                                    "set_rng_stream", "rng_streams"),
+      # Export necessary functions to cluster
+      # First get the functions that exist in the package namespace
+      pkg_fns <- c("margot_simulate", "margot_simulate_causal",
+                   "apply_shadows", "apply_shadow", "set_rng_stream")
+      available_fns <- pkg_fns[sapply(pkg_fns, function(x) 
+        exists(x, where = asNamespace("margot.sim"), mode = "function"))]
+      
+      if (length(available_fns) > 0) {
+        parallel::clusterExport(cl, available_fns, 
+                              envir = asNamespace("margot.sim"))
+      }
+      
+      # Export the specific variables needed
+      parallel::clusterExport(cl, c("n_per_rep", "dgp_params", "shadows", 
+                                    "estimator_fn", "truth_fn", "extract_fn",
+                                    "save_data", "summarize_fn", "checkpoint_dir",
+                                    "rng_streams", "verbose", "check_memory"),
                               envir = environment())
 
       results_list <- parallel::parLapply(cl, 1:n_reps, run_one_rep)
