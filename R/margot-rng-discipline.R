@@ -24,6 +24,9 @@
 #' streams <- create_rng_streams(100, seed = 123)
 create_rng_streams <- function(n_streams, seed = NULL, kind = "L'Ecuyer-CMRG") {
   # save current RNG state
+  if (!exists(".Random.seed")) {
+    set.seed(NULL)  # initialize RNG
+  }
   old_seed <- .Random.seed
   old_kind <- RNGkind()[1]
   on.exit({

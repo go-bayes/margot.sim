@@ -18,5 +18,7 @@
 ^NOTES\.md$
 ^planning$
 ^CLAUDE\.md$
+^DEVELOPMENT_ROADMAP\.md$
+^test_s3\.R$
 ^doc$
 ^Meta$

@@ -283,9 +283,9 @@ test_that("resume_monte_carlo handles missing checkpoints", {
   checkpoint_dir <- file.path(temp_dir, "test_resume")
   
   # try to resume without checkpoints
-  expect_message(
+  expect_error(
     result <- resume_monte_carlo(checkpoint_dir, n_reps = 10),
-    "No checkpoints found"
+    "Checkpoint directory does not exist"
   )
 })
 
