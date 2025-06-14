@@ -11,8 +11,8 @@
 <script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Simulate Longitudinal Data with Observational Shadows and Monte Carlo Evaluation">
-<meta name="description" content="Extensions to the margot package for simulating longitudinal data using Structural Causal Models (SCMs). Provides sophisticated capabilities for applying various observational shadows (measurement error, missingness, selection bias) to simulated data, running Monte Carlo simulations to evaluate statistical estimators, supporting flexible non-normal distributions, and creating a unified framework for causal inference method evaluation.">
-<meta property="og:description" content="Extensions to the margot package for simulating longitudinal data using Structural Causal Models (SCMs). Provides sophisticated capabilities for applying various observational shadows (measurement error, missingness, selection bias) to simulated data, running Monte Carlo simulations to evaluate statistical estimators, supporting flexible non-normal distributions, and creating a unified framework for causal inference method evaluation.">
+<meta name="description" content="Extensions to the margot package for simulating longitudinal data using Structural Causal Models (SCMs). Provides sophisticated capabilities for applying various observational shadows (measurement error, missingness, selection bias) to simulated data, running Monte Carlo simulations to evaluate statistical estimators, supporting flexible non-normal distributions, and creating a unified framework for causal inference method evaluation. The shadow framework is inspired by Plato's Allegory of the Cave, representing observed data as distorted reflections of true causal processes. Key methodological foundations include: Pearl (2009) &lt;doi:10.1017/CBO9780511803161&gt; &quot;Causality: Models, Reasoning, and Inference&quot;; Hernán and Robins (2020) &lt;https://www.hsph.harvard.edu/miguel-hernan/causal-inference-book/&gt; &quot;Causal Inference: What If&quot;; Little and Rubin (2002) &lt;doi:10.1002/9781119013563&gt; &quot;Statistical Analysis with Missing Data&quot;; Carroll et al. (2006) &lt;doi:10.1201/9781420010138&gt; &quot;Measurement Error in Nonlinear Models&quot;.">
+<meta property="og:description" content="Extensions to the margot package for simulating longitudinal data using Structural Causal Models (SCMs). Provides sophisticated capabilities for applying various observational shadows (measurement error, missingness, selection bias) to simulated data, running Monte Carlo simulations to evaluate statistical estimators, supporting flexible non-normal distributions, and creating a unified framework for causal inference method evaluation. The shadow framework is inspired by Plato's Allegory of the Cave, representing observed data as distorted reflections of true causal processes. Key methodological foundations include: Pearl (2009) &lt;doi:10.1017/CBO9780511803161&gt; &quot;Causality: Models, Reasoning, and Inference&quot;; Hernán and Robins (2020) &lt;https://www.hsph.harvard.edu/miguel-hernan/causal-inference-book/&gt; &quot;Causal Inference: What If&quot;; Little and Rubin (2002) &lt;doi:10.1002/9781119013563&gt; &quot;Statistical Analysis with Missing Data&quot;; Carroll et al. (2006) &lt;doi:10.1201/9781420010138&gt; &quot;Measurement Error in Nonlinear Models&quot;.">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">margot.sim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,8 +40,19 @@
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Advanced Topics</h6></li>
     <li><a class="dropdown-item" href="articles/applying-shadows.html">Applying Observational Shadows</a></li>
+    <li><a class="dropdown-item" href="articles/truncation-coarsening.html">Truncation and Coarsening</a></li>
     <li><a class="dropdown-item" href="articles/monte-carlo-simple.html">Monte Carlo Evaluation</a></li>
     <li><a class="dropdown-item" href="articles/shift-interventions.html">Shift Interventions</a></li>
+    <li><a class="dropdown-item" href="articles/transport-weights-shadows.html">Transport Weights and Shadows</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Practical Applications</h6></li>
+    <li><a class="dropdown-item" href="articles/shift-weights.html">Shift Interventions with Sampling Weights</a></li>
+    <li><a class="dropdown-item" href="articles/censoring-effect-mod.html">Censoring and Effect Modification</a></li>
+    <li><a class="dropdown-item" href="articles/heterogeneous-effects.html">Heterogeneous Treatment Effects</a></li>
+    <li><a class="dropdown-item" href="articles/advanced-shift-interventions.html">Advanced Shift Interventions</a></li>
+    <li><a class="dropdown-item" href="articles/misclassification-bias.html">Misclassification Bias</a></li>
+    <li><a class="dropdown-item" href="articles/scenario-sensitivity.html">Scenario-Based Sensitivity Analysis</a></li>
+    <li><a class="dropdown-item" href="articles/practical-workflow.html">Complete Analysis Workflow</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
@@ -70,73 +81,122 @@
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"go-bayes/margot.sim"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
+<h2 id="whats-new-in-v012-january-2025">What’s New in v0.1.2 (January 2025)<a class="anchor" aria-label="anchor" href="#whats-new-in-v012-january-2025"></a>
+</h2>
+<div class="section level3">
+<h3 id="major-enhancements">Major Enhancements<a class="anchor" aria-label="anchor" href="#major-enhancements"></a>
+</h3>
+<ul>
+<li>
+<strong>Scenario Framework</strong>: Bundle observational challenges into coherent scenarios for systematic sensitivity analysis</li>
+<li>
+<strong>New Shadow Types</strong>: Truncation, coarsening, and mode effects shadows for realistic data limitations</li>
+<li>
+<strong>Enhanced Documentation</strong>: 12 comprehensive vignettes covering all major features</li>
+<li>
+<strong>Improved Architecture</strong>: Dual data design preserves true and observed data throughout analysis</li>
+</ul>
+</div>
+<div class="section level3">
+<h3 id="key-new-features">Key New Features<a class="anchor" aria-label="anchor" href="#key-new-features"></a>
+</h3>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Create scenarios for sensitivity analysis</span></span>
+<span><span class="va">scenarios</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>  oracle <span class="op">=</span> <span class="fu"><a href="reference/scenario_oracle.html">scenario_oracle</a></span><span class="op">(</span><span class="op">)</span>,  <span class="co"># Perfect measurement</span></span>
+<span>  rct <span class="op">=</span> <span class="fu"><a href="reference/scenario_rct_simple.html">scenario_rct_simple</a></span><span class="op">(</span><span class="op">)</span>,  <span class="co"># Typical RCT conditions</span></span>
+<span>  observational <span class="op">=</span> <span class="fu"><a href="reference/scenario_observational_simple.html">scenario_observational_simple</a></span><span class="op">(</span><span class="op">)</span>,  <span class="co"># Real-world messiness</span></span>
+<span>  pessimistic <span class="op">=</span> <span class="fu"><a href="reference/scenario_pessimistic.html">scenario_pessimistic</a></span><span class="op">(</span><span class="op">)</span>  <span class="co"># Worst-case scenario</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Compare effects across scenarios</span></span>
+<span><span class="va">comparison</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/compare_scenarios.html">compare_scenarios</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">my_data</span>,</span>
+<span>  scenarios <span class="op">=</span> <span class="va">scenarios</span>,</span>
+<span>  exposure <span class="op">=</span> <span class="st">"treatment"</span>,</span>
+<span>  outcome <span class="op">=</span> <span class="st">"outcome"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># New shadow types</span></span>
+<span><span class="va">truncation</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/create_truncation_shadow.html">create_truncation_shadow</a></span><span class="op">(</span></span>
+<span>  variables <span class="op">=</span> <span class="st">"income"</span>,</span>
+<span>  upper <span class="op">=</span> <span class="fl">200000</span>  <span class="co"># Top-coding</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">coarsening</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/create_coarsening_shadow.html">create_coarsening_shadow</a></span><span class="op">(</span></span>
+<span>  variables <span class="op">=</span> <span class="st">"age"</span>,</span>
+<span>  breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">30</span>, <span class="fl">50</span>, <span class="fl">70</span>, <span class="fl">100</span><span class="op">)</span>,</span>
+<span>  type <span class="op">=</span> <span class="st">"heaping"</span>  <span class="co"># Realistic rounding patterns</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
+</div>
+<div class="section level2">
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
-<p>margot.sim extends the <code>margot</code> package with:</p>
+<p>margot.sim helps researchers understand how well their statistical methods work when data are imperfect. The package provides:</p>
 <ol style="list-style-type: decimal">
 <li>
-<strong>Shadowing Framework</strong> - Apply observational distortions (measurement error, missingness, selection bias)</li>
+<strong>Shadowing Framework</strong> - Apply realistic observational distortions</li>
 <li>
-<strong>Monte Carlo Framework</strong> - Systematically evaluate statistical estimators<br>
-</li>
+<strong>Scenario Framework</strong> - Bundle shadows into documented research contexts</li>
 <li>
-<strong>Flexible Distributions</strong> - Specify non-normal distributions</li>
+<strong>Monte Carlo Framework</strong> - Systematically evaluate estimator performance</li>
 <li>
-<strong>Integrated Workflows</strong> - Complete simulation studies</li>
+<strong>Transport Weights</strong> - Generalize from samples to populations</li>
+<li>
+<strong>Flexible Distributions</strong> - Model non-normal data</li>
 </ol>
 </div>
 <div class="section level2">
 <h2 id="quick-start">Quick Start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
 </h2>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://go-bayes.github.io/margot.sim/">margot.sim</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Generate data with measurement error</span></span>
-<span><span class="va">shadow</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/create_shadow.html">create_shadow</a></span><span class="op">(</span></span>
-<span>  type <span class="op">=</span> <span class="st">"measurement_error"</span>,</span>
-<span>  params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>    variables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"t1_l"</span>, <span class="st">"t2_l"</span><span class="op">)</span>,</span>
-<span>    error_type <span class="op">=</span> <span class="st">"classical"</span>,</span>
-<span>    sigma <span class="op">=</span> <span class="fl">0.5</span></span>
-<span>  <span class="op">)</span></span>
+<span><span class="co"># 1. Generate data with a typical observational scenario</span></span>
+<span><span class="va">obs_scenario</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/scenario_observational_simple.html">scenario_observational_simple</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">sim_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/margot_simulate.html">margot_simulate</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">1000</span>, waves <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="va">observed_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/apply_scenario.html">apply_scenario</a></span><span class="op">(</span><span class="va">sim_data</span>, <span class="va">obs_scenario</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 2. Compare true vs observed effects</span></span>
+<span><span class="va">true_effects</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/compute_causal_effects.html">compute_causal_effects</a></span><span class="op">(</span></span>
+<span>  <span class="va">observed_data</span><span class="op">$</span><span class="va">data_true</span>,</span>
+<span>  exposure <span class="op">=</span> <span class="st">"t1_a"</span>,</span>
+<span>  outcome <span class="op">=</span> <span class="st">"t2_y"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/margot_simulate.html">margot_simulate</a></span><span class="op">(</span></span>
-<span>  n <span class="op">=</span> <span class="fl">1000</span>,</span>
-<span>  waves <span class="op">=</span> <span class="fl">3</span>,</span>
-<span>  shadows <span class="op">=</span> <span class="va">shadow</span></span>
+<span><span class="va">biased_effects</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/compute_causal_effects.html">compute_causal_effects</a></span><span class="op">(</span></span>
+<span>  <span class="va">observed_data</span><span class="op">$</span><span class="va">data_observed</span>,</span>
+<span>  exposure <span class="op">=</span> <span class="st">"t1_a"</span>, </span>
+<span>  outcome <span class="op">=</span> <span class="st">"t2_y"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Run Monte Carlo evaluation</span></span>
-<span><span class="va">mc_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/margot_monte_carlo.html">margot_monte_carlo</a></span><span class="op">(</span></span>
-<span>  n_reps <span class="op">=</span> <span class="fl">100</span>,</span>
-<span>  n_per_rep <span class="op">=</span> <span class="fl">500</span>,</span>
-<span>  dgp_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>waves <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span>
-<span>  shadows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">shadow</span><span class="op">)</span>,</span>
-<span>  estimator_fn <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">t3_y</span> <span class="op">~</span> <span class="va">t2_a</span> <span class="op">+</span> <span class="va">t1_l</span> <span class="op">+</span> <span class="va">b1</span>, data <span class="op">=</span> <span class="va">data</span><span class="op">)</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>      estimate <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span><span class="op">[</span><span class="st">"t2_a"</span><span class="op">]</span>,</span>
-<span>      se <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/vcov.html" class="external-link">vcov</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="st">"t2_a"</span><span class="op">]</span></span>
-<span>    <span class="op">)</span></span>
-<span>  <span class="op">}</span></span>
+<span><span class="co"># 3. Run sensitivity analysis across scenarios</span></span>
+<span><span class="va">scenarios</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/scenario_collection_simple.html">scenario_collection_simple</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">comparison</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/compare_scenarios.html">compare_scenarios</a></span><span class="op">(</span></span>
+<span>  <span class="va">sim_data</span>,</span>
+<span>  <span class="va">scenarios</span>,</span>
+<span>  exposure <span class="op">=</span> <span class="st">"t1_a"</span>,</span>
+<span>  outcome <span class="op">=</span> <span class="st">"t2_y"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">mc_results</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">comparison</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">comparison</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="shadowing-framework">Shadowing Framework<a class="anchor" aria-label="anchor" href="#shadowing-framework"></a>
+<h2 id="core-features">Core Features<a class="anchor" aria-label="anchor" href="#core-features"></a>
 </h2>
 <div class="section level3">
-<h3 id="available-shadow-types">Available Shadow Types<a class="anchor" aria-label="anchor" href="#available-shadow-types"></a>
+<h3 id="id_1-shadowing-framework">1. Shadowing Framework<a class="anchor" aria-label="anchor" href="#id_1-shadowing-framework"></a>
 </h3>
-<p><strong>Measurement Error:</strong> - Classical error (continuous variables) - Misclassification (binary variables) - Differential error - Dichotomization - Correlated errors</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Classical measurement error</span></span>
+<p>The package implements a comprehensive set of observational “shadows” that distort true data:</p>
+<p><strong>Measurement Error:</strong></p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Classical error for continuous variables</span></span>
 <span><span class="va">me_shadow</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/create_shadow.html">create_shadow</a></span><span class="op">(</span></span>
 <span>  type <span class="op">=</span> <span class="st">"measurement_error"</span>,</span>
 <span>  params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>    variables <span class="op">=</span> <span class="st">"t1_l"</span>,</span>
+<span>    variables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"blood_pressure"</span>, <span class="st">"cholesterol"</span><span class="op">)</span>,</span>
 <span>    error_type <span class="op">=</span> <span class="st">"classical"</span>,</span>
 <span>    sigma <span class="op">=</span> <span class="fl">0.5</span></span>
 <span>  <span class="op">)</span></span>
@@ -146,206 +206,321 @@
 <span><span class="va">misclass_shadow</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/create_shadow.html">create_shadow</a></span><span class="op">(</span></span>
 <span>  type <span class="op">=</span> <span class="st">"measurement_error"</span>, </span>
 <span>  params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>    variables <span class="op">=</span> <span class="st">"t1_a"</span>,</span>
+<span>    variables <span class="op">=</span> <span class="st">"treatment"</span>,</span>
 <span>    error_type <span class="op">=</span> <span class="st">"misclassification"</span>,</span>
-<span>    sensitivity <span class="op">=</span> <span class="fl">0.85</span>,  <span class="co"># P(observed=1|true=1)</span></span>
-<span>    specificity <span class="op">=</span> <span class="fl">0.90</span>   <span class="co"># P(observed=0|true=0)</span></span>
+<span>    sensitivity <span class="op">=</span> <span class="fl">0.85</span>,  <span class="co"># 85% of treated correctly identified</span></span>
+<span>    specificity <span class="op">=</span> <span class="fl">0.90</span>   <span class="co"># 90% of untreated correctly identified</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Differential error (depends on other variables)</span></span>
+<span><span class="va">diff_shadow</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/create_shadow.html">create_shadow</a></span><span class="op">(</span></span>
+<span>  type <span class="op">=</span> <span class="st">"measurement_error"</span>,</span>
+<span>  params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    variables <span class="op">=</span> <span class="st">"self_reported_health"</span>,</span>
+<span>    error_type <span class="op">=</span> <span class="st">"differential"</span>,</span>
+<span>    differential_var <span class="op">=</span> <span class="st">"education"</span>,</span>
+<span>    differential_fn <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">edu_values</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="co"># More educated report health more accurately</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">edu_values</span><span class="op">)</span>, <span class="fl">0</span>, <span class="fl">0.5</span> <span class="op">-</span> <span class="fl">0.1</span> <span class="op">*</span> <span class="va">edu_values</span><span class="op">)</span></span>
+<span>    <span class="op">}</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p><strong>Data Limitations:</strong></p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Truncation (values beyond limits not observed)</span></span>
+<span><span class="va">truncation</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/create_truncation_shadow.html">create_truncation_shadow</a></span><span class="op">(</span></span>
+<span>  variables <span class="op">=</span> <span class="st">"biomarker"</span>,</span>
+<span>  lower <span class="op">=</span> <span class="fl">0</span>,      <span class="co"># Detection limit</span></span>
+<span>  upper <span class="op">=</span> <span class="fl">1000</span>,   <span class="co"># Equipment maximum</span></span>
+<span>  type <span class="op">=</span> <span class="st">"boundary"</span>  <span class="co"># Values pile up at boundaries</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Coarsening (continuous data in categories)</span></span>
+<span><span class="va">coarsening</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/create_coarsening_shadow.html">create_coarsening_shadow</a></span><span class="op">(</span></span>
+<span>  variables <span class="op">=</span> <span class="st">"age"</span>,</span>
+<span>  breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">18</span>, <span class="fl">35</span>, <span class="fl">50</span>, <span class="fl">65</span>, <span class="fl">100</span><span class="op">)</span>,</span>
+<span>  type <span class="op">=</span> <span class="st">"heaping"</span>,     <span class="co"># People round to 5s and 0s</span></span>
+<span>  heaping_digits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">5</span><span class="op">)</span>,</span>
+<span>  heaping_prob <span class="op">=</span> <span class="fl">0.7</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Mode effects (measurement varies by collection method)</span></span>
+<span><span class="va">mode_effect</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/create_mode_effects_shadow.html">create_mode_effects_shadow</a></span><span class="op">(</span></span>
+<span>  variables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"depression_score"</span>, <span class="st">"anxiety_score"</span><span class="op">)</span>,</span>
+<span>  mode_var <span class="op">=</span> <span class="st">"survey_mode"</span>,  <span class="co"># phone/web/in-person</span></span>
+<span>  effects <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    phone <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="va">x</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, <span class="op">-</span><span class="fl">0.5</span>, <span class="fl">0.2</span><span class="op">)</span>,</span>
+<span>    web <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="va">x</span>,</span>
+<span>    in_person <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="va">x</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, <span class="fl">0.3</span>, <span class="fl">0.1</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p><strong>Missing Data:</strong></p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Item-level missingness</span></span>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Item-level missingness with different mechanisms</span></span>
 <span><span class="va">miss_shadow</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/create_item_missingness_shadow.html">create_item_missingness_shadow</a></span><span class="op">(</span></span>
-<span>  variables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"t1_l"</span>, <span class="st">"t2_l"</span><span class="op">)</span>,</span>
+<span>  variables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"income"</span>, <span class="st">"health_status"</span><span class="op">)</span>,</span>
+<span>  missing_mechanism <span class="op">=</span> <span class="st">"MAR"</span>,  <span class="co"># or "MCAR", "MNAR"</span></span>
 <span>  missing_rate <span class="op">=</span> <span class="fl">0.2</span>,</span>
-<span>  missing_mechanism <span class="op">=</span> <span class="st">"MAR"</span>,</span>
-<span>  dependent_vars <span class="op">=</span> <span class="st">"b1"</span></span>
+<span>  dependent_vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"age"</span>, <span class="st">"education"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p><strong>Selection Bias:</strong></p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Positivity violations</span></span>
 <span><span class="va">pos_shadow</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/create_positivity_shadow.html">create_positivity_shadow</a></span><span class="op">(</span></span>
-<span>  exposure_var <span class="op">=</span> <span class="st">"t1_a"</span>,</span>
+<span>  exposure_var <span class="op">=</span> <span class="st">"treatment"</span>,</span>
 <span>  filter_fn <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="co"># Treatment only possible if risk score &lt;= 2</span></span>
-<span>    <span class="va">data</span><span class="op">$</span><span class="va">b1</span> <span class="op">+</span> <span class="va">data</span><span class="op">$</span><span class="va">b2</span> <span class="op">&lt;=</span> <span class="fl">2</span></span>
+<span>    <span class="co"># Treatment only available to low-risk patients</span></span>
+<span>    <span class="va">data</span><span class="op">$</span><span class="va">risk_score</span> <span class="op">&lt;=</span> <span class="fl">0.7</span></span>
 <span>  <span class="op">}</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="combining-shadows">Combining Shadows<a class="anchor" aria-label="anchor" href="#combining-shadows"></a>
+<h3 id="id_2-scenario-framework">2. Scenario Framework<a class="anchor" aria-label="anchor" href="#id_2-scenario-framework"></a>
 </h3>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Apply multiple shadows</span></span>
-<span><span class="va">shadows</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">me_shadow</span>, <span class="va">miss_shadow</span><span class="op">)</span></span>
-<span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/margot_simulate.html">margot_simulate</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">1000</span>, waves <span class="op">=</span> <span class="fl">3</span>, shadows <span class="op">=</span> <span class="va">shadows</span><span class="op">)</span></span>
+<p>Scenarios bundle shadows with documentation for systematic sensitivity analysis:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Create a COVID vaccine effectiveness scenario</span></span>
+<span><span class="va">covid_scenario</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/create_scenario.html">create_scenario</a></span><span class="op">(</span></span>
+<span>  name <span class="op">=</span> <span class="st">"COVID Vaccine Study"</span>,</span>
+<span>  shadows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    <span class="co"># Vaccination status misclassified</span></span>
+<span>    vaccine_misclass <span class="op">=</span> <span class="fu"><a href="reference/create_shadow.html">create_shadow</a></span><span class="op">(</span></span>
+<span>      type <span class="op">=</span> <span class="st">"measurement_error"</span>,</span>
+<span>      params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>        variables <span class="op">=</span> <span class="st">"vaccinated"</span>,</span>
+<span>        error_type <span class="op">=</span> <span class="st">"misclassification"</span>,</span>
+<span>        sensitivity <span class="op">=</span> <span class="fl">0.95</span>,</span>
+<span>        specificity <span class="op">=</span> <span class="fl">0.98</span></span>
+<span>      <span class="op">)</span></span>
+<span>    <span class="op">)</span>,</span>
+<span>    <span class="co"># Differential testing by vaccination status</span></span>
+<span>    testing_bias <span class="op">=</span> <span class="fu"><a href="reference/create_shadow.html">create_shadow</a></span><span class="op">(</span></span>
+<span>      type <span class="op">=</span> <span class="st">"measurement_error"</span>,</span>
+<span>      params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>        variables <span class="op">=</span> <span class="st">"covid_positive"</span>,</span>
+<span>        error_type <span class="op">=</span> <span class="st">"differential"</span>,</span>
+<span>        differential_var <span class="op">=</span> <span class="st">"vaccinated"</span>,</span>
+<span>        differential_fn <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">vax</span><span class="op">)</span> <span class="op">{</span></span>
+<span>          <span class="co"># Vaccinated more likely to test</span></span>
+<span>          <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">vax</span> <span class="op">==</span> <span class="fl">1</span>, </span>
+<span>                 <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">vax</span><span class="op">)</span>, <span class="fl">0</span>, <span class="fl">0.1</span><span class="op">)</span>,</span>
+<span>                 <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">vax</span><span class="op">)</span>, <span class="fl">0</span>, <span class="fl">0.3</span><span class="op">)</span><span class="op">)</span></span>
+<span>        <span class="op">}</span></span>
+<span>      <span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  description <span class="op">=</span> <span class="st">"COVID-19 vaccine effectiveness with real-world biases"</span>,</span>
+<span>  justification <span class="op">=</span> <span class="st">"Testing behavior and record-keeping vary by vaccination status"</span>,</span>
+<span>  references <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Lipsitch M, et al. NEJM 2021"</span>, <span class="st">"Hernan MA, et al. Ann Intern Med 2021"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Or apply post-hoc</span></span>
-<span><span class="va">shadowed_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/apply_shadows.html">apply_shadows</a></span><span class="op">(</span><span class="va">dat</span>, <span class="va">shadows</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co"># Use pre-built scenario library</span></span>
+<span><span class="va">scenarios</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/scenario_collection_simple.html">scenario_collection_simple</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co"># Includes: oracle, rct, observational, pessimistic</span></span></code></pre></div>
 </div>
-</div>
-<div class="section level2">
-<h2 id="monte-carlo-framework">Monte Carlo Framework<a class="anchor" aria-label="anchor" href="#monte-carlo-framework"></a>
-</h2>
-<p>Evaluate estimator performance under various conditions:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="section level3">
+<h3 id="id_3-monte-carlo-framework">3. Monte Carlo Framework<a class="anchor" aria-label="anchor" href="#id_3-monte-carlo-framework"></a>
+</h3>
+<p>Systematically evaluate estimator performance:</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Define estimator</span></span>
 <span><span class="va">ipw_estimator</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="co"># Fit propensity score model</span></span>
-<span>  <span class="va">ps_model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm</a></span><span class="op">(</span><span class="va">t1_a</span> <span class="op">~</span> <span class="va">b1</span> <span class="op">+</span> <span class="va">b2</span> <span class="op">+</span> <span class="va">t0_l</span>, </span>
-<span>                  data <span class="op">=</span> <span class="va">data</span>, </span>
-<span>                  family <span class="op">=</span> <span class="va">binomial</span><span class="op">)</span></span>
+<span>  <span class="co"># Propensity score model</span></span>
+<span>  <span class="va">ps_model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm</a></span><span class="op">(</span><span class="va">treatment</span> <span class="op">~</span> <span class="va">age</span> <span class="op">+</span> <span class="va">gender</span> <span class="op">+</span> <span class="va">baseline_health</span>, </span>
+<span>                  data <span class="op">=</span> <span class="va">data</span>, family <span class="op">=</span> <span class="va">binomial</span><span class="op">)</span></span>
 <span>  <span class="va">ps</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">ps_model</span>, type <span class="op">=</span> <span class="st">"response"</span><span class="op">)</span></span>
 <span>  </span>
-<span>  <span class="co"># Calculate weights</span></span>
-<span>  <span class="va">weights</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">t1_a</span> <span class="op">==</span> <span class="fl">1</span>, <span class="fl">1</span><span class="op">/</span><span class="va">ps</span>, <span class="fl">1</span><span class="op">/</span><span class="op">(</span><span class="fl">1</span><span class="op">-</span><span class="va">ps</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="co"># IPW weights</span></span>
+<span>  <span class="va">weights</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">treatment</span> <span class="op">==</span> <span class="fl">1</span>, <span class="fl">1</span><span class="op">/</span><span class="va">ps</span>, <span class="fl">1</span><span class="op">/</span><span class="op">(</span><span class="fl">1</span><span class="op">-</span><span class="va">ps</span><span class="op">)</span><span class="op">)</span></span>
 <span>  </span>
 <span>  <span class="co"># Outcome model</span></span>
-<span>  <span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">t2_y</span> <span class="op">~</span> <span class="va">t1_a</span>, weights <span class="op">=</span> <span class="va">weights</span>, data <span class="op">=</span> <span class="va">data</span><span class="op">)</span></span>
+<span>  <span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">outcome</span> <span class="op">~</span> <span class="va">treatment</span>, weights <span class="op">=</span> <span class="va">weights</span>, data <span class="op">=</span> <span class="va">data</span><span class="op">)</span></span>
 <span>  </span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>    estimate <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span><span class="op">[</span><span class="st">"t1_a"</span><span class="op">]</span>,</span>
-<span>    se <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/vcov.html" class="external-link">vcov</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="st">"t1_a"</span><span class="op">]</span>,</span>
+<span>    estimate <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span><span class="op">[</span><span class="st">"treatment"</span><span class="op">]</span>,</span>
+<span>    se <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/vcov.html" class="external-link">vcov</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="st">"treatment"</span><span class="op">]</span>,</span>
 <span>    converged <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
-<span><span class="co"># Run simulation</span></span>
-<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/margot_monte_carlo.html">margot_monte_carlo</a></span><span class="op">(</span></span>
-<span>  n_reps <span class="op">=</span> <span class="fl">500</span>,</span>
-<span>  n_per_rep <span class="op">=</span> <span class="fl">1000</span>,</span>
+<span><span class="co"># Run Monte Carlo evaluation</span></span>
+<span><span class="va">mc_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/margot_monte_carlo.html">margot_monte_carlo</a></span><span class="op">(</span></span>
+<span>  n_reps <span class="op">=</span> <span class="fl">1000</span>,</span>
+<span>  n_per_rep <span class="op">=</span> <span class="fl">500</span>,</span>
 <span>  dgp_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>    waves <span class="op">=</span> <span class="fl">2</span>,</span>
-<span>    params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>a_lag_y_coef <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span>  <span class="co"># True effect</span></span>
+<span>    params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>a_y_coef <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span>  <span class="co"># True effect</span></span>
 <span>  <span class="op">)</span>,</span>
-<span>  shadows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">me_shadow</span>, <span class="va">miss_shadow</span><span class="op">)</span>,</span>
+<span>  shadows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">misclass_shadow</span>, <span class="va">miss_shadow</span><span class="op">)</span>,</span>
 <span>  estimator_fn <span class="op">=</span> <span class="va">ipw_estimator</span>,</span>
-<span>  truth_fn <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="fl">0.3</span>,</span>
+<span>  truth_fn <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="fl">0.5</span>,</span>
 <span>  parallel <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  n_cores <span class="op">=</span> <span class="fl">4</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># View results</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">results</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">results</span>, type <span class="op">=</span> <span class="st">"histogram"</span><span class="op">)</span></span></code></pre></div>
-<div class="section level3">
-<h3 id="performance-metrics">Performance Metrics<a class="anchor" aria-label="anchor" href="#performance-metrics"></a>
-</h3>
-<p>The framework automatically calculates: - Bias and relative bias - Variance and MSE - Coverage of confidence intervals - Convergence rates - Sample size retention</p>
-</div>
-</div>
-<div class="section level2">
-<h2 id="complete-example">Complete Example<a class="anchor" aria-label="anchor" href="#complete-example"></a>
-</h2>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Compare estimators under measurement error</span></span>
-<span><span class="va">comparison</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/example_measurement_error_comparison.html">example_measurement_error_comparison</a></span><span class="op">(</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Full workflow demonstration</span></span>
-<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/example_complete_workflow.html">example_complete_workflow</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="advanced-usage">Advanced Usage<a class="anchor" aria-label="anchor" href="#advanced-usage"></a>
-</h2>
-<div class="section level3">
-<h3 id="custom-shadows">Custom Shadows<a class="anchor" aria-label="anchor" href="#custom-shadows"></a>
-</h3>
-<p>Create your own shadow types:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Define apply method</span></span>
-<span><span class="va">apply_shadow.my_custom_shadow</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span>, <span class="va">shadow</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="co"># Your shadowing logic here</span></span>
-<span>  <span class="va">data</span></span>
-<span><span class="op">}</span></span>
-<span></span>
-<span><span class="co"># Use it</span></span>
-<span><span class="va">shadow</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/structure.html" class="external-link">structure</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"my_custom"</span>, params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  class <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"my_custom_shadow"</span>, <span class="st">"margot_shadow"</span><span class="op">)</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span><span class="co"># Automatic performance metrics</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">mc_results</span><span class="op">)</span></span>
+<span><span class="co"># - Bias: -0.12 (24% relative bias)</span></span>
+<span><span class="co"># - RMSE: 0.18</span></span>
+<span><span class="co"># - Coverage: 0.87 (nominal 0.95)</span></span>
+<span><span class="co"># - Power: 0.73</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="flexible-distributions">Flexible Distributions<a class="anchor" aria-label="anchor" href="#flexible-distributions"></a>
+<h3 id="id_4-transport-weights">4. Transport Weights<a class="anchor" aria-label="anchor" href="#id_4-transport-weights"></a>
 </h3>
+<p>Generalize from study samples to target populations:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Non-normal baseline</span></span>
-<span><span class="va">gamma_dist</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/create_distribution.html">create_distribution</a></span><span class="op">(</span></span>
-<span>  <span class="st">"gamma"</span>,</span>
-<span>  params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>shape <span class="op">=</span> <span class="fl">2</span>, rate <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="co"># When your sample doesn't match your target population</span></span>
+<span><span class="va">transport_analysis</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/margot_transport_analysis.html">margot_transport_analysis</a></span><span class="op">(</span></span>
+<span>  sample_data <span class="op">=</span> <span class="va">trial_data</span>,</span>
+<span>  population_data <span class="op">=</span> <span class="va">registry_data</span>,</span>
+<span>  transport_vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"age"</span>, <span class="st">"comorbidity"</span>, <span class="st">"ses"</span><span class="op">)</span>,</span>
+<span>  exposure <span class="op">=</span> <span class="st">"treatment"</span>, </span>
+<span>  outcome <span class="op">=</span> <span class="st">"mortality"</span>,</span>
+<span>  shadows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    <span class="co"># Registry data has measurement error</span></span>
+<span>    <span class="fu"><a href="reference/create_shadow.html">create_shadow</a></span><span class="op">(</span></span>
+<span>      type <span class="op">=</span> <span class="st">"measurement_error"</span>,</span>
+<span>      params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>        variables <span class="op">=</span> <span class="st">"comorbidity"</span>,</span>
+<span>        error_type <span class="op">=</span> <span class="st">"misclassification"</span>,</span>
+<span>        sensitivity <span class="op">=</span> <span class="fl">0.85</span>,</span>
+<span>        specificity <span class="op">=</span> <span class="fl">0.95</span></span>
+<span>      <span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Use in simulation</span></span>
-<span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/margot_simulate_flex.html">margot_simulate_flex</a></span><span class="op">(</span></span>
-<span>  n <span class="op">=</span> <span class="fl">1000</span>,</span>
-<span>  distributions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>baseline <span class="op">=</span> <span class="va">gamma_dist</span><span class="op">)</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">transport_analysis</span><span class="op">$</span><span class="va">comparison</span><span class="op">)</span></span>
+<span><span class="co"># Sample ATE: 0.15 (trial participants)</span></span>
+<span><span class="co"># Population ATE: 0.08 (real-world patients)</span></span>
+<span><span class="co"># Transport bias: -0.07</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
 <h2 id="documentation">Documentation<a class="anchor" aria-label="anchor" href="#documentation"></a>
 </h2>
-<p>For detailed documentation, see:</p>
+<p>Comprehensive vignettes cover all major features:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Package documentation</span></span>
-<span><span class="op">?</span><span class="va">margot.sim</span></span>
+<code class="sourceCode R"><span><span class="co"># Core functionality</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html" class="external-link">vignette</a></span><span class="op">(</span><span class="st">"basic-simulation"</span><span class="op">)</span>           <span class="co"># Getting started</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html" class="external-link">vignette</a></span><span class="op">(</span><span class="st">"applying-shadows"</span><span class="op">)</span>           <span class="co"># Shadow framework</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html" class="external-link">vignette</a></span><span class="op">(</span><span class="st">"scenario-sensitivity"</span><span class="op">)</span>       <span class="co"># NEW: Scenario-based analysis</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html" class="external-link">vignette</a></span><span class="op">(</span><span class="st">"monte-carlo-simple"</span><span class="op">)</span>         <span class="co"># Evaluating estimators</span></span>
 <span></span>
-<span><span class="co"># Key functions</span></span>
-<span><span class="op">?</span><span class="va">create_shadow</span></span>
-<span><span class="op">?</span><span class="va">margot_monte_carlo</span></span>
-<span><span class="op">?</span><span class="va">margot_simulate</span></span>
+<span><span class="co"># Advanced topics</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html" class="external-link">vignette</a></span><span class="op">(</span><span class="st">"truncation-coarsening"</span><span class="op">)</span>      <span class="co"># NEW: Data limitations</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html" class="external-link">vignette</a></span><span class="op">(</span><span class="st">"misclassification-bias"</span><span class="op">)</span>     <span class="co"># Binary variable errors</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html" class="external-link">vignette</a></span><span class="op">(</span><span class="st">"shift-interventions"</span><span class="op">)</span>        <span class="co"># Modified treatment policies</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html" class="external-link">vignette</a></span><span class="op">(</span><span class="st">"transport-weights-shadows"</span><span class="op">)</span>  <span class="co"># Generalizing to populations</span></span>
 <span></span>
-<span><span class="co"># Examples</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/example.html" class="external-link">example</a></span><span class="op">(</span><span class="va">create_shadow</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/example.html" class="external-link">example</a></span><span class="op">(</span><span class="va">margot_monte_carlo</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co"># Practical applications</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html" class="external-link">vignette</a></span><span class="op">(</span><span class="st">"heterogeneous-effects"</span><span class="op">)</span>      <span class="co"># Effect modification</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html" class="external-link">vignette</a></span><span class="op">(</span><span class="st">"censoring-effect-mod"</span><span class="op">)</span>       <span class="co"># Dropout and effect moderation</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html" class="external-link">vignette</a></span><span class="op">(</span><span class="st">"practical-workflow"</span><span class="op">)</span>         <span class="co"># Complete analysis workflow</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="future-directions">Future Directions<a class="anchor" aria-label="anchor" href="#future-directions"></a>
+</h2>
+<div class="section level3">
+<h3 id="near-term-q1-q2-2025">Near-term (Q1-Q2 2025)<a class="anchor" aria-label="anchor" href="#near-term-q1-q2-2025"></a>
+</h3>
+<ul>
+<li>
+<strong>Causal method integration</strong>: Direct support for <code>lmtp</code>, <code>grf</code>, and TMLE packages</li>
+<li>
+<strong>Enhanced HTE framework</strong>: Systematic heterogeneous treatment effect discovery</li>
+<li>
+<strong>Diagnostic visualizations</strong>: Balance plots, positivity checks, shadow validation</li>
+<li>
+<strong>Performance optimizations</strong>: Faster simulation for large-scale studies</li>
+</ul>
+</div>
+<div class="section level3">
+<h3 id="medium-term-2025">Medium-term (2025)<a class="anchor" aria-label="anchor" href="#medium-term-2025"></a>
+</h3>
+<ul>
+<li>
+<strong>Interactive tools</strong>: Shiny apps for exploring shadow impacts</li>
+<li>
+<strong>Batch estimation</strong>: Simultaneous evaluation of multiple estimators</li>
+<li>
+<strong>Cross-package validation</strong>: Compare results across causal inference ecosystems</li>
+<li>
+<strong>Educational platform</strong>: Interactive tutorials and case studies</li>
+</ul>
+</div>
+<div class="section level3">
+<h3 id="long-term-vision">Long-term Vision<a class="anchor" aria-label="anchor" href="#long-term-vision"></a>
+</h3>
+<ul>
+<li>
+<strong>Comprehensive bias catalog</strong>: Library of validated shadow parameters from literature</li>
+<li>
+<strong>Automated sensitivity analysis</strong>: Smart defaults based on study design</li>
+<li>
+<strong>Integration hub</strong>: Bridge between simulation and applied causal inference</li>
+<li>
+<strong>Community repository</strong>: User-contributed scenarios and shadows</li>
+</ul>
+</div>
+</div>
+<div class="section level2">
+<h2 id="why-margotsim">Why margot.sim?<a class="anchor" aria-label="anchor" href="#why-margotsim"></a>
+</h2>
+<p>Real studies rarely provide clean data. Instead, researchers face: - Missing responses when participants skip questions or drop out - Measurement errors from imperfect instruments or self-reports<br>
+- Selection biases when treatment assignment isn’t random</p>
+<p>Traditional simulations often ignore these challenges. margot.sim:</p>
+<ol style="list-style-type: decimal">
+<li>
+<strong>Mirrors reality</strong> - Generates clean data then adds realistic distortions</li>
+<li>
+<strong>Stress-tests methods</strong> - Evaluates if your approach works when assumptions fail</li>
+<li>
+<strong>Maintains truth</strong> - Always knows ground truth for principled evaluation</li>
+<li>
+<strong>Supports any estimator</strong> - Flexible framework works with any statistical method</li>
+<li>
+<strong>Builds confidence</strong> - Demonstrates robustness before costly field studies</li>
+</ol>
+<p>The framework’s power comes from maintaining <strong>a clean separation between true data-generating processes and observed data</strong>, enabling principled evaluation of statistical methods under realistic conditions.</p>
 </div>
 <div class="section level2">
 <h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
 </h2>
-<p>Contributions are welcome. Please:</p>
+<p>We welcome contributions! Please:</p>
 <ol style="list-style-type: decimal">
 <li>Fork the repository</li>
-<li>Create a feature branch</li>
+<li>Create a feature branch (<code>git checkout -b feature/amazing-feature</code>)</li>
 <li>Add tests for new functionality</li>
+<li>Ensure all tests pass (<code><a href="https://devtools.r-lib.org/reference/test.html" class="external-link">devtools::test()</a></code>)</li>
 <li>Submit a pull request</li>
 </ol>
-</div>
-<div class="section level2">
-<h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
-</h2>
-<p>MIT License</p>
+<p>Priority areas for contribution: - Additional shadow types for domain-specific biases - Pre-built scenarios for different research fields - Integration with causal inference packages - Performance optimizations</p>
 </div>
 <div class="section level2">
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
 <p>If you use margot.sim in your research, please cite:</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/citation.html" class="external-link">citation</a></span><span class="op">(</span><span class="st">"margot.sim"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="why-do-we-need-a-beefed-up-simulator">Why do we need a beefed-up simulator?<a class="anchor" aria-label="anchor" href="#why-do-we-need-a-beefed-up-simulator"></a>
+<h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
 </h2>
-<p>Real studies seldom hand us tidy, truth-telling data. Instead we get scratches and dents: * Missing answers. People skip survey items or drop out of follow-ups. * Blurred measurements. Blood-pressure cuffs mis-read, self-reports round up or down. * Uneven treatment chances. Some groups are far more (or far less) likely to receive the exposure we’re studying, making “apples-with-apples” comparisons tricky.</p>
-<p>Traditional toy simulations gloss over these hassles, so a method that looks brilliant on paper can wilt in practice. Here we:</p>
-<ol style="list-style-type: decimal">
-<li>Mirror the messiness. Simulating truth and then adding “shadows” let us layer on realistic missing data, measurement error, and selection bias. That means our virtual datasets behave more like the ones sitting on an analyst’s desk.</li>
-<li>Stress-test causal tools. We can ask, “Does this method still give the right answer if half the blood-pressure readings are off by 5 mmHg? If drop-out is twice as common among the treated?” Running thousands of such scenarios in silico is faster, cheaper, and safer than discovering the problem after a costly field study.</li>
-<li>Keep truth separate from distortion. By generating the “clean” data first and then adding each shadow, we always know the ground truth. That makes it painless to check how far an estimator strays once the smoke and mirrors appear.</li>
-<li>Plug in any causal question so that users can tailor simulations to the exact claim they plan to make.</li>
-<li>Build confidence. Showing that a method works under sharp, realistic tests—especially can gives us (and journal referees) fewer reasons to worry.</li>
-</ol>
-<p>The <code>margot.sim</code> package provides a simulation framework to quantify how statistical estimators perform when the data they are fed are <em>shadows</em> of a true causal process. This concept nods to Plato’s “Allegory of the Cave,” where prisoners mistake shadows cast on walls for reality (Bloom, Kirsch, et al. 1968). <code>margot.sim</code> gives us access to simulated ground truth so that we can evaluate how far our data and modelling choices can mislead us. The framework’s power comes from its consistent architecture that maintains <strong>a clean separation between the true data-generating process and the distorted data that investigators observe</strong>, allowing for principled evaluation of statistical methods in the face of data limitations that inevitably arise in science (Bulbulia 2024).</p>
+<p>MIT License - see <a href="LICENSE.html">LICENSE.md</a> for details</p>
+</div>
+<div class="section level2">
+<h2 id="acknowledgments">Acknowledgments<a class="anchor" aria-label="anchor" href="#acknowledgments"></a>
+</h2>
+<p>The shadow metaphor draws inspiration from Plato’s Allegory of the Cave, reminding us that observed data are often distorted reflections of underlying truths.</p>
 </div>
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/citation.html" class="external-link">citation</a></span><span class="op">(</span><span class="st">"margot.sim"</span><span class="op">)</span></span></code></pre></div>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
-<div id="ref-bloom1968republic" class="csl-entry">
-Bloom, Allan, Adam Kirsch, et al. 1968. <em>The Republic of Plato</em>. Vol. 2. Basic Books New York.
-</div>
-<div id="ref-bulbulia2024wierd" class="csl-entry">
-Bulbulia, J. A. 2024. “Methods in Causal Inference Part 3: Measurement Error and External Validity Threats.” <em>Evolutionary Human Sciences</em> 6: e42. <a href="https://doi.org/10.1017/ehs.2024.33" class="external-link uri">https://doi.org/10.1017/ehs.2024.33</a>.
-</div>
-</div>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># TBA</span></span></code></pre></div>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
@@ -386,6 +561,7 @@ Bulbulia, J. A. 2024. “Methods in Causal Inference Part 3: Measurement Error a
 <li><a href="https://opensource.org/licenses/MIT" class="external-link"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a></li>
 <li><a href="https://app.codecov.io/gh/go-bayes/margot.sim" class="external-link"><img src="https://codecov.io/gh/go-bayes/margot.sim/graph/badge.svg" alt="Codecov test coverage"></a></li>
 <li><a href="https://github.com/go-bayes/margot.sim" class="external-link"><img src="https://img.shields.io/github/stars/go-bayes/margot.sim?style=social" alt="GitHub stars"></a></li>
+<li><a href="https://github.com/go-bayes/margot.sim/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/go-bayes/margot.sim/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
 </ul>
 </div>
 

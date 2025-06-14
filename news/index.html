@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">margot.sim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -23,8 +23,19 @@
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Advanced Topics</h6></li>
     <li><a class="dropdown-item" href="../articles/applying-shadows.html">Applying Observational Shadows</a></li>
+    <li><a class="dropdown-item" href="../articles/truncation-coarsening.html">Truncation and Coarsening</a></li>
     <li><a class="dropdown-item" href="../articles/monte-carlo-simple.html">Monte Carlo Evaluation</a></li>
     <li><a class="dropdown-item" href="../articles/shift-interventions.html">Shift Interventions</a></li>
+    <li><a class="dropdown-item" href="../articles/transport-weights-shadows.html">Transport Weights and Shadows</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Practical Applications</h6></li>
+    <li><a class="dropdown-item" href="../articles/shift-weights.html">Shift Interventions with Sampling Weights</a></li>
+    <li><a class="dropdown-item" href="../articles/censoring-effect-mod.html">Censoring and Effect Modification</a></li>
+    <li><a class="dropdown-item" href="../articles/heterogeneous-effects.html">Heterogeneous Treatment Effects</a></li>
+    <li><a class="dropdown-item" href="../articles/advanced-shift-interventions.html">Advanced Shift Interventions</a></li>
+    <li><a class="dropdown-item" href="../articles/misclassification-bias.html">Misclassification Bias</a></li>
+    <li><a class="dropdown-item" href="../articles/scenario-sensitivity.html">Scenario-Based Sensitivity Analysis</a></li>
+    <li><a class="dropdown-item" href="../articles/practical-workflow.html">Complete Analysis Workflow</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://github.com/go-bayes/margot.sim" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
@@ -40,6 +51,234 @@
       <small>Source: <a href="https://github.com/go-bayes/margot.sim/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.1.3" id="margotsim-013-2025-06-12-development-version">margot.sim 0.1.3 (2025-06-12 development version)<a class="anchor" aria-label="anchor" href="#margotsim-013-2025-06-12-development-version"></a></h2>
+<div class="section level3">
+<h3 id="major-new-features-0-1-3">Major New Features<a class="anchor" aria-label="anchor" href="#major-new-features-0-1-3"></a></h3>
+<div class="section level4">
+<h4 id="scenario-framework-for-systematic-sensitivity-analysis-0-1-3">Scenario Framework for Systematic Sensitivity Analysis<a class="anchor" aria-label="anchor" href="#scenario-framework-for-systematic-sensitivity-analysis-0-1-3"></a></h4>
+<ul><li>
+<strong>Core Infrastructure</strong>: New framework for bundling shadows into documented research scenarios
+<ul><li>
+<code><a href="../reference/create_scenario.html">create_scenario()</a></code>: Create scenarios with shadows, descriptions, justifications, and references</li>
+<li>
+<code><a href="../reference/apply_scenario.html">apply_scenario()</a></code>: Apply all shadows in a scenario while preserving dual data architecture</li>
+<li>
+<code><a href="../reference/compare_scenarios.html">compare_scenarios()</a></code>: Compare causal effects across multiple scenarios</li>
+<li>
+<code><a href="../reference/sensitivity_analysis.html">sensitivity_analysis()</a></code>: Monte Carlo evaluation across scenarios</li>
+</ul></li>
+<li>
+<strong>Pre-built Scenario Library</strong>: Common research contexts with realistic observational challenges
+<ul><li>
+<code><a href="../reference/scenario_oracle.html">scenario_oracle()</a></code>: Perfect measurement benchmark</li>
+<li>
+<code><a href="../reference/scenario_rct_typical.html">scenario_rct_typical()</a></code>: Well-conducted RCT with minimal biases</li>
+<li>
+<code><a href="../reference/scenario_rct_pragmatic.html">scenario_rct_pragmatic()</a></code>: Real-world trial conditions</li>
+<li>
+<code><a href="../reference/scenario_ehr_typical.html">scenario_ehr_typical()</a></code>: Electronic health records with coding errors and missingness</li>
+<li>
+<code><a href="../reference/scenario_survey_typical.html">scenario_survey_typical()</a></code>: Survey data with self-report biases</li>
+<li>
+<code><a href="../reference/scenario_registry_typical.html">scenario_registry_typical()</a></code>: Administrative data with truncation and coarsening</li>
+<li>
+<code><a href="../reference/scenario_pessimistic.html">scenario_pessimistic()</a></code>: Worst-case plausible scenario</li>
+<li>
+<code><a href="../reference/scenario_collection.html">scenario_collection()</a></code>: Get standard scenario set for sensitivity analysis</li>
+</ul></li>
+<li>
+<strong>Simple Scenario Library</strong>: Alternative implementations that work with standard margot_simulate() output
+<ul><li>
+<code><a href="../reference/scenario_rct_simple.html">scenario_rct_simple()</a></code>, <code><a href="../reference/scenario_observational_simple.html">scenario_observational_simple()</a></code>, <code><a href="../reference/scenario_collection_simple.html">scenario_collection_simple()</a></code>
+</li>
+</ul></li>
+</ul></div>
+<div class="section level4">
+<h4 id="extended-shadow-types-0-1-3">Extended Shadow Types<a class="anchor" aria-label="anchor" href="#extended-shadow-types-0-1-3"></a></h4>
+<ul><li>
+<strong>Truncation Shadows</strong> (<code><a href="../reference/create_truncation_shadow.html">create_truncation_shadow()</a></code>): Model measurement limits
+<ul><li>“simple” type: Values beyond thresholds become NA</li>
+<li>“boundary” type: Values pile up at boundaries (e.g., “200k+” for income)</li>
+<li>Handles laboratory equipment limits, survey bounds, privacy top-coding</li>
+</ul></li>
+<li>
+<strong>Coarsening Shadows</strong> (<code><a href="../reference/create_coarsening_shadow.html">create_coarsening_shadow()</a></code>): Convert continuous to categorical data
+<ul><li>Multiple handling strategies: “midpoint”, “lower”, “upper”, “random”, “heaping”</li>
+<li>Heaping algorithm models realistic digit preference (e.g., ages ending in 0 or 5)</li>
+<li>Supports custom breaks or automatic binning</li>
+</ul></li>
+<li>
+<strong>Mode Effects Shadows</strong> (<code><a href="../reference/create_mode_effects_shadow.html">create_mode_effects_shadow()</a></code>): Measurement varies by collection method
+<ul><li>Define mode-specific transformation functions</li>
+<li>Model phone vs web vs in-person survey differences</li>
+<li>Preserves relationships while adding systematic mode effects</li>
+</ul></li>
+</ul></div>
+</div>
+<div class="section level3">
+<h3 id="new-documentation-0-1-3">New Documentation<a class="anchor" aria-label="anchor" href="#new-documentation-0-1-3"></a></h3>
+<div class="section level4">
+<h4 id="vignettes-0-1-3">Vignettes<a class="anchor" aria-label="anchor" href="#vignettes-0-1-3"></a></h4>
+<ul><li>
+<strong>“Scenario-Based Sensitivity Analysis”</strong> (<code><a href="../articles/scenario-sensitivity.html">vignette("scenario-sensitivity")</a></code>):
+<ul><li>Comprehensive guide to using scenarios for systematic sensitivity analysis</li>
+<li>Examples of creating custom scenarios for specific research contexts</li>
+<li>Threshold analysis to find when conclusions change</li>
+</ul></li>
+<li>
+<strong>“Truncation and Coarsening: When Data Loses Precision”</strong> (<code><a href="../articles/truncation-coarsening.html">vignette("truncation-coarsening")</a></code>):
+<ul><li>Detailed examples of truncation vs censoring</li>
+<li>Impact of coarsening on causal estimates</li>
+<li>Realistic heaping patterns in self-reported data</li>
+</ul></li>
+</ul></div>
+</div>
+<div class="section level3">
+<h3 id="improvements-0-1-3">Improvements<a class="anchor" aria-label="anchor" href="#improvements-0-1-3"></a></h3>
+<div class="section level4">
+<h4 id="enhanced-architecture-0-1-3">Enhanced Architecture<a class="anchor" aria-label="anchor" href="#enhanced-architecture-0-1-3"></a></h4>
+<ul><li>All new shadows integrate with existing <code><a href="../reference/apply_shadow.html">apply_shadow()</a></code> S3 dispatch system</li>
+<li>Comprehensive input validation and error messages</li>
+<li>Temporal order validation extended to new shadow types</li>
+<li>Print methods for scenario objects and comparison results</li>
+<li>Plot methods for scenario comparisons using ggplot2</li>
+</ul></div>
+<div class="section level4">
+<h4 id="testing-and-quality-0-1-3">Testing and Quality<a class="anchor" aria-label="anchor" href="#testing-and-quality-0-1-3"></a></h4>
+<ul><li>Added 77 new tests for scenario framework</li>
+<li>Added 49 tests for extended shadow types</li>
+<li>All new functions have comprehensive edge case coverage</li>
+<li>Updated _pkgdown.yml with new function categories</li>
+</ul></div>
+<div class="section level4">
+<h4 id="examples-0-1-3">Examples<a class="anchor" aria-label="anchor" href="#examples-0-1-3"></a></h4>
+<ul><li>Added examples to all major scenario functions</li>
+<li>Created realistic COVID vaccine effectiveness scenario example</li>
+<li>Demonstrated systematic sensitivity analysis workflows</li>
+</ul></div>
+</div>
+<div class="section level3">
+<h3 id="technical-details-0-1-3">Technical Details<a class="anchor" aria-label="anchor" href="#technical-details-0-1-3"></a></h3>
+<div class="section level4">
+<h4 id="s3-methods-0-1-3">S3 Methods<a class="anchor" aria-label="anchor" href="#s3-methods-0-1-3"></a></h4>
+<ul><li>
+<code><a href="../reference/apply_shadow.truncation_shadow.html">apply_shadow.truncation_shadow()</a></code>: Handles both simple and boundary truncation</li>
+<li>
+<code><a href="../reference/apply_shadow.coarsening_shadow.html">apply_shadow.coarsening_shadow()</a></code>: Implements all coarsening strategies</li>
+<li>
+<code><a href="../reference/apply_shadow.mode_effects_shadow.html">apply_shadow.mode_effects_shadow()</a></code>: Applies mode-specific transformations</li>
+<li>
+<code><a href="../reference/print.margot_scenario.html">print.margot_scenario()</a></code>: Formatted output for scenarios</li>
+<li>
+<code><a href="../reference/print.margot_scenario_result.html">print.margot_scenario_result()</a></code>: Results from scenario application</li>
+<li>
+<code><a href="../reference/print.margot_scenario_comparison.html">print.margot_scenario_comparison()</a></code>: Comparison table with bias calculations</li>
+<li>
+<code><a href="../reference/plot.margot_scenario_comparison.html">plot.margot_scenario_comparison()</a></code>: Visual comparison of effects</li>
+<li>
+<code><a href="../reference/summary.margot_sensitivity_analysis.html">summary.margot_sensitivity_analysis()</a></code>: Summary of Monte Carlo sensitivity results</li>
+</ul></div>
+<div class="section level4">
+<h4 id="internal-functions-0-1-3">Internal Functions<a class="anchor" aria-label="anchor" href="#internal-functions-0-1-3"></a></h4>
+<ul><li>Enhanced <code><a href="../reference/apply_shadows_with_truth.html">apply_shadows_with_truth()</a></code> to work with scenario framework</li>
+<li>Added bracket parsing for coarsening shadows</li>
+<li>Implemented realistic heaping algorithm with NA handling</li>
+</ul></div>
+</div>
+<div class="section level3">
+<h3 id="bug-fixes-0-1-3">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-1-3"></a></h3>
+<ul><li>Fixed differential error function signatures to match expected interface</li>
+<li>Improved handling of interval parsing in coarsening shadows</li>
+<li>Fixed NA handling in heaping algorithm</li>
+<li>Removed non-implemented selection shadow from pessimistic scenario</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.1.2" id="margotsim-012-2025-06-11">margot.sim 0.1.2 (2025-06-11)<a class="anchor" aria-label="anchor" href="#margotsim-012-2025-06-11"></a></h2>
+<div class="section level3">
+<h3 id="new-features-0-1-2">New features<a class="anchor" aria-label="anchor" href="#new-features-0-1-2"></a></h3>
+<div class="section level4">
+<h4 id="shadow-bias-comparison-framework-0-1-2">Shadow Bias Comparison Framework<a class="anchor" aria-label="anchor" href="#shadow-bias-comparison-framework-0-1-2"></a></h4>
+<ul><li>Added comprehensive framework for comparing causal effects before and after applying observational shadows
+<ul><li>
+<code><a href="../reference/compute_causal_effects.html">compute_causal_effects()</a></code>: Standardized function for computing ATE, ATT, and ATU from data</li>
+<li>
+<code><a href="../reference/compute_effects_from_sim.html">compute_effects_from_sim()</a></code>: Wrapper for margot simulation data with proper time indexing</li>
+<li>
+<code><a href="../reference/compare_shadow_bias.html">compare_shadow_bias()</a></code>: Calculates absolute and relative bias for each estimand</li>
+<li>
+<code><a href="../reference/apply_shadows_with_truth.html">apply_shadows_with_truth()</a></code>: Preserves complete data alongside shadowed observations</li>
+<li>
+<code><a href="../reference/compare_shadow_effects.html">compare_shadow_effects()</a></code>: Full workflow for comparing true vs observed effects</li>
+</ul></li>
+</ul></div>
+<div class="section level4">
+<h4 id="transport-weights-and-generalizability-0-1-2">Transport Weights and Generalizability<a class="anchor" aria-label="anchor" href="#transport-weights-and-generalizability-0-1-2"></a></h4>
+<ul><li>Added support for transportability analyses to generalize from samples to target populations
+<ul><li>
+<code><a href="../reference/simulate_ate_data_with_weights.html">simulate_ate_data_with_weights()</a></code>: Direct replacement for legacy function with identical interface</li>
+<li>
+<code><a href="../reference/margot_transport_analysis.html">margot_transport_analysis()</a></code>: Enhanced version integrating shadows with transport weights</li>
+<li>Shows how observational distortions affect transported estimates differently in source vs target populations</li>
+<li>Handles effect modification that differs between sample and population</li>
+</ul></li>
+</ul></div>
+<div class="section level4">
+<h4 id="enhanced-examples-and-documentation-0-1-2">Enhanced Examples and Documentation<a class="anchor" aria-label="anchor" href="#enhanced-examples-and-documentation-0-1-2"></a></h4>
+<ul><li>
+<code><a href="../reference/example_shadow_bias_analysis.html">example_shadow_bias_analysis()</a></code>: Complete workflow demonstrating shadow bias evaluation</li>
+<li>
+<code><a href="../reference/example_shadow_scenarios.html">example_shadow_scenarios()</a></code>: Compares bias across multiple shadow combinations</li>
+<li>
+<code><a href="../reference/example_weighted_shadow_analysis.html">example_weighted_shadow_analysis()</a></code>: Shows transport weights interacting with shadows</li>
+</ul></div>
+<div class="section level4">
+<h4 id="new-vignettes-0-1-2">New Vignettes<a class="anchor" aria-label="anchor" href="#new-vignettes-0-1-2"></a></h4>
+<ul><li>
+<strong>“Shift Interventions with Sampling Weights”</strong>: Demonstrates progressive interventions with population weighting</li>
+<li>
+<strong>“Censoring and Effect Modification”</strong>: Explores differential censoring by severity with IPCW correction</li>
+<li>
+<strong>“Heterogeneous Treatment Effects and Simpson’s Paradox”</strong>: Shows how aggregation can mask subgroup benefits</li>
+<li>
+<strong>“Advanced Shift Interventions”</strong>: Covers threshold, bounded, responsive, and combined shift patterns</li>
+<li>
+<strong>“Misclassification Bias”</strong>: Compares plain vs differential misclassification with model misspecification</li>
+<li>
+<strong>“Practical Workflow”</strong>: Complete analysis pipeline from design to reporting</li>
+<li>
+<strong>“Transport Weights and Shadows”</strong>: Generalizability with observational distortions</li>
+</ul></div>
+</div>
+<div class="section level3">
+<h3 id="improvements-0-1-2">Improvements<a class="anchor" aria-label="anchor" href="#improvements-0-1-2"></a></h3>
+<div class="section level4">
+<h4 id="dual-data-architecture-0-1-2">Dual Data Architecture<a class="anchor" aria-label="anchor" href="#dual-data-architecture-0-1-2"></a></h4>
+<ul><li>Modified <code><a href="../reference/margot_simulate_causal.html">margot_simulate_causal()</a></code> to support dual data structure (<code>data_true</code> and <code>data_observed</code>)</li>
+<li>Shadows now preserve original values systematically for ground truth comparisons</li>
+<li>Enhanced print methods for shadow results and effect comparisons</li>
+</ul></div>
+<div class="section level4">
+<h4 id="sampling-weights-integration-0-1-2">Sampling Weights Integration<a class="anchor" aria-label="anchor" href="#sampling-weights-integration-0-1-2"></a></h4>
+<ul><li>Sampling weights are fully integrated throughout the effect computation pipeline</li>
+<li>Weights preserved through shadow application process</li>
+<li>Support for comparing weighted (target population) vs unweighted (source population) effects</li>
+</ul></div>
+<div class="section level4">
+<h4 id="documentation-0-1-2">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-1-2"></a></h4>
+<ul><li>Added comprehensive design documentation in CLAUDE.md</li>
+<li>Updated README with transport weights example</li>
+<li>Enhanced _pkgdown.yml structure with new function categories</li>
+</ul></div>
+</div>
+<div class="section level3">
+<h3 id="bug-fixes-0-1-2">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-1-2"></a></h3>
+<ul><li>Fixed wave indexing to properly handle margot.sim structure (wave 0: baseline, wave 1: treatment, wave 2: outcome)</li>
+<li>Improved handling of non-binary treatments in effect computation (with appropriate warnings)</li>
+<li>Fixed recursive print method issue in shadow_bias_comparison</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.1" id="margotsim-011-2025-06-10">margot.sim 0.1.1 (2025-06-10)<a class="anchor" aria-label="anchor" href="#margotsim-011-2025-06-10"></a></h2>
 <div class="section level3">
@@ -68,7 +307,7 @@
 </ul></div>
 </div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.1.0" id="id_2025-06-10-margotsim-010">[2025-06-10] margot.sim 0.1.0<a class="anchor" aria-label="anchor" href="#id_2025-06-10-margotsim-010"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.1.0" id="margotsim-010-2025-06-10">margot.sim 0.1.0 (2025-06-10)<a class="anchor" aria-label="anchor" href="#margotsim-010-2025-06-10"></a></h2>
 <div class="section level3">
 <h3 id="new-0-1-0">New<a class="anchor" aria-label="anchor" href="#new-0-1-0"></a></h3>
 <ul><li>Initial release of margot.sim package</li>
