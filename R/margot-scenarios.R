@@ -64,8 +64,8 @@
 #'     ),
 #'     missingness = create_item_missingness_shadow(
 #'       variables = c("lab_values", "vitals"),
-#'       mechanism = "MAR",
-#'       rate = 0.30,
+#'       missing_rate = 0.30,
+#'       missing_mechanism = "MAR",
 #'       dependent_vars = c("age", "severity")
 #'     )
 #'   ),
@@ -110,63 +110,7 @@ create_scenario <- function(name,
   return(scenario)
 }
 
-#' Print method for scenario objects
-#'
-#' @param x A margot_scenario object
-#' @param ... Additional arguments (ignored)
-#'
-#' @export
-print.margot_scenario <- function(x, ...) {
-  cat("Margot Scenario: ", x$name, "\n", sep = "")
-  cat(rep("=", nchar(x$name) + 17), "\n", sep = "")
-  
-  if (nchar(x$description) > 0) {
-    cat("Description: ", x$description, "\n", sep = "")
-  }
-  
-  # access additional fields
-  if (!is.null(x$justification) && nchar(x$justification) > 0) {
-    cat("\nJustification: ", x$justification, "\n", sep = "")
-  }
-  
-  if (!is.null(x$references) && length(x$references) > 0) {
-    cat("\nReferences:\n")
-    for (i in seq_along(x$references)) {
-      cat("  [", i, "] ", x$references[i], "\n", sep = "")
-    }
-  }
-  
-  cat("\nShadows (", length(x$shadows), "):\n", sep = "")
-  if (length(x$shadows) > 0) {
-    shadow_names <- names(x$shadows)
-    if (is.null(shadow_names)) {
-      shadow_names <- paste0("Shadow ", seq_along(x$shadows))
-    }
-    
-    for (i in seq_along(x$shadows)) {
-      shadow <- x$shadows[[i]]
-      cat("  - ", shadow_names[i], ": ", shadow$type, " shadow", sep = "")
-      
-      # add key details based on shadow type
-      if (shadow$type == "measurement_error") {
-        cat(" (", shadow$params$error_type, ")", sep = "")
-      } else if (shadow$type == "censoring") {
-        cat(" (rate: ", shadow$params$rate, ")", sep = "")
-      } else if (shadow$type == "item_missingness") {
-        cat(" (", shadow$params$mechanism, ", rate: ", shadow$params$rate, ")", sep = "")
-      }
-      cat("\n")
-    }
-  } else {
-    cat("  (No shadows - represents perfect measurement)\n")
-  }
-  
-  if (!is.null(x$population)) {
-    cat("\nPopulation: ", x$population$name, "\n", sep = "")
-  }
-  
-  invisible(x)
-}
+# print.margot_scenario method moved to margot-s3-methods.R for consistency
 
 # Scenario Application ----------------------------------------------------
 
@@ -466,6 +410,9 @@ plot.margot_scenario_comparison <- function(x, estimand = "ate", ...) {
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     stop("Package 'ggplot2' is required for plotting")
   }
+  
+  # declare variables to avoid R CMD check notes
+  Effect <- Scenario <- N_Shadows <- NULL
   
   # extract data for plotting
   plot_data <- data.frame(

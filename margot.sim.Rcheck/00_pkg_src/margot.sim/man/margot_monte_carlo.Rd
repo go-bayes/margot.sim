@@ -12,11 +12,14 @@ margot_monte_carlo(
   estimator_fn = NULL,
   truth_fn = NULL,
   extract_fn = NULL,
-  parallel = FALSE,
+  parallel = getOption("margot.parallel", FALSE),
   n_cores = NULL,
-  seed = NULL,
-  verbose = TRUE,
-  save_data = FALSE
+  seed = getOption("margot.seed", NULL),
+  verbose = getOption("margot.verbose", TRUE),
+  save_data = FALSE,
+  memory_limit = getOption("margot.max_memory", NULL),
+  summarize_fn = NULL,
+  checkpoint_dir = getOption("margot.cache_dir", NULL)
 )
 }
 \arguments{

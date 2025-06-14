@@ -95,6 +95,10 @@ reference:
   - create_lmtp_style_shifts
   - create_mtp_intervention
   - create_ips_intervention
+  - create_lmtp_wrapper
+  - create_interaction_shift
+  - create_multi_treatment_shift
+  - create_interaction_patterns
 - title: Shadowing Framework
   desc: Functions for applying observational distortions
   contents:
@@ -181,6 +185,9 @@ reference:
   - summary.margot_mc_results
   - print.mc_comparison
   - create_rng_streams
+  - create_seed_sequence
+  - setup_parallel_rng
+  - validate_parallel_rng
   - validate_rng_reproducibility
   - diagnose_rng_streams
   - create_data_summarizer
@@ -249,6 +256,15 @@ reference:
   - margot_extract_var
   - margot_missingness_summary
   - analyze_heterogeneity
+  - check_margot_suggests
+  - margot_loaded_suggests
+  - margot_optional_deps
+  - margot_options
+  - margot_option_defaults
+  - has_margot_core
+  - get_class_source
+  - print.margot_suggests
+  - "`%||%`"
 - title: Examples
   desc: Example functions demonstrating package features
   contents:

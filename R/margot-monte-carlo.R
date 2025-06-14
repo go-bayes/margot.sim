@@ -20,6 +20,9 @@
 #' @param seed Random seed
 #' @param verbose Print progress?
 #' @param save_data Logical, save datasets from each replication?
+#' @param memory_limit Maximum memory usage in GB (e.g., "4GB")
+#' @param summarize_fn Optional function to summarize results during simulation
+#' @param checkpoint_dir Directory for saving intermediate checkpoints
 #'
 #' @return Object of class "margot_mc_results" with simulation results
 #' @export
@@ -55,14 +58,14 @@ margot_monte_carlo <- function(
     estimator_fn = NULL,
     truth_fn = NULL,
     extract_fn = NULL,
-    parallel = FALSE,
+    parallel = getOption("margot.parallel", FALSE),
     n_cores = NULL,
-    seed = NULL,
-    verbose = TRUE,
+    seed = getOption("margot.seed", NULL),
+    verbose = getOption("margot.verbose", TRUE),
     save_data = FALSE,
-    memory_limit = NULL,
+    memory_limit = getOption("margot.max_memory", NULL),
     summarize_fn = NULL,
-    checkpoint_dir = NULL
+    checkpoint_dir = getOption("margot.cache_dir", NULL)
 ) {
 
   # Input validation

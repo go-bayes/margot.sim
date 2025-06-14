@@ -1,6 +1,12 @@
+base
+methods
+datasets
+utils
+grDevices
+graphics
+stats
 margot.sim
 ggplot2
 dplyr
 tidyr
 survival
-patchwork

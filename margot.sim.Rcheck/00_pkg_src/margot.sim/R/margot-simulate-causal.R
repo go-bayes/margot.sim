@@ -11,7 +11,10 @@
 #'
 #' @param n Integer. Number of subjects to simulate
 #' @param waves Integer. Number of measurement waves
-#' @param treatments Character vector. Names of treatment variables (currently uses first)
+#' @param treatments Character vector or list. Names of treatment variables. Can be:
+#'   - Single treatment: "a" (backward compatible)
+#'   - Multiple treatments: c("a", "b")
+#'   - Named list: list(belief_god = "believe_god", belief_spirit = "believe_spirit")
 #' @param interventions Named list of intervention functions. Each function should
 #'   have signature function(data, time, trt) and return treatment values
 #' @param sampling_weights Weights or function to create target population
@@ -25,12 +28,16 @@
 #'
 #' @return Object of class "margot_causal_sim" containing:
 #'   - data: List of datasets under each intervention
+#'   - data_true: Complete data before any shadows (if shadows applied)
+#'   - data_observed: Data after shadows applied (if shadows applied)
 #'   - effects: True causal effects (if multiple interventions)
+#'   - effects_true: Effects computed from true data
+#'   - effects_observed: Effects computed from observed data
 #'   - censoring_bias: Bias induced by censoring (if apply_censoring = TRUE)
 #'   - metadata: Simulation metadata
 #'
 #' @examples
-#' # Define interventions
+#' # Example 1: Single treatment (backward compatible)
 #' interventions <- list(
 #'   never_treat = function(data, time, trt) {
 #'     rep(0, nrow(data))
@@ -55,6 +62,38 @@
 #'     verbose = TRUE
 #'   )
 #' )
+#' 
+#' # Example 2: Multi-treatment with interaction patterns
+#' # Use the new interaction shift functions
+#' interaction_interventions <- list(
+#'   both_high = create_interaction_patterns(
+#'     trt_patterns = list("belief_god" = 1, "belief_spirit" = 1),
+#'     combination = "all"
+#'   ),
+#'   only_god = create_interaction_patterns(
+#'     trt_patterns = list("belief_god" = 1, "belief_spirit" = 0),
+#'     combination = "all"
+#'   ),
+#'   only_spirit = create_interaction_patterns(
+#'     trt_patterns = list("belief_god" = 0, "belief_spirit" = 1),
+#'     combination = "all"
+#'   ),
+#'   neither = create_interaction_patterns(
+#'     trt_patterns = list("belief_god" = 0, "belief_spirit" = 0),
+#'     combination = "all"
+#'   )
+#' )
+#' 
+#' \dontrun{
+#' # Simulate multi-treatment scenario
+#' multi_results <- margot_simulate_causal(
+#'   n = 1000,
+#'   waves = 3,
+#'   treatments = c("belief_god", "belief_spirit"),
+#'   interventions = interaction_interventions,
+#'   apply_censoring = FALSE
+#' )
+#' }
 #'
 #' @export
 margot_simulate_causal <- function(
@@ -77,6 +116,19 @@ margot_simulate_causal <- function(
   if (is.null(intervention_names) || any(intervention_names == "")) {
     stop("all interventions must be named")
   }
+  
+  # process treatments parameter
+  if (is.list(treatments) && !is.null(names(treatments))) {
+    # named list format
+    treatment_names <- names(treatments)
+    treatment_vars <- unname(unlist(treatments))  # unname to avoid named vector
+  } else if (is.character(treatments)) {
+    # vector format
+    treatment_vars <- treatments
+    treatment_names <- treatments
+  } else {
+    stop("treatments must be a character vector or named list")
+  }
 
   # simulate under each intervention
   data_list <- list()
@@ -96,12 +148,46 @@ margot_simulate_causal <- function(
       latent_dependence = FALSE
     )
 
+    # create intervention wrapper for multi-treatment support
+    intervention_fn <- interventions[[name]]
+    
+    # check if this is a multi-treatment intervention
+    if (length(treatment_vars) > 1) {
+      # check if intervention supports multi-treatment (has trt_list parameter)
+      if ("trt_list" %in% names(formals(intervention_fn))) {
+        # create wrapper that calls LMTP-style intervention
+        wrapped_intervention <- function(data, time, trt) {
+          # build treatment list for current wave
+          wave_treatments <- paste0("t", time, "_", treatment_vars)
+          names(wave_treatments) <- treatment_names
+          
+          # call multi-treatment intervention
+          result <- intervention_fn(data, trt_list = wave_treatments)
+          
+          # return value for specific treatment requested
+          trt_base <- gsub("^t[0-9]+_", "", trt)
+          idx <- which(treatment_vars == trt_base)
+          if (length(idx) > 0) {
+            return(result[[wave_treatments[idx]]])
+          } else {
+            return(data[[trt]])  # fallback to natural value
+          }
+        }
+      } else {
+        # single-treatment intervention, use as-is
+        wrapped_intervention <- intervention_fn
+      }
+    } else {
+      # single treatment, use intervention as-is
+      wrapped_intervention <- intervention_fn
+    }
+    
     # simulate complete data (no censoring in generation)
     # but we need to pass censoring params to store probabilities
     complete_data <- margot_simulate(
       n = n,
       waves = waves,
-      intervention = interventions[[name]],
+      intervention = wrapped_intervention,
       params = sim_params,
       sampling_weights = sampling_weights,
       apply_process_function = FALSE,  # do this later
@@ -175,6 +261,7 @@ margot_simulate_causal <- function(
 
       # bias from censoring if applicable
       censoring_bias <- NULL
+      observed_effects <- NULL
       if (!is.null(observed_data)) {
         observed_effects <- compute_true_effects(
           observed_data,
@@ -195,26 +282,41 @@ margot_simulate_causal <- function(
   } else {
     effects <- NULL
     censoring_bias <- NULL
+    observed_effects <- NULL
   }
 
-  # return results
-  structure(
-    list(
-      data = data_list,
-      effects = effects,
-      censoring_bias = censoring_bias,
-      metadata = list(
-        n = n,
-        waves = waves,
-        treatments = treatments,
-        intervention_names = intervention_names,
-        sampling_weights_applied = !is.null(sampling_weights),
-        censoring_applied = apply_censoring,
-        timestamp = Sys.time()
-      )
-    ),
-    class = "margot_causal_sim"
+  # prepare dual data architecture output
+  result <- list(
+    data = data_list,
+    effects = effects,
+    censoring_bias = censoring_bias,
+    metadata = list(
+      n = n,
+      waves = waves,
+      treatments = treatment_vars,
+      treatment_names = treatment_names,
+      intervention_names = intervention_names,
+      sampling_weights_applied = !is.null(sampling_weights),
+      censoring_applied = apply_censoring,
+      timestamp = Sys.time()
+    )
   )
+  
+  # add dual data architecture when censoring/shadows applied
+  if (apply_censoring) {
+    # extract complete and observed data separately
+    result$data_true <- lapply(data_list, function(x) x$complete)
+    result$data_observed <- lapply(data_list, function(x) x$observed)
+    
+    # compute effects using new interface if we have the right structure
+    if (length(intervention_names) >= 2 && !is.null(effects)) {
+      # for now, keep the existing effects structure
+      result$effects_true <- effects
+      result$effects_observed <- observed_effects
+    }
+  }
+  
+  structure(result, class = "margot_causal_sim")
 }
 
 #' Compute true causal effects from simulated data
@@ -280,6 +382,17 @@ print.margot_causal_sim <- function(x, ...) {
   cat("--------------------------------\n")
   cat("sample size:", x$metadata$n, "\n")
   cat("waves:", x$metadata$waves, "\n")
+  
+  # handle single or multiple treatments
+  if (length(x$metadata$treatments) == 1) {
+    cat("treatment:", x$metadata$treatments, "\n")
+  } else {
+    cat("treatments:", paste(x$metadata$treatments, collapse = ", "), "\n")
+    if (!identical(x$metadata$treatment_names, x$metadata$treatments)) {
+      cat("treatment names:", paste(x$metadata$treatment_names, collapse = ", "), "\n")
+    }
+  }
+  
   cat("interventions:", paste(x$metadata$intervention_names, collapse = ", "), "\n")
 
   if (x$metadata$sampling_weights_applied) {
@@ -288,6 +401,7 @@ print.margot_causal_sim <- function(x, ...) {
 
   if (x$metadata$censoring_applied) {
     cat("censoring: applied (complete and observed data available)\n")
+    cat("data structure: dual architecture (data_true and data_observed)\n")
   }
 
   if (!is.null(x$effects)) {

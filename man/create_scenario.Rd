@@ -79,8 +79,8 @@ ehr_scenario <- create_scenario(
     ),
     missingness = create_item_missingness_shadow(
       variables = c("lab_values", "vitals"),
-      mechanism = "MAR",
-      rate = 0.30,
+      missing_rate = 0.30,
+      missing_mechanism = "MAR",
       dependent_vars = c("age", "severity")
     )
   ),

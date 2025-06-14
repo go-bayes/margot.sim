@@ -4,12 +4,14 @@
 \alias{apply_shadow}
 \title{Apply a shadow to data}
 \usage{
-apply_shadow(data, shadow, ...)
+apply_shadow(data, shadow, preserve_truth = FALSE, ...)
 }
 \arguments{
 \item{data}{Data frame to apply shadow to}
 
 \item{shadow}{A shadow object created with create_shadow()}
+
+\item{preserve_truth}{Logical, whether to preserve original values (default FALSE)}
 
 \item{...}{Additional arguments passed to specific shadow methods}
 }

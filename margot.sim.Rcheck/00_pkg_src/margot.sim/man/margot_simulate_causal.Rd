@@ -21,7 +21,10 @@ margot_simulate_causal(
 
 \item{waves}{Integer. Number of measurement waves}
 
-\item{treatments}{Character vector. Names of treatment variables (currently uses first)}
+\item{treatments}{Character vector or list. Names of treatment variables. Can be:
+- Single treatment: "a" (backward compatible)
+- Multiple treatments: c("a", "b")
+- Named list: list(belief_god = "believe_god", belief_spirit = "believe_spirit")}
 
 \item{interventions}{Named list of intervention functions. Each function should
 have signature function(data, time, trt) and return treatment values}
@@ -42,7 +45,11 @@ have signature function(data, time, trt) and return treatment values}
 \value{
 Object of class "margot_causal_sim" containing:
   - data: List of datasets under each intervention
+  - data_true: Complete data before any shadows (if shadows applied)
+  - data_observed: Data after shadows applied (if shadows applied)
   - effects: True causal effects (if multiple interventions)
+  - effects_true: Effects computed from true data
+  - effects_observed: Effects computed from observed data
   - censoring_bias: Bias induced by censoring (if apply_censoring = TRUE)
   - metadata: Simulation metadata
 }
@@ -56,7 +63,7 @@ for causal inference. Supports:
 - Bias analysis from censoring
 }
 \examples{
-# Define interventions
+# Example 1: Single treatment (backward compatible)
 interventions <- list(
   never_treat = function(data, time, trt) {
     rep(0, nrow(data))
@@ -81,5 +88,37 @@ results <- margot_simulate_causal(
     verbose = TRUE
   )
 )
+
+# Example 2: Multi-treatment with interaction patterns
+# Use the new interaction shift functions
+interaction_interventions <- list(
+  both_high = create_interaction_patterns(
+    trt_patterns = list("belief_god" = 1, "belief_spirit" = 1),
+    combination = "all"
+  ),
+  only_god = create_interaction_patterns(
+    trt_patterns = list("belief_god" = 1, "belief_spirit" = 0),
+    combination = "all"
+  ),
+  only_spirit = create_interaction_patterns(
+    trt_patterns = list("belief_god" = 0, "belief_spirit" = 1),
+    combination = "all"
+  ),
+  neither = create_interaction_patterns(
+    trt_patterns = list("belief_god" = 0, "belief_spirit" = 0),
+    combination = "all"
+  )
+)
+
+\dontrun{
+# Simulate multi-treatment scenario
+multi_results <- margot_simulate_causal(
+  n = 1000,
+  waves = 3,
+  treatments = c("belief_god", "belief_spirit"),
+  interventions = interaction_interventions,
+  apply_censoring = FALSE
+)
+}
 
 }

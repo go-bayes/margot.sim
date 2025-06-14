@@ -7,7 +7,7 @@ This document consolidates feedback from the recent code review with existing im
 ## Immediate Priorities (Do Before API Solidifies)
 
 ### 1. Formal Object System (S3/R6)
-**Status**: Not started  
+**Status**: COMPLETED ✓  
 **Priority**: CRITICAL - Must be done before external users adopt the package  
 **Why**: Once users start writing shadows and scenarios, changing the object system will break their code
 
@@ -48,7 +48,7 @@ validate.margot_shadow <- function(x, ...) {
 - Add new file: `R/margot-s3-methods.R` for generic methods
 
 ### 2. Seed Discipline & Parallel RNG
-**Status**: Partially implemented (basic seed support exists)  
+**Status**: COMPLETED ✓  
 **Priority**: CRITICAL - Silent reproducibility failures are unacceptable  
 **Why**: Current parallel implementation may not guarantee reproducibility
 
@@ -80,7 +80,7 @@ margot_monte_carlo <- function(..., seed = NULL) {
 - All simulation functions to accept and propagate seed parameter
 
 ### 3. Shadow Algebra/Dependencies
-**Status**: Not implemented  
+**Status**: COMPLETED ✓  
 **Priority**: HIGH - Shadows can interact in unexpected ways  
 **Why**: E.g., truncation changes variance assumptions for measurement error
 
@@ -128,7 +128,7 @@ apply_shadows_with_dependencies <- function(data, shadows) {
 - New file: `R/margot-shadow-dependencies.R`
 
 ### 4. Positivity & Support Diagnostics
-**Status**: Not implemented  
+**Status**: COMPLETED ✓  
 **Priority**: HIGH - Users need this immediately  
 **Why**: Violated positivity is a common cause of estimator failure
 
@@ -179,7 +179,7 @@ margot_check_positivity <- function(data, treatment_var, covariates,
 - `R/margot-diagnostics.R` - Positivity and support checks
 
 ### 5. Memory Management
-**Status**: Not implemented  
+**Status**: COMPLETED ✓  
 **Priority**: HIGH - Large simulations can exhaust memory  
 **Why**: 1000 reps × 10,000 rows × 50 vars × 2 (true/observed) = 2-3 GB
 
@@ -221,7 +221,23 @@ margot_monte_carlo <- function(..., summarise_fn = NULL) {
 **Files to modify**:
 - `R/monte-carlo.R` - Add memory management options
 
-### 6. Enhanced Testing Infrastructure
+### 6. Multi-Treatment Support
+**Status**: COMPLETED ✓  
+**Priority**: CRITICAL - Affects API design  
+**Why**: Complex causal questions require multi-treatment interactions
+
+**Implementation**:
+- Updated `margot_simulate_causal` to accept treatment lists
+- Created LMTP-compatible wrapper functions
+- Added interaction shift functions for complex treatment patterns
+- Maintained backward compatibility for single treatments
+
+**Files created/modified**:
+- `R/margot-simulate-causal.R` - Updated for multi-treatment support
+- `R/margot-shift-interventions.R` - Added interaction functions
+- `tests/testthat/test-multi-treatment.R` - Comprehensive tests
+
+### 7. Enhanced Testing Infrastructure
 **Status**: Basic tests exist (54% coverage)  
 **Priority**: HIGH - Need property-based tests  
 **Why**: Must verify bias → 0 as shadow → 0
@@ -258,7 +274,7 @@ test_that("bias approaches zero as shadow strength decreases", {
 - `tests/testthat/test-properties.R` - Property-based tests
 - Update existing tests to improve coverage
 
-### 7. CRAN Compliance
+### 8. CRAN Compliance
 **Status**: Package passes basic R CMD check  
 **Priority**: HIGH - Must be sorted before submission  
 **Why**: CRAN requirements affect design decisions
@@ -292,6 +308,24 @@ Based on IMPLEMENTATION_PLAN.md, these are scheduled for completion before CRAN 
 **Status**: Design complete, not implemented  
 **Priority**: MEDIUM  
 **Implementation**: Add U parameters to `.default_sim_params()`
+
+## Margotsphere Architecture (Future Development)
+
+**Status**: Planning phase  
+**Priority**: LOW - Focus on margot.sim stability first  
+**Why**: Modular ecosystem will enable better maintenance and extension
+
+**Planned packages**:
+- `margot.core` - S3 classes, validation, core infrastructure
+- `margot.wrangle` - Data transformation, long-to-wide conversion
+- `margot.sim` - Simulation engine (current package)
+- `margot.lmtp` - LMTP integration, batch estimators
+- `margot.grf` - GRF integration, heterogeneous effects
+- `margot.viz` - Visualization, tables, graphs
+- `margot.report` - Reporting templates, Quarto integration
+- `margotsphere` - Meta-package importing all above
+
+**Note**: Will only extract S3 classes actually needed by margot.sim to minimize regret.
 
 ## Long-term Features (Post-CRAN)
 

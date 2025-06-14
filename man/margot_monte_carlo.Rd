@@ -12,14 +12,14 @@ margot_monte_carlo(
   estimator_fn = NULL,
   truth_fn = NULL,
   extract_fn = NULL,
-  parallel = FALSE,
+  parallel = getOption("margot.parallel", FALSE),
   n_cores = NULL,
-  seed = NULL,
-  verbose = TRUE,
+  seed = getOption("margot.seed", NULL),
+  verbose = getOption("margot.verbose", TRUE),
   save_data = FALSE,
-  memory_limit = NULL,
+  memory_limit = getOption("margot.max_memory", NULL),
   summarize_fn = NULL,
-  checkpoint_dir = NULL
+  checkpoint_dir = getOption("margot.cache_dir", NULL)
 )
 }
 \arguments{
@@ -46,6 +46,12 @@ margot_monte_carlo(
 \item{verbose}{Print progress?}
 
 \item{save_data}{Logical, save datasets from each replication?}
+
+\item{memory_limit}{Maximum memory usage in GB (e.g., "4GB")}
+
+\item{summarize_fn}{Optional function to summarize results during simulation}
+
+\item{checkpoint_dir}{Directory for saving intermediate checkpoints}
 }
 \value{
 Object of class "margot_mc_results" with simulation results

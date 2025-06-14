@@ -41,22 +41,27 @@
 #'     specificity = 0.90   # 90% of true negatives correctly classified
 #'   )
 #' )
-create_shadow <- function(type = c("censoring", "measurement_error", "selection", "item_missingness", "positivity"),
+create_shadow <- function(type = c("censoring", "measurement_error", "selection", "item_missingness", "positivity", "truncation", "coarsening", "mode_effects"),
                         params = list(),
                         name = NULL) {
   type <- match.arg(type)
 
-  # Validate params based on type
+  # validate params based on type
   params <- validate_shadow_params(type, params)
 
-  structure(
-    list(
-      type = type,
-      params = params,
-      name = name %||% paste0(type, "_shadow")
-    ),
-    class = c(paste0(type, "_shadow"), "margot_shadow")
+  # create shadow using S3 constructor
+  shadow <- new_shadow(
+    type = type,
+    params = params
   )
+  
+  # add name if provided
+  shadow$name <- name %||% paste0(type, "_shadow")
+  
+  # validate the shadow  
+  validate_shadow(shadow)
+  
+  return(shadow)
 }
 
 #' Extract time index from variable name
@@ -140,6 +145,34 @@ validate_shadow_params <- function(type, params) {
              exposure_var = character(),
              filter_fn = NULL
            )
+         },
+         truncation = {
+           defaults <- list(
+             variables = character(),
+             lower = -Inf,
+             upper = Inf,
+             type = "simple"
+           )
+         },
+         coarsening = {
+           defaults <- list(
+             variables = character(),
+             breaks = numeric(),
+             labels = NULL,
+             type = "midpoint",
+             heaping_digits = c(0, 5),
+             heaping_prob = 0.7,
+             include_lowest = TRUE,
+             right = TRUE
+           )
+         },
+         mode_effects = {
+           defaults <- list(
+             variables = character(),
+             mode_var = character(),
+             effect_specs = list(),
+             reference_mode = NULL
+           )
          }
   )
 
@@ -169,11 +202,12 @@ validate_shadow_params <- function(type, params) {
 #'
 #' @param data Data frame to apply shadow to
 #' @param shadow A shadow object created with create_shadow()
+#' @param preserve_truth Logical, whether to preserve original values (default FALSE)
 #' @param ... Additional arguments passed to specific shadow methods
 #'
 #' @return Modified data frame
 #' @export
-apply_shadow <- function(data, shadow, ...) {
+apply_shadow <- function(data, shadow, preserve_truth = FALSE, ...) {
   UseMethod("apply_shadow", shadow)
 }
 
@@ -182,10 +216,11 @@ apply_shadow <- function(data, shadow, ...) {
 #' @param data Data frame
 #' @param shadows List of shadow objects
 #' @param verbose Logical, print progress?
+#' @param preserve_truth Logical, whether to preserve original values (default FALSE)
 #'
 #' @return Data frame with all shadows applied
 #' @export
-apply_shadows <- function(data, shadows, verbose = FALSE) {
+apply_shadows <- function(data, shadows, verbose = FALSE, preserve_truth = FALSE) {
   if (!is.list(shadows)) shadows <- list(shadows)
 
   for (i in seq_along(shadows)) {
@@ -201,7 +236,7 @@ apply_shadows <- function(data, shadows, verbose = FALSE) {
       cat(sprintf("Applying shadow %d/%d: %s\n",
                   i, length(shadows), shadow$name))
     }
-    data <- apply_shadow(data, shadow)
+    data <- apply_shadow(data, shadow, preserve_truth = preserve_truth)
   }
 
   # Add metadata about applied shadows

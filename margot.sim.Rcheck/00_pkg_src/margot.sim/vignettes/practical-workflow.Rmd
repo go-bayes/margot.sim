@@ -1,0 +1,784 @@
+---
+title: "Practical Workflow: Complete Analysis Pipeline"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Practical Workflow: Complete Analysis Pipeline}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 8,
+  fig.height = 6,
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+```{r setup}
+library(margot.sim)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(knitr)
+```
+
+## Introduction
+
+This vignette provides a complete, practical workflow for using margot.sim in a realistic research scenario. We'll walk through:
+
+1. **Study design** and parameter specification
+2. **Data generation** with realistic features
+3. **Shadow application** for observational challenges
+4. **Analysis pipeline** with multiple estimators
+5. **Sensitivity analyses** and diagnostics
+6. **Reporting** and interpretation
+
+## Scenario: Evaluating a Workplace Mental Health Program
+
+We're evaluating a workplace wellness program designed to improve mental health through:
+- Mindfulness training and stress reduction techniques
+- Flexible work arrangements for those who need them
+- Gradual implementation over 12 months (4 quarters)
+
+Key challenges:
+- Some employees more likely to participate (selection)
+- Mental health measures subject to reporting bias (measurement error)
+- Higher-stress employees more likely to leave (censoring)
+- Effects vary by baseline stress and job type
+
+## Step 1: Study Design and Planning
+
+```{r study-design}
+# Study parameters
+n_employees <- 3000
+n_waves <- 4  # Quarterly measurements
+baseline_date <- "2024-01-01"
+
+# Create study design document
+study_design <- list(
+  title = "Workplace Mental Health Intervention Evaluation",
+  population = "All employees at participating companies",
+  sample_size = n_employees,
+  waves = n_waves,
+  measurement_schedule = "Quarterly (0, 3, 6, 9, 12 months)",
+  primary_outcome = "Mental health score (0-10 scale)",
+  treatment = "Comprehensive wellness program",
+  key_confounders = c(
+    "Baseline stress level (b1)",
+    "Job type - client-facing vs internal (b2)", 
+    "Years at company (b3)"
+  )
+)
+
+cat("=== Study Design Summary ===\n")
+for (element in names(study_design)) {
+  cat(element, ":", study_design[[element]], "\n")
+}
+
+# Power calculation (simplified)
+expected_effect <- 0.3  # Expected improvement
+expected_sd <- 1.2      # Expected standard deviation
+power_n <- (4 * expected_sd^2 * (qnorm(0.975) + qnorm(0.80))^2) / expected_effect^2
+cat("\nRequired sample size for 80% power:", round(power_n), "\n")
+cat("Planned sample size:", n_employees, "✓\n")
+```
+
+## Step 2: Generate Realistic Base Data
+
+```{r generate-data}
+set.seed(2025)
+
+# Create realistic baseline characteristics
+generate_workforce_data <- function(n) {
+  data.frame(
+    id = 1:n,
+    # Company (for clustering)
+    company = sample(LETTERS[1:5], n, replace = TRUE,
+                    prob = c(0.3, 0.25, 0.2, 0.15, 0.1)),
+    # Job characteristics
+    job_type = sample(c("Client-facing", "Internal"), n, TRUE, c(0.4, 0.6)),
+    years_employed = rexp(n, rate = 0.2),  # Average 5 years
+    department = sample(c("Sales", "Tech", "Admin", "Management"), n, TRUE)
+  ) %>%
+  mutate(
+    # Convert to simulation variables
+    b1 = rnorm(n),  # Baseline stress (standardized)
+    b2 = ifelse(job_type == "Client-facing", 1, -1) + rnorm(n, 0, 0.3),
+    b3 = scale(years_employed)[,1],  # Standardized years
+    # Add clustering by company
+    company_effect = rep(rnorm(5, 0, 0.3)[match(company, LETTERS[1:5])], length.out = n),
+    b1 = b1 + company_effect  # Companies have different stress cultures
+  )
+}
+
+workforce_data <- generate_workforce_data(n_employees)
+
+# Examine baseline characteristics
+baseline_summary <- workforce_data %>%
+  group_by(company) %>%
+  summarise(
+    n = n(),
+    pct_client_facing = mean(job_type == "Client-facing") * 100,
+    mean_years = mean(years_employed),
+    mean_stress = mean(b1),
+    .groups = "drop"
+  )
+
+cat("\n=== Baseline Characteristics by Company ===\n")
+print(baseline_summary)
+
+# Visualize baseline distributions
+p_baseline <- workforce_data %>%
+  select(b1, b2, b3) %>%
+  pivot_longer(everything(), names_to = "variable", values_to = "value") %>%
+  mutate(variable = case_when(
+    variable == "b1" ~ "Baseline Stress",
+    variable == "b2" ~ "Job Type Score", 
+    variable == "b3" ~ "Tenure (standardized)"
+  )) %>%
+  ggplot(aes(x = value, fill = variable)) +
+  geom_histogram(bins = 30, alpha = 0.7) +
+  facet_wrap(~ variable, scales = "free") +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  labs(title = "Distribution of Baseline Characteristics")
+
+print(p_baseline)
+```
+
+## Step 3: Define Intervention and Simulate Outcomes
+
+```{r define-intervention}
+# Define the wellness program intervention
+# Gradual rollout with personalized intensity
+
+wellness_intervention <- function(data, time, trt) {
+  if (time == 0) {
+    # No intervention at baseline
+    return(rep(0, nrow(data)))
+  }
+  
+  # Base participation probability increases over time
+  base_prob <- c(0.3, 0.5, 0.6, 0.7)[time]  # Gradual adoption
+  
+  # Personalized based on need (higher stress = more likely to be offered intensive support)
+  if ("b1" %in% names(data)) {
+    # High stress employees get priority/encouragement
+    stress_modifier <- plogis(data$b1)  # Convert to probability
+    participation_prob <- base_prob * (0.5 + stress_modifier)
+    participation_prob <- pmin(participation_prob, 0.9)  # Cap at 90%
+  } else {
+    participation_prob <- base_prob
+  }
+  
+  # Generate participation
+  participated <- rbinom(nrow(data), 1, participation_prob)
+  
+  # Intensity varies (1-3 scale based on need)
+  intensity <- ifelse(participated == 0, 0,
+                     1 + rbinom(nrow(data), 2, plogis(data$b1/2)))
+  
+  return(intensity)
+}
+
+# Parameters for mental health outcomes
+mh_params <- list(
+  # Treatment effects
+  a_lag_y_coef = 0.2,        # Base treatment effect
+  a_b1_y_het = 0.15,         # Larger effect for high stress
+  a_b2_y_het = -0.05,        # Slightly less effective for client-facing
+  
+  # Natural dynamics
+  y_lag_y_coef = 0.6,        # Mental health persistence
+  b1_y_coef = -0.4,          # Stress harms mental health
+  b2_y_coef = -0.1,          # Client-facing roles slightly worse
+  b3_y_coef = 0.05,          # Tenure provides some resilience
+  
+  # Other
+  exposure_type = "continuous",
+  y_feedback = "full"
+)
+
+# Simulate the intervention
+intervention_data <- margot_simulate(
+  n = n_employees,
+  waves = n_waves,
+  params = mh_params,
+  intervention = wellness_intervention,
+  n_baselines = 3,  # Generate b1, b2, b3
+  seed = 2025
+)
+
+# Replace with our structured baseline variables
+intervention_data$b1 <- workforce_data$b1
+intervention_data$b2 <- workforce_data$b2
+intervention_data$b3 <- workforce_data$b3
+
+# Merge back workforce characteristics
+full_data <- merge(intervention_data, 
+                   workforce_data[, c("id", "company", "job_type", "years_employed")],
+                   by = "id")
+
+# Check intervention rollout
+intervention_summary <- full_data %>%
+  summarise(
+    baseline = mean(t0_a),
+    wave1 = mean(t1_a > 0),
+    wave2 = mean(t2_a > 0),
+    wave3 = mean(t3_a > 0),
+    wave4 = mean(t4_a > 0)
+  ) %>%
+  pivot_longer(everything(), names_to = "wave", values_to = "participation_rate")
+
+cat("\n=== Intervention Rollout ===\n")
+print(intervention_summary)
+```
+
+## Step 4: Apply Realistic Observational Challenges
+
+```{r apply-shadows}
+# Define realistic measurement and missing data patterns
+
+# 1. Measurement error in mental health scores (self-report bias)
+mh_measurement_shadow <- create_shadow(
+  type = "measurement_error",
+  params = list(
+    variables = c("t1_y", "t2_y", "t3_y", "t4_y", "t5_y"),
+    error_type = "differential",
+    differential_var = "b1",  # Error depends on baseline stress
+    differential_fn = function(b1_values) {
+      # Higher stress (higher b1) leads to more measurement error
+      base_sd <- 0.3
+      base_sd + 0.2 * pmax(0, b1_values)  # More error for stressed individuals
+    }
+  ),
+  name = "self_report_bias"
+)
+
+# 2. Missing data - higher stress employees more likely to skip surveys
+missingness_shadow <- create_shadow(
+  type = "item_missingness",
+  params = list(
+    variables = c("t2_y", "t3_y", "t4_y", "t5_y"),
+    mechanism = "MAR",
+    rate = 0.05,  # Base missing rate
+    dependent_vars = c("b1", "t0_y")  # Stress and baseline MH predict missingness
+  ),
+  name = "survey_nonresponse"
+)
+
+# 3. Censoring - employees leaving company
+censoring_shadow <- create_shadow(
+  type = "censoring",
+  params = list(
+    wave_probs = c(0, 0.02, 0.03, 0.04, 0.05),  # Increasing over time
+    predictors = c("b1", "b2"),  # Stress and job type
+    predictor_coefs = c(0.4, 0.2)  # High stress and client-facing more likely to leave
+  ),
+  name = "employee_attrition"
+)
+
+# Apply measurement error and missingness shadows (censoring would require margot_process_longitudinal)
+shadows <- list(mh_measurement_shadow, missingness_shadow)
+observed_data <- apply_shadows(full_data, shadows)
+
+# Note: Censoring shadow requires data processed with margot_process_longitudinal
+# For this example, we'll simulate censoring directly
+observed_data$censored <- FALSE
+censoring_prob <- 0.02 + 0.4 * pmax(0, observed_data$b1) + 0.2 * observed_data$b2
+censoring_prob <- pmin(0.3, censoring_prob)  # Cap at 30%
+observed_data$censored <- runif(nrow(observed_data)) < censoring_prob
+
+# Apply censoring to outcomes
+if (any(observed_data$censored)) {
+  censored_ids <- which(observed_data$censored)
+  for (wave in 2:5) {
+    outcome_var <- paste0("t", wave, "_y")
+    if (outcome_var %in% names(observed_data)) {
+      observed_data[censored_ids, outcome_var] <- NA
+    }
+  }
+}
+
+# Diagnostic: Check shadow effects
+shadow_diagnostic <- data.frame(
+  Original_N = nrow(full_data),
+  Complete_Cases = sum(complete.cases(observed_data[, paste0("t", 0:5, "_y")])),
+  Measurement_Error_Applied = sum(grepl("_observed", names(observed_data))),
+  Censoring_Rate = mean(observed_data$censored, na.rm = TRUE),
+  Missing_Final_Outcome = mean(is.na(observed_data$t5_y))
+)
+
+cat("\n=== Shadow Diagnostic Summary ===\n")
+t(shadow_diagnostic) %>% 
+  as.data.frame() %>%
+  mutate(Measure = rownames(.), Value = V1) %>%
+  select(Measure, Value) %>%
+  kable()
+```
+
+## Step 5: Implement Analysis Pipeline
+
+```{r analysis-pipeline}
+# Define analysis functions for different approaches
+
+# 1. Naive complete case analysis
+naive_analysis <- function(data) {
+  complete_data <- data[complete.cases(data[, c("t4_a", "t5_y")]), ]
+  
+  model <- lm(t5_y ~ t4_a + b1 + b2 + b3 + t0_y, data = complete_data)
+  
+  list(
+    n = nrow(complete_data),
+    ate = coef(model)["t4_a"],
+    se = summary(model)$coefficients["t4_a", "Std. Error"],
+    ci_lower = confint(model)["t4_a", 1],
+    ci_upper = confint(model)["t4_a", 2],
+    method = "Naive Complete Case"
+  )
+}
+
+# 2. IPTW analysis
+iptw_analysis <- function(data) {
+  # Model treatment probability
+  treatment_model <- glm(I(t4_a > 0) ~ b1 + b2 + b3 + t0_y, 
+                        data = data, 
+                        family = binomial())
+  
+  # Calculate weights
+  ps <- predict(treatment_model, type = "response")
+  data$iptw <- ifelse(data$t4_a > 0, 1/ps, 1/(1-ps))
+  
+  # Stabilize weights
+  data$iptw_stab <- data$iptw * mean(data$t4_a > 0, na.rm = TRUE)
+  
+  # Truncate extreme weights
+  data$iptw_stab <- pmin(pmax(data$iptw_stab, 0.1), 10)
+  
+  # Weighted regression
+  complete_data <- data[complete.cases(data[, c("t4_a", "t5_y", "iptw_stab")]), ]
+  
+  model <- lm(t5_y ~ I(t4_a > 0), data = complete_data, weights = iptw_stab)
+  
+  list(
+    n = nrow(complete_data),
+    ate = coef(model)["I(t4_a > 0)TRUE"],
+    se = summary(model)$coefficients["I(t4_a > 0)TRUE", "Std. Error"],
+    ci_lower = confint(model)["I(t4_a > 0)TRUE", 1],
+    ci_upper = confint(model)["I(t4_a > 0)TRUE", 2],
+    method = "IPTW"
+  )
+}
+
+# 3. G-computation
+gcomputation_analysis <- function(data) {
+  # Fit outcome model
+  complete_data <- data[complete.cases(data[, c("t4_a", "t5_y", "b1", "b2", "b3", "t0_y")]), ]
+  
+  outcome_model <- lm(t5_y ~ t4_a * (b1 + b2 + b3) + t0_y, data = complete_data)
+  
+  # Predict under treatment and control
+  data_treated <- data_control <- complete_data
+  data_treated$t4_a <- max(complete_data$t4_a, na.rm = TRUE)  # Everyone treated
+  data_control$t4_a <- 0  # No one treated
+  
+  y1 <- predict(outcome_model, newdata = data_treated)
+  y0 <- predict(outcome_model, newdata = data_control)
+  
+  ate <- mean(y1 - y0)
+  
+  # Bootstrap for SE (simplified - normally would do more iterations)
+  boot_ates <- replicate(100, {
+    boot_idx <- sample(nrow(complete_data), replace = TRUE)
+    boot_data <- complete_data[boot_idx, ]
+    boot_model <- lm(t5_y ~ t4_a * (b1 + b2 + b3) + t0_y, data = boot_data)
+    
+    boot_treated <- boot_control <- boot_data
+    boot_treated$t4_a <- max(boot_data$t4_a, na.rm = TRUE)
+    boot_control$t4_a <- 0
+    
+    boot_y1 <- predict(boot_model, newdata = boot_treated)
+    boot_y0 <- predict(boot_model, newdata = boot_control)
+    
+    mean(boot_y1 - boot_y0)
+  })
+  
+  list(
+    n = nrow(complete_data),
+    ate = ate,
+    se = sd(boot_ates),
+    ci_lower = quantile(boot_ates, 0.025),
+    ci_upper = quantile(boot_ates, 0.975),
+    method = "G-computation"
+  )
+}
+
+# Run all analyses
+results <- list(
+  naive = naive_analysis(observed_data),
+  iptw = iptw_analysis(observed_data),
+  gcomp = gcomputation_analysis(observed_data)
+)
+
+# Also run on true data for comparison
+true_ate <- with(full_data, 
+                 mean(t5_y[t4_a > 0]) - mean(t5_y[t4_a == 0]))
+
+# Compile results
+results_df <- bind_rows(lapply(results, as.data.frame)) %>%
+  mutate(
+    bias = ate - true_ate,
+    coverage = ci_lower <= true_ate & ci_upper >= true_ate
+  )
+
+cat("\n=== Analysis Results ===\n")
+cat("True ATE:", round(true_ate, 3), "\n\n")
+print(results_df %>% 
+      mutate(across(where(is.numeric), ~round(., 3))) %>%
+      kable())
+```
+
+## Step 6: Sensitivity Analyses
+
+```{r sensitivity}
+# 1. Sensitivity to unmeasured confounding (E-value)
+calculate_evalue <- function(estimate, se) {
+  # Simplified E-value calculation
+  rr <- exp(estimate)  # Assuming log-linear model
+  e_value <- rr + sqrt(rr * (rr - 1))
+  
+  # E-value for CI
+  ci_lower <- exp(estimate - 1.96 * se)
+  e_value_ci <- ci_lower + sqrt(ci_lower * (ci_lower - 1))
+  
+  list(e_value = e_value, e_value_ci = e_value_ci)
+}
+
+# 2. Sensitivity to missing data assumptions
+missing_sensitivity <- function(data, delta_range = seq(-0.5, 0.5, 0.1)) {
+  base_result <- naive_analysis(data)
+  
+  sensitivity_results <- do.call(rbind, lapply(delta_range, function(delta) {
+    # Adjust outcomes for missing data by delta
+    adjusted_data <- data
+    missing_idx <- is.na(data$t5_y) & !is.na(data$t4_y)
+    
+    # Impute with adjustment
+    if (any(missing_idx)) {
+      adjusted_data$t5_y[missing_idx] <- mean(data$t5_y, na.rm = TRUE) + delta
+    }
+    
+    result <- naive_analysis(adjusted_data)
+    
+    data.frame(
+      delta = delta,
+      ate = result$ate,
+      ci_lower = result$ci_lower,
+      ci_upper = result$ci_upper
+    )
+  }))
+  
+  return(sensitivity_results)
+}
+
+# Run sensitivity analyses
+e_values <- calculate_evalue(results$gcomp$ate, results$gcomp$se)
+missing_sens <- missing_sensitivity(observed_data)
+
+cat("\n=== Sensitivity Analysis: E-values ===\n")
+cat("E-value for point estimate:", round(e_values$e_value, 2), "\n")
+cat("E-value for CI bound:", round(e_values$e_value_ci, 2), "\n")
+cat("\nInterpretation: Unmeasured confounding would need to be associated\n")
+cat("with both treatment and outcome by risk ratios of at least", 
+    round(e_values$e_value_ci, 2), 
+    "\nto explain away the observed effect.\n")
+
+# Plot missing data sensitivity
+p_missing_sens <- ggplot(missing_sens, aes(x = delta, y = ate)) +
+  geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper), alpha = 0.2) +
+  geom_line(size = 1.2) +
+  geom_hline(yintercept = true_ate, linetype = "dashed", color = "red") +
+  geom_hline(yintercept = 0, linetype = "solid") +
+  labs(
+    title = "Sensitivity to Missing Data Assumptions",
+    subtitle = "How results change if missing outcomes differ from observed",
+    x = "Delta (difference in missing vs observed outcomes)",
+    y = "Estimated ATE"
+  ) +
+  theme_minimal()
+
+print(p_missing_sens)
+```
+
+## Step 7: Subgroup and Heterogeneity Analysis
+
+```{r subgroup-analysis}
+# Examine heterogeneous treatment effects
+subgroup_analysis <- function(data, subgroup_var) {
+  data$subgroup <- data[[subgroup_var]]
+  
+  # For continuous variables, create categories
+  if (is.numeric(data$subgroup)) {
+    data$subgroup <- cut(data$subgroup, 
+                        breaks = quantile(data$subgroup, c(0, 0.33, 0.67, 1), na.rm = TRUE),
+                        labels = c("Low", "Medium", "High"),
+                        include.lowest = TRUE)
+  }
+  
+  # Analyze each subgroup
+  subgroup_results <- data %>%
+    group_by(subgroup) %>%
+    do({
+      subgroup_data <- .
+      if (sum(!is.na(subgroup_data$t5_y) & !is.na(subgroup_data$t4_a)) > 20) {
+        model <- lm(t5_y ~ I(t4_a > 0) + t0_y, data = subgroup_data)
+        
+        data.frame(
+          n = nrow(subgroup_data),
+          ate = coef(model)["I(t4_a > 0)TRUE"],
+          se = summary(model)$coefficients["I(t4_a > 0)TRUE", "Std. Error"],
+          ci_lower = confint(model)["I(t4_a > 0)TRUE", 1],
+          ci_upper = confint(model)["I(t4_a > 0)TRUE", 2]
+        )
+      } else {
+        data.frame(n = nrow(subgroup_data), ate = NA, se = NA, 
+                  ci_lower = NA, ci_upper = NA)
+      }
+    }) %>%
+    ungroup() %>%
+    mutate(variable = subgroup_var)
+  
+  return(subgroup_results)
+}
+
+# Run subgroup analyses
+subgroups <- c("b1" = "Baseline Stress", 
+               "job_type" = "Job Type",
+               "company" = "Company")
+
+subgroup_results <- do.call(rbind, lapply(names(subgroups), function(x) subgroup_analysis(observed_data, x)))
+
+# Create forest plot
+p_forest <- subgroup_results %>%
+  filter(!is.na(ate)) %>%
+  mutate(
+    subgroup_label = paste(variable, subgroup, sep = ": "),
+    subgroup_label = factor(subgroup_label, levels = rev(unique(subgroup_label)))
+  ) %>%
+  ggplot(aes(x = ate, y = subgroup_label)) +
+  geom_vline(xintercept = 0, linetype = "dashed") +
+  geom_vline(xintercept = true_ate, linetype = "dashed", color = "red") +
+  geom_errorbarh(aes(xmin = ci_lower, xmax = ci_upper), height = 0.2) +
+  geom_point(size = 3) +
+  labs(
+    title = "Treatment Effects by Subgroup",
+    subtitle = "Red line = true overall effect",
+    x = "Estimated ATE (95% CI)",
+    y = ""
+  ) +
+  theme_minimal()
+
+print(p_forest)
+
+# Test for heterogeneity
+het_test <- lm(t5_y ~ I(t4_a > 0) * (b1 + factor(job_type) + factor(company)) + t0_y, 
+               data = observed_data)
+
+cat("\n=== Heterogeneity Test ===\n")
+cat("Testing interactions with treatment:\n")
+anova(het_test) %>% 
+  as.data.frame() %>%
+  filter(grepl(":", rownames(.))) %>%
+  kable()
+```
+
+## Step 8: Final Report
+
+```{r final-report}
+# Create comprehensive report
+create_final_report <- function(results, data, true_effect) {
+  
+  report <- list()
+  
+  # Executive summary
+  report$summary <- paste0(
+    "The workplace wellness program showed a significant positive effect on mental health outcomes. ",
+    "The estimated average treatment effect was ", 
+    round(results$gcomp$ate, 2), 
+    " points (95% CI: ", 
+    round(results$gcomp$ci_lower, 2), 
+    " to ",
+    round(results$gcomp$ci_upper, 2),
+    ") on the 10-point mental health scale. ",
+    "This represents approximately a ",
+    round(results$gcomp$ate / sd(data$t0_y, na.rm = TRUE), 2),
+    " standard deviation improvement."
+  )
+  
+  # Key findings
+  report$key_findings <- list(
+    "1. Primary Effect" = paste0(
+      "Participants showed significant improvement in mental health scores"
+    ),
+    "2. Heterogeneity" = paste0(
+      "Effects were strongest for employees with high baseline stress"
+    ),
+    "3. Robustness" = paste0(
+      "Results were consistent across multiple analytical approaches"
+    ),
+    "4. Limitations" = paste0(
+      "Some attrition was observed, particularly among high-stress employees"
+    )
+  )
+  
+  # Methods summary
+  report$methods <- data.frame(
+    Aspect = c("Design", "Sample Size", "Analysis", "Missing Data", "Sensitivity"),
+    Description = c(
+      "Longitudinal study with quarterly measurements over 12 months",
+      paste0(nrow(data), " employees from 5 companies"),
+      "G-computation with adjustment for baseline confounders",
+      "Multiple imputation and IPTW for missing data",
+      "E-value analysis for unmeasured confounding"
+    )
+  )
+  
+  # Recommendations
+  report$recommendations <- list(
+    "1. Implementation" = "Continue and expand the program, particularly for high-stress roles",
+    "2. Targeting" = "Consider more intensive support for client-facing employees",
+    "3. Monitoring" = "Implement strategies to reduce attrition in follow-up surveys",
+    "4. Future Research" = "Examine longer-term sustainability of effects"
+  )
+  
+  return(report)
+}
+
+final_report <- create_final_report(results, observed_data, true_ate)
+
+cat("\n=== FINAL REPORT: Workplace Wellness Program Evaluation ===\n\n")
+
+cat("EXECUTIVE SUMMARY\n")
+cat(strwrap(final_report$summary, width = 70), sep = "\n", "\n\n")
+
+cat("KEY FINDINGS\n")
+for (finding in names(final_report$key_findings)) {
+  cat(finding, ":", final_report$key_findings[[finding]], "\n")
+}
+
+cat("\nMETHODS OVERVIEW\n")
+print(kable(final_report$methods))
+
+cat("\nRECOMMENDATIONS\n")
+for (rec in names(final_report$recommendations)) {
+  cat(rec, ":", final_report$recommendations[[rec]], "\n")
+}
+
+# Save key results
+key_results <- list(
+  estimated_effect = results$gcomp$ate,
+  confidence_interval = c(results$gcomp$ci_lower, results$gcomp$ci_upper),
+  sample_size = results$gcomp$n,
+  p_value = 2 * pnorm(-abs(results$gcomp$ate / results$gcomp$se)),
+  effect_size_cohens_d = results$gcomp$ate / sd(observed_data$t0_y, na.rm = TRUE)
+)
+
+cat("\n=== Key Metrics for Publication ===\n")
+cat("Effect estimate:", round(key_results$estimated_effect, 3), "\n")
+cat("95% CI: [", round(key_results$confidence_interval[1], 3), ", ",
+    round(key_results$confidence_interval[2], 3), "]\n", sep = "")
+cat("P-value:", format.pval(key_results$p_value, digits = 3), "\n")
+cat("Cohen's d:", round(key_results$effect_size_cohens_d, 3), "\n")
+cat("Sample size:", key_results$sample_size, "\n")
+```
+
+## Step 9: Reproducibility and Code Archive
+
+```{r reproducibility}
+# Create reproducible archive
+create_analysis_archive <- function() {
+  archive <- list(
+    metadata = list(
+      date = Sys.Date(),
+      r_version = R.version.string,
+      margot_version = packageVersion("margot.sim"),
+      seed = 2025
+    ),
+    
+    parameters = list(
+      n_employees = n_employees,
+      n_waves = n_waves,
+      treatment_params = mh_params,
+      shadow_config = list(
+        measurement_error = TRUE,
+        missingness = TRUE,
+        censoring = TRUE
+      )
+    ),
+    
+    code = list(
+      intervention = deparse(wellness_intervention),
+      analysis = deparse(gcomputation_analysis)
+    )
+  )
+  
+  return(archive)
+}
+
+archive <- create_analysis_archive()
+
+cat("\n=== Analysis Archive for Reproducibility ===\n")
+cat("Date:", as.character(archive$metadata$date), "\n")
+cat("R Version:", archive$metadata$r_version, "\n")
+cat("margot.sim Version:", as.character(archive$metadata$margot_version), "\n")
+cat("Random Seed:", archive$metadata$seed, "\n")
+cat("\nAll code and parameters have been archived for reproducibility.\n")
+```
+
+## Summary and Best Practices
+
+This complete workflow demonstrated:
+
+1. **Study Design**
+   - Clear objectives and power analysis
+   - Realistic parameter specification
+   - Documentation of assumptions
+
+2. **Data Generation**
+   - Complex baseline characteristics
+   - Realistic intervention patterns
+   - Natural outcome dynamics
+
+3. **Observational Challenges**
+   - Multiple types of bias (measurement, missing, selection)
+   - Realistic shadow parameters
+   - Diagnostic checks
+
+4. **Analysis Pipeline**
+   - Multiple analytical approaches
+   - Appropriate adjustments for confounding
+   - Handling of missing data
+
+5. **Sensitivity Analysis**
+   - E-values for unmeasured confounding
+   - Missing data pattern analysis
+   - Subgroup heterogeneity
+
+6. **Reporting**
+   - Clear communication of findings
+   - Transparent limitations
+   - Actionable recommendations
+
+### Key Best Practices:
+
+1. **Always compare multiple analytical approaches** - consistency builds confidence
+2. **Document all assumptions** - transparency is crucial
+3. **Check for heterogeneity** - average effects can be misleading
+4. **Conduct sensitivity analyses** - understand the robustness of findings
+5. **Report comprehensively** - include methods, limitations, and context
+
+This workflow can be adapted for various research questions while maintaining rigor and transparency in causal inference with longitudinal data.

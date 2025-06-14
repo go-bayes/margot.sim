@@ -1,0 +1,605 @@
+---
+title: "Shift Interventions with Sampling Weights"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Shift Interventions with Sampling Weights}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 5,
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+```{r setup}
+library(margot.sim)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+```
+
+## Introduction
+
+This vignette demonstrates how to implement shift interventions with sampling weights in longitudinal studies. We'll explore a realistic scenario where:
+
+1. **Sampling weights** correct for under-representation of certain populations
+2. **Shift interventions** gradually increase exposure levels over time
+3. **Effect modification** creates different treatment responses across subgroups
+4. **Weight-driven interactions** show how ignoring weights can bias results
+
+## Motivating Example: Health Behaviour Intervention
+
+Imagine a study examining a health behaviour intervention (e.g., physical activity promotion) where:
+
+- The study over-sampled young adults (age < 30) who make up 60% of the sample but only 20% of the target population
+- Older adults (age ≥ 30) show stronger treatment benefits
+- We want to shift activity levels up by 20% over 5 waves
+- Ignoring sampling weights will underestimate population effects
+
+## Setting Up the Simulation
+
+### Step 1: Define Population Parameters
+
+```{r population-params}
+# Population and sample characteristics
+n_sample <- 2000
+n_waves <- 5
+
+# Age distribution (simplified as binary for clarity)
+prop_young_population <- 0.20  # 20% young in population
+prop_young_sample <- 0.60      # 60% young in sample (oversampled)
+
+# Calculate sampling weights
+weight_young <- prop_young_population / prop_young_sample  # 0.33
+weight_old <- (1 - prop_young_population) / (1 - prop_young_sample)  # 2.0
+
+cat("Sampling weights:\n")
+cat("  Young adults:", round(weight_young, 2), "\n")
+cat("  Older adults:", round(weight_old, 2), "\n")
+```
+
+### Step 2: Create Progressive Shift Intervention
+
+We'll implement a gradual 20% increase in activity levels over 5 waves:
+
+```{r shift-intervention}
+# Create progressive shift intervention
+create_progressive_shift <- function(total_increase = 0.20, 
+                                   n_waves = 5,
+                                   min_value = 1,
+                                   max_value = 7) {
+  
+  # Calculate per-wave increase
+  wave_increase <- total_increase / n_waves
+  
+  function(data, time, trt) {
+    # Keep baseline (wave 0) natural
+    if (time == 0) {
+      return(data[[trt]])
+    }
+    
+    # Progressive increase at each wave
+    if (time <= n_waves) {
+      values <- data[[trt]]
+      # Shift by cumulative percentage
+      shift_factor <- 1 + (wave_increase * time)
+      shifted <- values * shift_factor
+      
+      # Apply bounds
+      return(pmax(min_value, pmin(max_value, shifted)))
+    }
+    
+    # After intervention period, maintain last level
+    return(data[[trt]])
+  }
+}
+
+# Create our 20% progressive shift
+progressive_shift <- create_progressive_shift(
+  total_increase = 0.20,
+  n_waves = 5,
+  min_value = 1,
+  max_value = 7
+)
+```
+
+### Step 3: Simulate Data with Heterogeneous Effects
+
+```{r simulate-data}
+set.seed(2025)
+
+# First, create baseline data with age groups
+baseline_data <- data.frame(
+  id = 1:n_sample,
+  # Oversample young adults
+  age_group = sample(c("young", "old"), 
+                     n_sample, 
+                     replace = TRUE,
+                     prob = c(prop_young_sample, 1 - prop_young_sample)),
+  # Convert to numeric for simulation
+  b1 = ifelse(sample(c("young", "old"), 
+                     n_sample, 
+                     replace = TRUE,
+                     prob = c(prop_young_sample, 1 - prop_young_sample)) == "old", 1, 0)
+)
+
+# Add sampling weights
+baseline_data$weight <- ifelse(baseline_data$age_group == "young", 
+                              weight_young, 
+                              weight_old)
+
+# Parameters with strong effect modification by age
+sim_params <- list(
+  # Base treatment effect
+  a_lag_y_coef = 0.2,
+  
+  # Strong effect modification by age (b1)
+  a_b1_y_het = 0.3,  # Older adults benefit more
+  
+  # Other parameters
+  y_feedback = "full",
+  exposure_type = "continuous"
+)
+
+# Simulate under natural and shifted interventions
+results_natural <- margot_simulate_causal(
+  n = n_sample,
+  waves = n_waves,
+  treatments = "a",
+  interventions = list(
+    natural = function(data, time, trt) data[[trt]]
+  ),
+  common_params = list(
+    params = sim_params,
+    baseline_data = baseline_data[, c("id", "b1")]  # Include b1 for effect modification
+  ),
+  seed = 2025
+)
+
+results_shifted <- margot_simulate_causal(
+  n = n_sample,
+  waves = n_waves,
+  treatments = "a",
+  interventions = list(
+    progressive_20pct = progressive_shift
+  ),
+  common_params = list(
+    params = sim_params,
+    baseline_data = baseline_data[, c("id", "b1")]
+  ),
+  seed = 2025
+)
+
+# Extract and merge data
+data_natural <- results_natural$data$natural
+data_shifted <- results_shifted$data$progressive_20pct
+
+# Add weights and age groups back
+data_natural <- merge(data_natural, baseline_data[, c("id", "age_group", "weight")], by = "id")
+data_shifted <- merge(data_shifted, baseline_data[, c("id", "age_group", "weight")], by = "id")
+```
+
+## Analyzing Treatment Trajectories
+
+### Visualizing Exposure Patterns Over Time
+
+```{r trajectory-plots, fig.height=6}
+# Prepare data for plotting
+plot_data_natural <- data_natural %>%
+  select(id, age_group, weight, starts_with("t") & ends_with("_a")) %>%
+  pivot_longer(cols = starts_with("t") & ends_with("_a"),
+               names_to = "wave",
+               values_to = "exposure") %>%
+  mutate(wave = as.numeric(gsub("t|_a", "", wave)),
+         intervention = "Natural")
+
+plot_data_shifted <- data_shifted %>%
+  select(id, age_group, weight, starts_with("t") & ends_with("_a")) %>%
+  pivot_longer(cols = starts_with("t") & ends_with("_a"),
+               names_to = "wave",
+               values_to = "exposure") %>%
+  mutate(wave = as.numeric(gsub("t|_a", "", wave)),
+         intervention = "20% Progressive Shift")
+
+plot_data <- bind_rows(plot_data_natural, plot_data_shifted)
+
+# Calculate weighted means
+trajectory_summary <- plot_data %>%
+  group_by(intervention, wave, age_group) %>%
+  summarise(
+    unweighted_mean = mean(exposure, na.rm = TRUE),
+    weighted_mean = weighted.mean(exposure, weight, na.rm = TRUE),
+    n = n(),
+    .groups = "drop"
+  )
+
+# Plot trajectories
+p1 <- ggplot(trajectory_summary, 
+             aes(x = wave, y = unweighted_mean, 
+                 color = age_group, linetype = intervention)) +
+  geom_line(size = 1.2) +
+  geom_point(size = 2) +
+  scale_color_manual(values = c("young" = "#E69F00", "old" = "#56B4E9")) +
+  scale_linetype_manual(values = c("Natural" = "dashed", "20% Progressive Shift" = "solid")) +
+  labs(
+    title = "Exposure Trajectories by Age Group (Unweighted)",
+    subtitle = "Progressive 20% increase over 5 waves",
+    x = "Wave",
+    y = "Mean Exposure Level",
+    color = "Age Group",
+    linetype = "Intervention"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
+print(p1)
+```
+
+### Weight Distribution Diagnostics
+
+```{r weight-diagnostics, fig.height=5}
+# Examine weight distribution
+weight_summary <- baseline_data %>%
+  group_by(age_group) %>%
+  summarise(
+    n = n(),
+    prop_sample = n / n_sample,
+    weight = first(weight),
+    weighted_prop = (n * first(weight)) / sum(baseline_data$weight),
+    .groups = "drop"
+  )
+
+print(weight_summary)
+
+# Effective sample size
+ess <- sum(baseline_data$weight)^2 / sum(baseline_data$weight^2)
+cat("\nEffective sample size:", round(ess, 0), 
+    "(", round(100 * ess / n_sample, 1), "% of actual sample)\n")
+
+# Visualize weights
+p2 <- ggplot(baseline_data, aes(x = age_group, y = weight, fill = age_group)) +
+  geom_boxplot(alpha = 0.7) +
+  geom_hline(yintercept = 1, linetype = "dashed", color = "red") +
+  scale_fill_manual(values = c("young" = "#E69F00", "old" = "#56B4E9")) +
+  labs(
+    title = "Distribution of Sampling Weights",
+    subtitle = "Weights correct for oversampling of young adults",
+    x = "Age Group",
+    y = "Sampling Weight"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+print(p2)
+```
+
+## Treatment Effect Analysis
+
+### Compare Weighted vs Unweighted Effects
+
+```{r treatment-effects}
+# Function to calculate effects
+calculate_effects <- function(data, weights = NULL) {
+  # Use final wave outcome
+  outcome_var <- paste0("t", n_waves + 1, "_y")
+  treatment_var <- paste0("t", n_waves, "_a")
+  
+  if (is.null(weights)) {
+    # Unweighted
+    ate <- mean(data[[outcome_var]][data[[treatment_var]] >= median(data[[treatment_var]])] -
+                data[[outcome_var]][data[[treatment_var]] < median(data[[treatment_var]])], 
+                na.rm = TRUE)
+  } else {
+    # Weighted
+    high_exposure <- data[[treatment_var]] >= median(data[[treatment_var]])
+    ate <- weighted.mean(data[[outcome_var]][high_exposure], weights[high_exposure], na.rm = TRUE) -
+           weighted.mean(data[[outcome_var]][!high_exposure], weights[!high_exposure], na.rm = TRUE)
+  }
+  
+  return(ate)
+}
+
+# Calculate effects for shifted intervention
+effects_unweighted <- calculate_effects(data_shifted)
+effects_weighted <- calculate_effects(data_shifted, data_shifted$weight)
+
+# By age group
+effects_by_age <- data_shifted %>%
+  group_by(age_group) %>%
+  summarise(
+    n = n(),
+    weight = first(weight),
+    unweighted_effect = calculate_effects(cur_data()),
+    weighted_effect = calculate_effects(cur_data(), cur_data()$weight),
+    .groups = "drop"
+  )
+
+cat("\n=== Overall Treatment Effects ===\n")
+cat("Unweighted ATE:", round(effects_unweighted, 3), "\n")
+cat("Weighted ATE:", round(effects_weighted, 3), "\n")
+cat("Relative difference:", round(100 * (effects_weighted - effects_unweighted) / effects_unweighted, 1), "%\n")
+
+cat("\n=== Effects by Age Group ===\n")
+print(effects_by_age)
+```
+
+### Visualizing Effect Heterogeneity
+
+```{r effect-heterogeneity, fig.height=6}
+# Calculate treatment effects over time
+wave_effects <- data.frame()
+
+for (w in 1:n_waves) {
+  outcome_var <- paste0("t", w + 1, "_y")
+  treatment_var <- paste0("t", w, "_a")
+  
+  # Skip if variables don't exist
+  if (!all(c(outcome_var, treatment_var) %in% names(data_shifted))) next
+  
+  # Calculate effects by age group
+  age_effects <- data_shifted %>%
+    group_by(age_group) %>%
+    summarise(
+      wave = w,
+      n = n(),
+      unweighted_effect = {
+        high <- cur_data()[[treatment_var]] >= median(cur_data()[[treatment_var]])
+        mean(cur_data()[[outcome_var]][high]) - mean(cur_data()[[outcome_var]][!high])
+      },
+      weighted_effect = {
+        high <- cur_data()[[treatment_var]] >= median(cur_data()[[treatment_var]])
+        weighted.mean(cur_data()[[outcome_var]][high], cur_data()$weight[high]) -
+        weighted.mean(cur_data()[[outcome_var]][!high], cur_data()$weight[!high])
+      },
+      .groups = "drop"
+    )
+  
+  wave_effects <- bind_rows(wave_effects, age_effects)
+}
+
+# Reshape for plotting
+effect_plot_data <- wave_effects %>%
+  pivot_longer(cols = c(unweighted_effect, weighted_effect),
+               names_to = "weight_type",
+               values_to = "effect") %>%
+  mutate(weight_type = ifelse(weight_type == "unweighted_effect", "Unweighted", "Weighted"))
+
+# Plot effects over waves
+p3 <- ggplot(effect_plot_data, 
+             aes(x = wave, y = effect, color = age_group, linetype = weight_type)) +
+  geom_line(size = 1.2) +
+  geom_point(size = 2) +
+  scale_color_manual(values = c("young" = "#E69F00", "old" = "#56B4E9")) +
+  scale_linetype_manual(values = c("Unweighted" = "dashed", "Weighted" = "solid")) +
+  labs(
+    title = "Treatment Effects Over Time by Age Group",
+    subtitle = "Comparing weighted vs unweighted analyses",
+    x = "Wave",
+    y = "Treatment Effect",
+    color = "Age Group",
+    linetype = "Analysis Type"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
+print(p3)
+```
+
+## Bias from Ignoring Weights
+
+Let's quantify the bias introduced by ignoring sampling weights:
+
+```{r bias-analysis}
+# Simulate true population effects (large sample)
+set.seed(2025)
+n_population <- 50000
+
+# Create population with correct age distribution
+pop_baseline <- data.frame(
+  id = 1:n_population,
+  b1 = rbinom(n_population, 1, 1 - prop_young_population)  # Mostly older adults
+)
+
+# Simulate population under shift
+pop_results <- margot_simulate_causal(
+  n = n_population,
+  waves = n_waves,
+  treatments = "a",
+  interventions = list(
+    progressive_20pct = progressive_shift
+  ),
+  common_params = list(
+    params = sim_params,
+    baseline_data = pop_baseline
+  ),
+  seed = 2025
+)
+
+# Calculate true population effect
+pop_data <- pop_results$data$progressive_20pct
+true_pop_effect <- calculate_effects(pop_data)
+
+# Compare biases
+bias_results <- data.frame(
+  Analysis = c("True Population", "Sample (Unweighted)", "Sample (Weighted)"),
+  Effect = c(true_pop_effect, effects_unweighted, effects_weighted),
+  Bias = c(0, effects_unweighted - true_pop_effect, effects_weighted - true_pop_effect)
+) %>%
+  mutate(
+    Relative_Bias = 100 * Bias / true_pop_effect,
+    MSE = Bias^2
+  )
+
+cat("\n=== Bias Analysis ===\n")
+print(bias_results %>% mutate(across(where(is.numeric), ~round(., 3))))
+
+# Visualize bias
+p4 <- ggplot(bias_results[-1, ], aes(x = Analysis, y = Bias, fill = Analysis)) +
+  geom_bar(stat = "identity") +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  scale_fill_manual(values = c("Sample (Unweighted)" = "#D55E00", 
+                               "Sample (Weighted)" = "#009E73")) +
+  labs(
+    title = "Bias in Treatment Effect Estimation",
+    subtitle = "Impact of ignoring sampling weights",
+    x = "",
+    y = "Bias (vs True Population Effect)"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+print(p4)
+```
+
+## Monte Carlo Evaluation
+
+Let's run a Monte Carlo simulation to evaluate the performance of weighted vs unweighted estimators:
+
+```{r monte-carlo, cache=TRUE}
+# Run Monte Carlo simulation
+# Note: Due to API changes, using simplified approach
+set.seed(2025)
+n_mc <- 500
+mc_results <- list(unweighted = numeric(n_mc), weighted = numeric(n_mc))
+
+for (i in 1:n_mc) {
+  # Generate sample with oversampling
+  baseline <- data.frame(
+    id = 1:1000,
+    age_group = sample(c("young", "old"), 1000, TRUE, 
+                      c(prop_young_sample, 1 - prop_young_sample)),
+    b1 = ifelse(sample(c("young", "old"), 1000, TRUE,
+                      c(prop_young_sample, 1 - prop_young_sample)) == "old", 1, 0)
+  )
+  baseline$weight <- ifelse(baseline$age_group == "young", weight_young, weight_old)
+  
+  # Simulate data
+  sim_result <- margot_simulate_causal(
+    n = 1000,
+    waves = 3,  # Fewer waves for speed
+    treatments = "a",
+    interventions = list(shift = progressive_shift),
+    common_params = list(
+      params = sim_params,
+      baseline_data = baseline[, c("id", "b1")]
+    ),
+    seed = 2025 + i
+  )
+  
+  data <- merge(sim_result$data$shift, baseline[, c("id", "weight")], by = "id")
+  
+  # Calculate effects
+  mc_results$unweighted[i] <- calculate_effects(data)
+  mc_results$weighted[i] <- calculate_effects(data, data$weight)
+}
+
+# Summary statistics
+mc_summary <- data.frame(
+  Estimator = c("Unweighted", "Weighted"),
+  Mean_ATE = c(mean(mc_results$unweighted), mean(mc_results$weighted)),
+  SD = c(sd(mc_results$unweighted), sd(mc_results$weighted)),
+  Bias = c(mean(mc_results$unweighted) - true_pop_effect,
+           mean(mc_results$weighted) - true_pop_effect),
+  MSE = c(mean((mc_results$unweighted - true_pop_effect)^2),
+          mean((mc_results$weighted - true_pop_effect)^2)),
+  Coverage_95 = c(
+    mean(abs(mc_results$unweighted - true_pop_effect) < 1.96 * sd(mc_results$unweighted)),
+    mean(abs(mc_results$weighted - true_pop_effect) < 1.96 * sd(mc_results$weighted))
+  )
+)
+
+cat("\n=== Monte Carlo Results (", n_mc, " replications) ===\n", sep = "")
+print(mc_summary %>% mutate(across(where(is.numeric), ~round(., 4))))
+
+# The summary statistics already provide the comparison
+```
+
+## Practical Recommendations
+
+### 1. **Always Check Weight Distributions**
+
+```{r weight-recommendations}
+# Weight diagnostics function
+check_weights <- function(weights) {
+  cat("Weight Diagnostics:\n")
+  cat("  Mean:", mean(weights), "\n")
+  cat("  CV:", sd(weights) / mean(weights), "\n")
+  cat("  Range:", min(weights), "-", max(weights), "\n")
+  cat("  ESS:", round(sum(weights)^2 / sum(weights^2)), "\n")
+  
+  # Flag extreme weights
+  extreme_prop <- mean(weights > 5 | weights < 0.2)
+  if (extreme_prop > 0.05) {
+    cat("  WARNING:", round(100 * extreme_prop, 1), "% extreme weights\n")
+  }
+}
+
+check_weights(baseline_data$weight)
+```
+
+### 2. **Consider Weight Trimming for Stability**
+
+```{r weight-trimming}
+# Trim extreme weights
+trim_weights <- function(weights, lower = 0.1, upper = 10) {
+  trimmed <- pmax(lower, pmin(upper, weights))
+  
+  # Rescale to maintain same total weight
+  trimmed <- trimmed * sum(weights) / sum(trimmed)
+  
+  cat("Trimmed", sum(weights != trimmed), "weights\n")
+  return(trimmed)
+}
+
+# Example of trimming (not needed in this case)
+baseline_data$weight_trimmed <- trim_weights(baseline_data$weight)
+```
+
+### 3. **Report Both Weighted and Unweighted Results**
+
+Always present both analyses to show the impact of weighting:
+
+```{r reporting-template}
+# Create summary table
+summary_table <- data.frame(
+  Analysis = c("Unweighted", "Weighted", "Difference"),
+  `Sample ATE` = c(effects_unweighted, effects_weighted, 
+                   effects_weighted - effects_unweighted),
+  `Young Adults` = c(effects_by_age$unweighted_effect[1],
+                     effects_by_age$weighted_effect[1],
+                     effects_by_age$weighted_effect[1] - effects_by_age$unweighted_effect[1]),
+  `Older Adults` = c(effects_by_age$unweighted_effect[2],
+                     effects_by_age$weighted_effect[2],
+                     effects_by_age$weighted_effect[2] - effects_by_age$unweighted_effect[2]),
+  check.names = FALSE
+)
+
+knitr::kable(summary_table, digits = 3, 
+             caption = "Treatment Effects with and without Sampling Weights")
+```
+
+## Summary
+
+This vignette demonstrated:
+
+1. **Shift interventions** can be combined with sampling weights to estimate population effects
+2. **Ignoring weights** leads to biased estimates when effect modification is present
+3. **Weight diagnostics** are essential for assessing the stability of weighted analyses
+4. **Progressive interventions** can be implemented flexibly over multiple waves
+5. **Monte Carlo simulations** confirm the theoretical bias from ignoring weights
+
+Key takeaways:
+- Sampling weights are crucial when the sample doesn't represent the target population
+- Effect heterogeneity amplifies the bias from ignoring weights
+- Always check effective sample size and weight distributions
+- Consider sensitivity analyses with trimmed weights
+- Report both weighted and unweighted results for transparency
+
+The next vignettes will explore how these concepts interact with censoring, measurement error, and other real-world complications.

@@ -4,6 +4,8 @@
 - use nz english
 - write unit tests for each new function
 - .Rbuildignore all planning documents
+- test and validate all functions as we go
+- update _pkgdown.yml after creating or deleting functions
 
 # margot.sim Package Context
 

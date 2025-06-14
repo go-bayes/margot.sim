@@ -23,9 +23,11 @@
 #' # Create example data with potential positivity violation
 #' set.seed(123)
 #' n <- 1000
+#' x1 <- rnorm(n)
+#' x2 <- rnorm(n)
 #' data <- data.frame(
-#'   x1 = rnorm(n),
-#'   x2 = rnorm(n),
+#'   x1 = x1,
+#'   x2 = x2,
 #'   # treatment depends strongly on x1
 #'   a = rbinom(n, 1, plogis(3 * x1)),
 #'   y = rnorm(n)
@@ -291,6 +293,9 @@ plot.margot_positivity_diagnostic <- function(x, type = "propensity", ...) {
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     stop("ggplot2 package required for plotting")
   }
+  
+  # declare variables to avoid R CMD check notes
+  ps <- treatment <- NULL
   
   type <- match.arg(type, c("propensity", "overlap", "balance"))
   
