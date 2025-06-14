@@ -10,11 +10,7 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
 [![License:
 MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![R-CMD-check](https://github.com/go-bayes/margot.sim/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/go-bayes/margot.sim/actions/workflows/R-CMD-check.yaml)
-[![Codecov test
-coverage](https://codecov.io/gh/go-bayes/margot.sim/branch/main/graph/badge.svg)](https://app.codecov.io/gh/go-bayes/margot.sim?branch=main)
-
 <!-- [![GitHub stars](https://img.shields.io/github/stars/go-bayes/margot.sim?style=social)](https://github.com/go-bayes/margot.sim) -->
-
 <!-- CRAN badges: will activate after CRAN release
 [![CRAN status](https://www.r-pkg.org/badges/version/margot.sim)](https://CRAN.R-project.org/package=margot.sim)
 [![Downloads](https://cranlogs.r-pkg.org/badges/margot.sim)](https://cran.r-project.org/package=margot.sim)
