@@ -1,6 +1,71 @@
 # NEWS
 
-# margot.sim 0.1.3 (2025-06-12 development version)
+# margot.sim 0.1.3 (2025-01-15)
+
+## Major Architecture Improvements
+
+### S3 Object System
+* Complete S3 class implementation for shadows and scenarios
+  - `new_shadow()`: Low-level constructor with automatic validation
+  - `new_scenario()`: Scenario constructor with S3 dispatch
+  - `validate_shadow()`, `validate_scenario()`: S3 generic validation
+  - `is_shadow()`, `is_scenario()`: Type checking functions
+  - `as_shadow()`, `as_scenario()`: Coercion methods
+  - Print, summary, and as.data.frame methods for all classes
+  - `shadow_list` class for managing collections of shadows
+
+### Shadow Dependency Management
+* Automatic dependency resolution and reordering
+  - `get_shadow_dependencies()`: Define dependency relationships
+  - `check_shadow_ordering()`: Validate correct application order
+  - `reorder_shadows()`: Automatic topological sorting
+  - `update_shadow_params()`: Adjust parameters based on upstream effects
+  - `apply_shadows_with_dependencies()`: Apply with automatic reordering
+  - `visualize_shadow_dependencies()`: Display dependency graph
+
+### Multi-Treatment Support
+* Enhanced shift interventions for complex treatment interactions
+  - `create_multi_treatment_shift()`: Handle multiple concurrent treatments
+  - `create_interaction_shift()`: Define treatment interactions
+  - `create_interaction_patterns()`: Complex interaction specifications
+  - `create_lmtp_wrapper()`: LMTP-compatible intervention wrapper
+  - Updated `margot_simulate_causal()` to accept treatment lists
+
+### Memory Management 
+* Efficient handling of large-scale simulations
+  - Memory limit enforcement in `margot_monte_carlo()`
+  - Checkpoint saving for resumable simulations
+  - `create_memory_monitor()`: Track memory usage
+  - `create_mc_streamer()`: Stream results to disk
+  - `create_data_summarizer()`: On-the-fly summarization
+  - `resume_monte_carlo()`: Resume interrupted simulations
+
+### Positivity Diagnostics
+* Comprehensive tools for detecting violations
+  - `margot_check_positivity()`: Check empirical and model-based positivity
+  - `create_positivity_shadow_from_diagnostic()`: Create shadows from diagnostics
+  - Print and plot methods for diagnostics
+  - Integration with scenario framework
+
+### RNG and Reproducibility
+* Proper seed discipline for parallel simulations
+  - `create_seed_sequence()`: Generate reproducible seed sequences
+  - `create_rng_streams()`: Create independent RNG streams
+  - `setup_parallel_rng()`: Configure parallel backends
+  - `validate_parallel_rng()`: Verify RNG independence
+  - `diagnose_rng_streams()`: Debug RNG issues
+
+## CRAN Compliance
+
+* **Full R CMD check compliance**: 0 errors, 0 warnings, 0 notes
+* Fixed all documentation issues including `%||%` operator
+* Added missing parameter documentation
+* Replaced non-ASCII characters
+* Fixed example errors
+* Added igraph to Suggests
+* Cleaned up namespace imports
+
+## Previous Features (v0.1.3 development - 2025-06-12)
 
 ## Major New Features
 
@@ -92,7 +157,7 @@
 * Fixed NA handling in heaping algorithm
 * Removed non-implemented selection shadow from pessimistic scenario
 
-# margot.sim 0.1.2 (2025-06-11)
+# margot.sim 0.1.2 (2025-01-11)
 
 ## New features
 

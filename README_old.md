@@ -1,3 +1,4 @@
+
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 # margot.sim
@@ -32,74 +33,50 @@ You can install the development version of margot.sim from
 devtools::install_github("go-bayes/margot.sim")
 ```
 
-## What's New in v0.1.3 (January 2025)
+## What’s New in v0.1.2 (January 2025)
 
-### Major Architecture Improvements
+### Major Enhancements
 
-- **S3 Object System**: Complete S3 class implementation for shadows and scenarios with validation
-- **Shadow Dependencies**: Automatic dependency management and reordering for correct application
-- **Multi-Treatment Support**: Enhanced shift interventions for complex treatment interactions
-- **Memory Management**: Streaming and checkpointing for large-scale simulations
-- **Positivity Diagnostics**: Comprehensive tools for detecting and handling positivity violations
-- **CRAN Ready**: Full R CMD check compliance (0 errors, 0 warnings, 0 notes)
+- **Scenario Framework**: Bundle observational challenges into coherent
+  scenarios for systematic sensitivity analysis
+- **New Shadow Types**: Truncation, coarsening, and mode effects shadows
+  for realistic data limitations
+- **Enhanced Documentation**: 12 comprehensive vignettes covering all
+  major features
+- **Improved Architecture**: Dual data design preserves true and
+  observed data throughout analysis
 
 ### Key New Features
 
 ``` r
-# S3 object system with validation
-shadow <- new_shadow(
-  type = "measurement_error",
-  params = list(
-    variables = "blood_pressure",
-    error_type = "classical", 
-    sigma = 0.5
-  )
-)
-validate_shadow(shadow)  # Automatic validation
-
-# Shadow dependency management
-shadows <- list(
-  create_shadow("truncation", params = list(variables = "x", lower = 0)),
-  create_shadow("measurement_error", params = list(variables = "x", 
-                error_type = "classical", sigma = 1))
-)
-reordered <- reorder_shadows(shadows)  # Automatic correct ordering
-
-# Multi-treatment interventions
-intervention <- create_multi_treatment_shift(
-  treatments = c("diet", "exercise", "medication"),
-  shifts = list(
-    diet = function(a, data) pmin(a + 0.2, 1),
-    exercise = function(a, data) pmin(a + 0.3, 1),
-    medication = function(a, data) ifelse(data$risk > 0.5, 1, a)
-  )
+# Create scenarios for sensitivity analysis
+scenarios <- list(
+  oracle = scenario_oracle(),  # Perfect measurement
+  rct = scenario_rct_simple(),  # Typical RCT conditions
+  observational = scenario_observational_simple(),  # Real-world messiness
+  pessimistic = scenario_pessimistic()  # Worst-case scenario
 )
 
-# Positivity diagnostics
-pos_check <- margot_check_positivity(
+# Compare effects across scenarios
+comparison <- compare_scenarios(
   data = my_data,
-  treatment = "treatment",
-  covariates = c("age", "risk_score"),
-  threshold = 0.01
+  scenarios = scenarios,
+  exposure = "treatment",
+  outcome = "outcome"
 )
-plot(pos_check, type = "propensity")
 
-# Memory-efficient Monte Carlo
-mc_results <- margot_monte_carlo(
-  n_reps = 10000,
-  n_per_rep = 5000,
-  memory_limit = "4GB",
-  checkpoint_dir = "mc_checkpoints/",
-  # ... other parameters
+# New shadow types
+truncation <- create_truncation_shadow(
+  variables = "income",
+  upper = 200000  # Top-coding
+)
+
+coarsening <- create_coarsening_shadow(
+  variables = "age",
+  breaks = c(0, 30, 50, 70, 100),
+  type = "heaping"  # Realistic rounding patterns
 )
 ```
-
-### Previous Features (v0.1.2)
-
-- **Scenario Framework**: Bundle observational challenges into coherent scenarios
-- **New Shadow Types**: Truncation, coarsening, and mode effects shadows
-- **Enhanced Documentation**: 12 comprehensive vignettes
-- **Improved Architecture**: Dual data design preserves true and observed data
 
 ## Overview
 
@@ -107,8 +84,10 @@ margot.sim helps researchers understand how well their statistical
 methods work when data are imperfect. The package provides:
 
 1.  **Shadowing Framework** - Apply realistic observational distortions
-2.  **Scenario Framework** - Bundle shadows into documented research contexts
-3.  **Monte Carlo Framework** - Systematically evaluate estimator performance
+2.  **Scenario Framework** - Bundle shadows into documented research
+    contexts
+3.  **Monte Carlo Framework** - Systematically evaluate estimator
+    performance
 4.  **Transport Weights** - Generalize from samples to populations
 5.  **Flexible Distributions** - Model non-normal data
 
@@ -150,59 +129,10 @@ plot(comparison)
 
 ## Core Features
 
-### 1. S3 Object System
+### 1. Shadowing Framework
 
-The package implements a complete S3 class system for type safety and extensibility:
-
-``` r
-# Shadow classes with automatic validation
-shadow <- new_shadow("measurement_error", params = list(
-  variables = "x",
-  error_type = "classical",
-  sigma = 0.5
-))
-is_shadow(shadow)  # TRUE
-validate_shadow(shadow)  # Checks parameters
-
-# Scenario classes with methods
-scenario <- new_scenario(
-  name = "My Study",
-  shadows = list(shadow1, shadow2),
-  justification = "Based on validation study X"
-)
-print(scenario)  # Pretty printing
-summary(scenario)  # Summary statistics
-as.data.frame(scenario)  # Convert to data frame
-
-# Shadow collections
-shadows <- new_shadow_list(shadow1, shadow2, shadow3)
-print(shadows)  # Shows shadow types and counts
-```
-
-### 2. Shadow Dependency Management
-
-Shadows are automatically ordered based on dependencies:
-
-``` r
-# Dependencies handled automatically
-visualize_shadow_dependencies(shadows)
-# Shows dependency graph
-
-result <- apply_shadows_with_dependencies(
-  data = my_data,
-  shadows = shadows,
-  check_dependencies = TRUE  # Auto-reorders if needed
-)
-
-# Check ordering
-ordering <- check_shadow_ordering(shadows)
-if (!ordering$valid) {
-  print(ordering$issues)
-  shadows <- ordering$suggested_order
-}
-```
-
-### 3. Advanced Shadowing Framework
+The package implements a comprehensive set of observational “shadows”
+that distort true data:
 
 **Measurement Error:**
 
@@ -300,47 +230,10 @@ pos_shadow <- create_positivity_shadow(
 )
 ```
 
-### 4. Multi-Treatment Interventions
+### 2. Scenario Framework
 
-Handle complex treatment interactions:
-
-``` r
-# Multiple treatments with interactions
-intervention <- create_interaction_shift(
-  treatments = c("A", "B", "C"),
-  shift_fn = function(treatments, data) {
-    # Shift A up by 0.2
-    treatments$A <- pmin(treatments$A + 0.2, 1)
-    
-    # B depends on A
-    treatments$B <- ifelse(
-      treatments$A > 0.5,
-      pmin(treatments$B + 0.3, 1),
-      treatments$B
-    )
-    
-    # C depends on both A and B
-    treatments$C <- ifelse(
-      treatments$A > 0.5 & treatments$B > 0.5,
-      1,  # Always treat with C if both A and B are high
-      treatments$C * 0.5  # Reduce C otherwise
-    )
-    
-    treatments
-  }
-)
-
-# Apply to simulation
-result <- margot_simulate_causal(
-  n = 1000,
-  treatments = list(A = 0.3, B = 0.4, C = 0.2),
-  intervention = intervention
-)
-```
-
-### 5. Scenario Framework
-
-Scenarios bundle shadows with documentation for systematic sensitivity analysis:
+Scenarios bundle shadows with documentation for systematic sensitivity
+analysis:
 
 ``` r
 # Create a COVID vaccine effectiveness scenario
@@ -383,7 +276,7 @@ scenarios <- scenario_collection_simple()
 # Includes: oracle, rct, observational, pessimistic
 ```
 
-### 6. Monte Carlo Framework with Memory Management
+### 3. Monte Carlo Framework
 
 Systematically evaluate estimator performance:
 
@@ -408,10 +301,10 @@ ipw_estimator <- function(data) {
   )
 }
 
-# Run Monte Carlo evaluation with memory management
+# Run Monte Carlo evaluation
 mc_results <- margot_monte_carlo(
-  n_reps = 10000,
-  n_per_rep = 5000,
+  n_reps = 1000,
+  n_per_rep = 500,
   dgp_params = list(
     waves = 2,
     params = list(a_y_coef = 0.5)  # True effect
@@ -420,22 +313,8 @@ mc_results <- margot_monte_carlo(
   estimator_fn = ipw_estimator,
   truth_fn = function(data) 0.5,
   parallel = TRUE,
-  n_cores = 4,
-  memory_limit = "8GB",
-  checkpoint_dir = "mc_results/",
-  summarize_fn = function(result) {
-    # Only keep summary statistics to save memory
-    c(estimate = result$estimate,
-      se = result$se,
-      ci_lower = result$estimate - 1.96 * result$se,
-      ci_upper = result$estimate + 1.96 * result$se)
-  }
+  n_cores = 4
 )
-
-# Resume if interrupted
-if (file.exists("mc_results/checkpoint_5000.rds")) {
-  mc_results <- resume_monte_carlo("mc_results/checkpoint_5000.rds")
-}
 
 # Automatic performance metrics
 print(mc_results)
@@ -445,38 +324,7 @@ print(mc_results)
 # - Power: 0.73
 ```
 
-### 7. Positivity Diagnostics
-
-Detect and handle positivity violations:
-
-``` r
-# Check positivity
-pos_diagnostic <- margot_check_positivity(
-  data = my_data,
-  treatment = "treatment",
-  covariates = c("age", "severity", "comorbidities"),
-  threshold = 0.01,
-  method = "both"  # empirical and model-based
-)
-
-print(pos_diagnostic)
-# 47 units (4.7%) with propensity score < 0.01
-# 23 units (2.3%) with propensity score > 0.99
-
-# Visualize
-plot(pos_diagnostic, type = "propensity")
-
-# Create shadow from diagnostic
-pos_shadow <- create_positivity_shadow_from_diagnostic(
-  pos_diagnostic,
-  method = "trim"  # or "truncate"
-)
-
-# Apply to ensure positivity
-data_positivity <- apply_shadow(data, pos_shadow)
-```
-
-### 8. Transport Weights
+### 4. Transport Weights
 
 Generalize from study samples to target populations:
 
@@ -516,11 +364,11 @@ Comprehensive vignettes cover all major features:
 # Core functionality
 vignette("basic-simulation")           # Getting started
 vignette("applying-shadows")           # Shadow framework
-vignette("scenario-sensitivity")       # Scenario-based analysis
+vignette("scenario-sensitivity")       # NEW: Scenario-based analysis
 vignette("monte-carlo-simple")         # Evaluating estimators
 
 # Advanced topics
-vignette("truncation-coarsening")      # Data limitations
+vignette("truncation-coarsening")      # NEW: Data limitations
 vignette("misclassification-bias")     # Binary variable errors
 vignette("shift-interventions")        # Modified treatment policies
 vignette("transport-weights-shadows")  # Generalizing to populations
@@ -535,44 +383,54 @@ vignette("practical-workflow")         # Complete analysis workflow
 
 ### Near-term (Q1-Q2 2025)
 
-- **Unmeasured confounding**: Add support for hidden confounders in SCMs
-- **Natural value interventions**: Implement natural direct/indirect effects
-- **Enhanced visualizations**: Interactive diagnostic plots
-- **Vignette completion**: Four comprehensive tutorials
+- **Causal method integration**: Direct support for `lmtp`, `grf`, and
+  TMLE packages
+- **Enhanced HTE framework**: Systematic heterogeneous treatment effect
+  discovery
+- **Diagnostic visualizations**: Balance plots, positivity checks,
+  shadow validation
+- **Performance optimizations**: Faster simulation for large-scale
+  studies
 
 ### Medium-term (2025)
 
-- **Margotsphere ecosystem**: Modular package architecture
-  - `margot.core`: S3 classes and validation
-  - `margot.lmtp`: LMTP integration
-  - `margot.grf`: Causal forests
-  - `margot.viz`: Advanced visualizations
-- **CRAN submission**: First official release
-- **Method benchmarking**: Systematic comparisons across packages
+- **Interactive tools**: Shiny apps for exploring shadow impacts
+- **Batch estimation**: Simultaneous evaluation of multiple estimators
+- **Cross-package validation**: Compare results across causal inference
+  ecosystems
+- **Educational platform**: Interactive tutorials and case studies
 
 ### Long-term Vision
 
-- **Comprehensive bias catalog**: Library of validated shadow parameters from literature
-- **Automated sensitivity analysis**: Smart defaults based on study design
-- **Integration hub**: Bridge between simulation and applied causal inference
+- **Comprehensive bias catalog**: Library of validated shadow parameters
+  from literature
+- **Automated sensitivity analysis**: Smart defaults based on study
+  design
+- **Integration hub**: Bridge between simulation and applied causal
+  inference
 - **Community repository**: User-contributed scenarios and shadows
 
 ## Why margot.sim?
 
-Real studies rarely provide clean data. Instead, researchers face:
-- Missing responses when participants skip questions or drop out
-- Measurement errors from imperfect instruments or self-reports  
-- Selection biases when treatment assignment isn't random
+Real studies rarely provide clean data. Instead, researchers face: -
+Missing responses when participants skip questions or drop out -
+Measurement errors from imperfect instruments or self-reports  
+- Selection biases when treatment assignment isn’t random
 
 Traditional simulations often ignore these challenges. margot.sim:
 
-1.  **Mirrors reality** - Generates clean data then adds realistic distortions
-2.  **Stress-tests methods** - Evaluates if your approach works when assumptions fail
-3.  **Maintains truth** - Always knows ground truth for principled evaluation
-4.  **Supports any estimator** - Flexible framework works with any statistical method
-5.  **Builds confidence** - Demonstrates robustness before costly field studies
+1.  **Mirrors reality** - Generates clean data then adds realistic
+    distortions
+2.  **Stress-tests methods** - Evaluates if your approach works when
+    assumptions fail
+3.  **Maintains truth** - Always knows ground truth for principled
+    evaluation
+4.  **Supports any estimator** - Flexible framework works with any
+    statistical method
+5.  **Builds confidence** - Demonstrates robustness before costly field
+    studies
 
-The framework's power comes from maintaining **a clean separation
+The framework’s power comes from maintaining **a clean separation
 between true data-generating processes and observed data**, enabling
 principled evaluation of statistical methods under realistic conditions.
 
@@ -586,11 +444,10 @@ We welcome contributions! Please:
 4.  Ensure all tests pass (`devtools::test()`)
 5.  Submit a pull request
 
-Priority areas for contribution:
-- Additional shadow types for domain-specific biases
-- Pre-built scenarios for different research fields
-- Integration with causal inference packages
-- Performance optimizations
+Priority areas for contribution: - Additional shadow types for
+domain-specific biases - Pre-built scenarios for different research
+fields - Integration with causal inference packages - Performance
+optimizations
 
 ## Citation
 
@@ -606,7 +463,7 @@ MIT License - see [LICENSE.md](LICENSE.md) for details
 
 ## Acknowledgments
 
-The shadow metaphor draws inspiration from Plato's Allegory of the Cave,
+The shadow metaphor draws inspiration from Plato’s Allegory of the Cave,
 reminding us that observed data are often distorted reflections of
 underlying truths.
 
