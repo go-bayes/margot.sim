@@ -93,20 +93,13 @@ measurement error and moderate dropout.</p>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">rct</span> <span class="op">&lt;-</span> <span class="fu">scenario_rct_typical</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">rct</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Margot Scenario: Typical RCT</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ============================</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Description: Well-conducted RCT with protocol-based measurement</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Justification: Based on typical patterns from major clinical trials. Measurement error reflects instrument precision. Dropout rates from trial meta-analyses.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> References:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [1] Akl EA et al. Potential impact on estimated treatment effects of information lost to follow-up in randomised controlled trials (LOST-IT): systematic review. BMJ. 2012;344:e2809.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [2] Altman DG, Bland JM. Measurement in medicine: the analysis of method comparison studies. The Statistician. 1983;32:307-317.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Shadows (3):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   - measurement: measurement_error shadow (classical)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   - dropout: censoring shadow (rate: 0.15)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   - missing_items: item_missingness shadow (MCAR, rate: 0.05)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;margot_scenario&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Name: Typical RCT </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Description: Well-conducted RCT with protocol-based measurement </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Justification: Based on typical patterns from major clinical trials. Measurement error reflects instrument precision. Dropout rates from trial meta-analyses. </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> References: Akl EA et al. Potential impact on estimated treatment effects of information lost to follow-up in randomised controlled trials (LOST-IT): systematic review. BMJ. 2012;344:e2809.; Altman DG, Bland JM. Measurement in medicine: the analysis of method comparison studies. The Statistician. 1983;32:307-317. </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Number of shadows: 3 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Shadow types: measurement_error, censoring, item_missingness </span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

@@ -138,6 +138,30 @@
 
         </dt>
         <dd>Example: Incremental propensity score interventions</dd>
+      </dl><dl><dt>
+
+          <code><a href="create_lmtp_wrapper.html">create_lmtp_wrapper()</a></code>
+
+        </dt>
+        <dd>Create LMTP-compatible wrapper for shift functions</dd>
+      </dl><dl><dt>
+
+          <code><a href="create_interaction_shift.html">create_interaction_shift()</a></code>
+
+        </dt>
+        <dd>Create interaction shift interventions</dd>
+      </dl><dl><dt>
+
+          <code><a href="create_multi_treatment_shift.html">create_multi_treatment_shift()</a></code>
+
+        </dt>
+        <dd>Create multi-treatment shift function (LMTP style)</dd>
+      </dl><dl><dt>
+
+          <code><a href="create_interaction_patterns.html">create_interaction_patterns()</a></code>
+
+        </dt>
+        <dd>Create common interaction patterns</dd>
       </dl></div><div class="section level2">
       <h2 id="shadowing-framework">Shadowing Framework<a class="anchor" aria-label="anchor" href="#shadowing-framework"></a></h2>
 
@@ -155,6 +179,36 @@
 
         </dt>
         <dd>Shadowing Framework for margot</dd>
+      </dl><dl><dt>
+
+          <code><a href="new_shadow.html">new_shadow()</a></code>
+
+        </dt>
+        <dd>Create a margot shadow object</dd>
+      </dl><dl><dt>
+
+          <code><a href="new_shadow_list.html">new_shadow_list()</a></code>
+
+        </dt>
+        <dd>Create a shadow list</dd>
+      </dl><dl><dt>
+
+          <code><a href="is_shadow.html">is_shadow()</a></code>
+
+        </dt>
+        <dd>Check if object is a shadow</dd>
+      </dl><dl><dt>
+
+          <code><a href="as_shadow.html">as_shadow()</a></code>
+
+        </dt>
+        <dd>Convert objects to shadows</dd>
+      </dl><dl><dt>
+
+          <code><a href="validate_shadow.html">validate_shadow()</a></code>
+
+        </dt>
+        <dd>Validate a shadow object</dd>
       </dl><dl><dt>
 
           <code><a href="apply_shadow.html">apply_shadow()</a></code>
@@ -264,6 +318,30 @@
         <dd>Scenario Framework for margot</dd>
       </dl><dl><dt>
 
+          <code><a href="new_scenario.html">new_scenario()</a></code>
+
+        </dt>
+        <dd>Create a margot scenario object</dd>
+      </dl><dl><dt>
+
+          <code><a href="is_scenario.html">is_scenario()</a></code>
+
+        </dt>
+        <dd>Check if object is a scenario</dd>
+      </dl><dl><dt>
+
+          <code><a href="as_scenario.html">as_scenario()</a></code>
+
+        </dt>
+        <dd>Convert objects to scenarios</dd>
+      </dl><dl><dt>
+
+          <code><a href="validate_scenario.html">validate_scenario()</a></code>
+
+        </dt>
+        <dd>Validate a scenario object</dd>
+      </dl><dl><dt>
+
           <code><a href="apply_scenario.html">apply_scenario()</a></code>
 
         </dt>
@@ -357,7 +435,7 @@
           <code><a href="print.margot_scenario.html">print(<i>&lt;margot_scenario&gt;</i>)</a></code>
 
         </dt>
-        <dd>Print method for scenario objects</dd>
+        <dd>Print method for scenario objects (S3 format)</dd>
       </dl><dl><dt>
 
           <code><a href="print.margot_scenario_result.html">print(<i>&lt;margot_scenario_result&gt;</i>)</a></code>
@@ -555,6 +633,24 @@
         <dd>RNG Stream Management for Parallel Monte Carlo</dd>
       </dl><dl><dt>
 
+          <code><a href="create_seed_sequence.html">create_seed_sequence()</a></code>
+
+        </dt>
+        <dd>Create a seed sequence for reproducible parallel execution</dd>
+      </dl><dl><dt>
+
+          <code><a href="setup_parallel_rng.html">setup_parallel_rng()</a></code>
+
+        </dt>
+        <dd>Set up reproducible RNG for parallel backend</dd>
+      </dl><dl><dt>
+
+          <code><a href="validate_parallel_rng.html">validate_parallel_rng()</a></code>
+
+        </dt>
+        <dd>Validate parallel RNG reproducibility</dd>
+      </dl><dl><dt>
+
           <code><a href="validate_rng_reproducibility.html">validate_rng_reproducibility()</a></code>
 
         </dt>
@@ -664,73 +760,85 @@
           <code><a href="new_shadow.html">new_shadow()</a></code>
 
         </dt>
-        <dd>S3 Methods for margot Objects</dd>
+        <dd>Create a margot shadow object</dd>
       </dl><dl><dt>
 
           <code><a href="new_scenario.html">new_scenario()</a></code>
 
         </dt>
-        <dd>Constructor for margot_scenario objects</dd>
+        <dd>Create a margot scenario object</dd>
       </dl><dl><dt>
 
           <code><a href="validate_shadow.html">validate_shadow()</a></code>
 
         </dt>
-        <dd>Validator for margot_shadow objects</dd>
+        <dd>Validate a shadow object</dd>
       </dl><dl><dt>
 
           <code><a href="validate_scenario.html">validate_scenario()</a></code>
 
         </dt>
-        <dd>Validator for margot_scenario objects</dd>
+        <dd>Validate a scenario object</dd>
       </dl><dl><dt>
 
           <code><a href="is_shadow.html">is_shadow()</a></code>
 
         </dt>
-        <dd>Test if object is a shadow</dd>
+        <dd>Check if object is a shadow</dd>
       </dl><dl><dt>
 
           <code><a href="is_scenario.html">is_scenario()</a></code>
 
         </dt>
-        <dd>Test if object is a scenario</dd>
+        <dd>Check if object is a scenario</dd>
       </dl><dl><dt>
 
           <code><a href="as_shadow.html">as_shadow()</a></code>
 
         </dt>
-        <dd>Convert old-style shadow to S3</dd>
+        <dd>Convert objects to shadows</dd>
       </dl><dl><dt>
 
           <code><a href="as_scenario.html">as_scenario()</a></code>
 
         </dt>
-        <dd>Convert old-style scenario to S3</dd>
+        <dd>Convert objects to scenarios</dd>
       </dl><dl><dt>
 
-          <code><a href="c.margot_shadow.html">c(<i>&lt;margot_shadow&gt;</i>)</a></code>
+          <code><a href="new_shadow_list.html">new_shadow_list()</a></code>
 
         </dt>
-        <dd>Combine multiple shadows into a list</dd>
+        <dd>Create a shadow list</dd>
+      </dl><dl><dt>
+
+          <code><a href="c.margot_scenario.html">c(<i>&lt;margot_scenario&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Combine scenarios</dd>
+      </dl><dl><dt>
+
+          <code><a href="c.shadow_list.html">c(<i>&lt;shadow_list&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Combine shadow lists</dd>
       </dl><dl><dt>
 
           <code><a href="sub-.shadow_list.html">`[`(<i>&lt;shadow_list&gt;</i>)</a></code>
 
         </dt>
-        <dd>Extract shadow from a list</dd>
+        <dd>Extract from shadow list</dd>
       </dl><dl><dt>
 
           <code><a href="sub-.margot_scenario.html">`[`(<i>&lt;margot_scenario&gt;</i>)</a></code>
 
         </dt>
-        <dd>Subset shadows from a scenario</dd>
+        <dd>Extract shadows from a scenario</dd>
       </dl><dl><dt>
 
           <code><a href="length.margot_scenario.html">length(<i>&lt;margot_scenario&gt;</i>)</a></code>
 
         </dt>
-        <dd>Length method for scenarios</dd>
+        <dd>Get the number of shadows in a scenario</dd>
       </dl><dl><dt>
 
           <code><a href="names.margot_scenario.html">names(<i>&lt;margot_scenario&gt;</i>)</a></code>
@@ -742,13 +850,13 @@
           <code><a href="as.data.frame.margot_shadow.html">as.data.frame(<i>&lt;margot_shadow&gt;</i>)</a></code>
 
         </dt>
-        <dd>Convert shadow to data frame for summary</dd>
+        <dd>Convert shadow to data frame</dd>
       </dl><dl><dt>
 
           <code><a href="as.data.frame.margot_scenario.html">as.data.frame(<i>&lt;margot_scenario&gt;</i>)</a></code>
 
         </dt>
-        <dd>Convert scenario to data frame for summary</dd>
+        <dd>Convert scenario to data frame</dd>
       </dl><dl><dt>
 
           <code><a href="print.margot_shadow.html">print(<i>&lt;margot_shadow&gt;</i>)</a></code>
@@ -766,25 +874,19 @@
           <code><a href="summary.margot_shadow.html">summary(<i>&lt;margot_shadow&gt;</i>)</a></code>
 
         </dt>
-        <dd>Summary method for margot objects</dd>
+        <dd>Summary method for shadow objects</dd>
       </dl><dl><dt>
 
-          <code><a href="plot.margot_shadow.html">plot.margot_shadow()</a></code>
+          <code><a href="plot.margot_shadow.html">plot(<i>&lt;margot_shadow&gt;</i>)</a></code>
 
         </dt>
-        <dd>Plot method for shadow objects</dd>
+        <dd>Plot shadow distributions</dd>
       </dl><dl><dt>
 
           <code><a href="plot_shadow_type.html">plot_shadow_type()</a></code>
 
         </dt>
-        <dd>Default plot for shadows</dd>
-      </dl><dl><dt>
-
-          <code><a href="plot_shadow_type.default.html">plot_shadow_type(<i>&lt;default&gt;</i>)</a></code>
-
-        </dt>
-        <dd>Default shadow plot</dd>
+        <dd>Generic shadow plotting function</dd>
       </dl></div><div class="section level2">
       <h2 id="diagnostics-and-validation">Diagnostics and Validation<a class="anchor" aria-label="anchor" href="#diagnostics-and-validation"></a></h2>
 
@@ -837,13 +939,13 @@
           <code><a href="reorder_shadows.html">reorder_shadows()</a></code>
 
         </dt>
-        <dd>Reorder shadows to respect dependencies</dd>
+        <dd>Reorder shadows based on dependencies</dd>
       </dl><dl><dt>
 
           <code><a href="update_shadow_params.html">update_shadow_params()</a></code>
 
         </dt>
-        <dd>Update shadow parameters based on dependencies</dd>
+        <dd>Update shadow parameters based on upstream shadows</dd>
       </dl><dl><dt>
 
           <code><a href="apply_shadows_with_dependencies.html">apply_shadows_with_dependencies()</a></code>
@@ -927,6 +1029,60 @@
 
         </dt>
         <dd>Analyze heterogeneous effects from simulation output</dd>
+      </dl><dl><dt>
+
+          <code><a href="check_margot_suggests.html">check_margot_suggests()</a></code>
+
+        </dt>
+        <dd>Check all optional dependencies</dd>
+      </dl><dl><dt>
+
+          <code><a href="margot_loaded_suggests.html">margot_loaded_suggests()</a></code>
+
+        </dt>
+        <dd>Get heavy dependency usage in current session</dd>
+      </dl><dl><dt>
+
+          <code><a href="margot_optional_deps.html">margot_optional_deps()</a></code>
+
+        </dt>
+        <dd>List heavy dependencies that should move to Suggests</dd>
+      </dl><dl><dt>
+
+          <code><a href="margot_options.html">margot_options()</a></code>
+
+        </dt>
+        <dd>Standard margotverse options</dd>
+      </dl><dl><dt>
+
+          <code><a href="margot_option_defaults.html">margot_option_defaults()</a></code>
+
+        </dt>
+        <dd>Get default margotverse options</dd>
+      </dl><dl><dt>
+
+          <code><a href="has_margot_core.html">has_margot_core()</a></code>
+
+        </dt>
+        <dd>Check if margot.core is available</dd>
+      </dl><dl><dt>
+
+          <code><a href="get_class_source.html">get_class_source()</a></code>
+
+        </dt>
+        <dd>Get S3 class source</dd>
+      </dl><dl><dt>
+
+          <code><a href="print.margot_suggests.html">print(<i>&lt;margot_suggests&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Print method for margot_suggests</dd>
+      </dl><dl><dt>
+
+          <code><a href="grapes-or-or-grapes.html">`%||%`</a></code>
+
+        </dt>
+        <dd>S3 Methods for margot.sim Objects</dd>
       </dl></div><div class="section level2">
       <h2 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a></h2>
 

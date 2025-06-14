@@ -61,7 +61,7 @@
 <h2 id="immediate-priorities-do-before-api-solidifies">Immediate Priorities (Do Before API Solidifies)<a class="anchor" aria-label="anchor" href="#immediate-priorities-do-before-api-solidifies"></a></h2>
 <div class="section level3">
 <h3 id="id_1-formal-object-system-s3r6">1. Formal Object System (S3/R6)<a class="anchor" aria-label="anchor" href="#id_1-formal-object-system-s3r6"></a></h3>
-<p><strong>Status</strong>: Not started<br><strong>Priority</strong>: CRITICAL - Must be done before external users adopt the package<br><strong>Why</strong>: Once users start writing shadows and scenarios, changing the object system will break their code</p>
+<p><strong>Status</strong>: COMPLETED ✓<br><strong>Priority</strong>: CRITICAL - Must be done before external users adopt the package<br><strong>Why</strong>: Once users start writing shadows and scenarios, changing the object system will break their code</p>
 <p><strong>Implementation</strong>:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># S3 approach (recommended for simplicity)</span></span>
@@ -95,7 +95,7 @@
 </div>
 <div class="section level3">
 <h3 id="id_2-seed-discipline--parallel-rng">2. Seed Discipline &amp; Parallel RNG<a class="anchor" aria-label="anchor" href="#id_2-seed-discipline--parallel-rng"></a></h3>
-<p><strong>Status</strong>: Partially implemented (basic seed support exists)<br><strong>Priority</strong>: CRITICAL - Silent reproducibility failures are unacceptable<br><strong>Why</strong>: Current parallel implementation may not guarantee reproducibility</p>
+<p><strong>Status</strong>: COMPLETED ✓<br><strong>Priority</strong>: CRITICAL - Silent reproducibility failures are unacceptable<br><strong>Why</strong>: Current parallel implementation may not guarantee reproducibility</p>
 <p><strong>Implementation</strong>:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Option 1: future package approach</span></span>
@@ -121,7 +121,7 @@
 </div>
 <div class="section level3">
 <h3 id="id_3-shadow-algebradependencies">3. Shadow Algebra/Dependencies<a class="anchor" aria-label="anchor" href="#id_3-shadow-algebradependencies"></a></h3>
-<p><strong>Status</strong>: Not implemented<br><strong>Priority</strong>: HIGH - Shadows can interact in unexpected ways<br><strong>Why</strong>: E.g., truncation changes variance assumptions for measurement error</p>
+<p><strong>Status</strong>: COMPLETED ✓<br><strong>Priority</strong>: HIGH - Shadows can interact in unexpected ways<br><strong>Why</strong>: E.g., truncation changes variance assumptions for measurement error</p>
 <p><strong>Implementation</strong>:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Shadow dependency system</span></span>
@@ -163,7 +163,7 @@
 </div>
 <div class="section level3">
 <h3 id="id_4-positivity--support-diagnostics">4. Positivity &amp; Support Diagnostics<a class="anchor" aria-label="anchor" href="#id_4-positivity--support-diagnostics"></a></h3>
-<p><strong>Status</strong>: Not implemented<br><strong>Priority</strong>: HIGH - Users need this immediately<br><strong>Why</strong>: Violated positivity is a common cause of estimator failure</p>
+<p><strong>Status</strong>: COMPLETED ✓<br><strong>Priority</strong>: HIGH - Users need this immediately<br><strong>Why</strong>: Violated positivity is a common cause of estimator failure</p>
 <p><strong>Implementation</strong>:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">margot_check_positivity</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span>, <span class="va">treatment_var</span>, <span class="va">covariates</span>, </span>
@@ -209,7 +209,7 @@
 </div>
 <div class="section level3">
 <h3 id="id_5-memory-management">5. Memory Management<a class="anchor" aria-label="anchor" href="#id_5-memory-management"></a></h3>
-<p><strong>Status</strong>: Not implemented<br><strong>Priority</strong>: HIGH - Large simulations can exhaust memory<br><strong>Why</strong>: 1000 reps × 10,000 rows × 50 vars × 2 (true/observed) = 2-3 GB</p>
+<p><strong>Status</strong>: COMPLETED ✓<br><strong>Priority</strong>: HIGH - Large simulations can exhaust memory<br><strong>Why</strong>: 1000 reps × 10,000 rows × 50 vars × 2 (true/observed) = 2-3 GB</p>
 <p><strong>Implementation options</strong>:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Option 1: Streaming to disk</span></span>
@@ -246,7 +246,13 @@
 <p><strong>Files to modify</strong>: - <code>R/monte-carlo.R</code> - Add memory management options</p>
 </div>
 <div class="section level3">
-<h3 id="id_6-enhanced-testing-infrastructure">6. Enhanced Testing Infrastructure<a class="anchor" aria-label="anchor" href="#id_6-enhanced-testing-infrastructure"></a></h3>
+<h3 id="id_6-multi-treatment-support">6. Multi-Treatment Support<a class="anchor" aria-label="anchor" href="#id_6-multi-treatment-support"></a></h3>
+<p><strong>Status</strong>: COMPLETED ✓<br><strong>Priority</strong>: CRITICAL - Affects API design<br><strong>Why</strong>: Complex causal questions require multi-treatment interactions</p>
+<p><strong>Implementation</strong>: - Updated <code>margot_simulate_causal</code> to accept treatment lists - Created LMTP-compatible wrapper functions - Added interaction shift functions for complex treatment patterns - Maintained backward compatibility for single treatments</p>
+<p><strong>Files created/modified</strong>: - <code>R/margot-simulate-causal.R</code> - Updated for multi-treatment support - <code>R/margot-shift-interventions.R</code> - Added interaction functions - <code>tests/testthat/test-multi-treatment.R</code> - Comprehensive tests</p>
+</div>
+<div class="section level3">
+<h3 id="id_7-enhanced-testing-infrastructure">7. Enhanced Testing Infrastructure<a class="anchor" aria-label="anchor" href="#id_7-enhanced-testing-infrastructure"></a></h3>
 <p><strong>Status</strong>: Basic tests exist (54% coverage)<br><strong>Priority</strong>: HIGH - Need property-based tests<br><strong>Why</strong>: Must verify bias → 0 as shadow → 0</p>
 <p><strong>Implementation</strong>:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
@@ -277,7 +283,7 @@
 <p><strong>Files to create</strong>: - <code>tests/testthat/test-properties.R</code> - Property-based tests - Update existing tests to improve coverage</p>
 </div>
 <div class="section level3">
-<h3 id="id_7-cran-compliance">7. CRAN Compliance<a class="anchor" aria-label="anchor" href="#id_7-cran-compliance"></a></h3>
+<h3 id="id_8-cran-compliance">8. CRAN Compliance<a class="anchor" aria-label="anchor" href="#id_8-cran-compliance"></a></h3>
 <p><strong>Status</strong>: Package passes basic R CMD check<br><strong>Priority</strong>: HIGH - Must be sorted before submission<br><strong>Why</strong>: CRAN requirements affect design decisions</p>
 <p><strong>Checklist</strong>: - [ ] Reduce example data to &lt; 5 MB - [ ] Set <code>LazyData: false</code> if data is large - [ ] Ensure all examples run in &lt; 5 seconds - [ ] Add <code>\donttest{}</code> for longer examples - [ ] Check for platform-specific code - [ ] Verify no external dependencies in tests</p>
 </div>
@@ -297,6 +303,12 @@
 <h3 id="id_3-unmeasured-confounder-u">3. Unmeasured Confounder U<a class="anchor" aria-label="anchor" href="#id_3-unmeasured-confounder-u"></a></h3>
 <p><strong>Status</strong>: Design complete, not implemented<br><strong>Priority</strong>: MEDIUM<br><strong>Implementation</strong>: Add U parameters to <code><a href="reference/dot-default_sim_params.html">.default_sim_params()</a></code></p>
 </div>
+</div>
+<div class="section level2">
+<h2 id="margotsphere-architecture-future-development">Margotsphere Architecture (Future Development)<a class="anchor" aria-label="anchor" href="#margotsphere-architecture-future-development"></a></h2>
+<p><strong>Status</strong>: Planning phase<br><strong>Priority</strong>: LOW - Focus on margot.sim stability first<br><strong>Why</strong>: Modular ecosystem will enable better maintenance and extension</p>
+<p><strong>Planned packages</strong>: - <code>margot.core</code> - S3 classes, validation, core infrastructure - <code>margot.wrangle</code> - Data transformation, long-to-wide conversion - <code>margot.sim</code> - Simulation engine (current package) - <code>margot.lmtp</code> - LMTP integration, batch estimators - <code>margot.grf</code> - GRF integration, heterogeneous effects - <code>margot.viz</code> - Visualization, tables, graphs - <code>margot.report</code> - Reporting templates, Quarto integration - <code>margotsphere</code> - Meta-package importing all above</p>
+<p><strong>Note</strong>: Will only extract S3 classes actually needed by margot.sim to minimize regret.</p>
 </div>
 <div class="section level2">
 <h2 id="long-term-features-post-cran">Long-term Features (Post-CRAN)<a class="anchor" aria-label="anchor" href="#long-term-features-post-cran"></a></h2>

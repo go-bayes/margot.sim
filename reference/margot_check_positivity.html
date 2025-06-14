@@ -111,14 +111,15 @@ Check positivity violations in data</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Create example data with potential positivity violation</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">1000</span></span></span>
+<span class="r-in"><span><span class="va">x1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">x2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  x1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  x2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  x1 <span class="op">=</span> <span class="va">x1</span>,</span></span>
+<span class="r-in"><span>  x2 <span class="op">=</span> <span class="va">x2</span>,</span></span>
 <span class="r-in"><span>  <span class="co"># treatment depends strongly on x1</span></span></span>
 <span class="r-in"><span>  a <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="va">n</span>, <span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">plogis</a></span><span class="op">(</span><span class="fl">3</span> <span class="op">*</span> <span class="va">x1</span><span class="op">)</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'x1' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Check positivity</span></span></span>
 <span class="r-in"><span><span class="va">pos_check</span> <span class="op">&lt;-</span> <span class="fu">margot_check_positivity</span><span class="op">(</span></span></span>
@@ -126,11 +127,31 @@ Check positivity violations in data</p>
 <span class="r-in"><span>  treatment <span class="op">=</span> <span class="st">"a"</span>,</span></span>
 <span class="r-in"><span>  covariates <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x1"</span>, <span class="st">"x2"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in margot_check_positivity(data = data, treatment = "a", covariates = c("x1",     "x2")):</span> Treatment variable not found in data</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">pos_check</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'pos_check' not found</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Margot Positivity Diagnostic</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ============================</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Sample size: 1000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Treatment: a (2 levels)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Covariates: x1, x2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Threshold: 0.010</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Treatment Distribution:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     0     1 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 0.492 0.508 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Empirical Violations: 20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Top violations:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Stratum (1.13,3.24].[-3.05,-1.13], Treatment 0: p=0.000 (n=0/13)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Stratum (1.13,3.24].(-1.13,-0.653], Treatment 0: p=0.000 (n=0/13)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Stratum [-2.81,-1.16].(-0.653,-0.275], Treatment 1: p=0.000 (n=0/19)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Stratum (0.31,0.665].(-0.653,-0.275], Treatment 0: p=0.000 (n=0/8)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Stratum (1.13,3.24].(-0.653,-0.275], Treatment 0: p=0.000 (n=0/12)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ... and 15 more</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pos_check</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'pos_check' not found</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Plot type 'propensity' not yet implemented</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

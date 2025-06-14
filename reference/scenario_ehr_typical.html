@@ -81,23 +81,13 @@ misclassification, missing data, and selection issues.</p>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">ehr</span> <span class="op">&lt;-</span> <span class="fu">scenario_ehr_typical</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">ehr</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Margot Scenario: Typical EHR</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ============================</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Description: Electronic health record data with typical limitations</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Justification: EHR data quality varies by healthcare system and data type. Diagnosis codes have known validity issues. Lab values missing not at random (sicker patients tested more). Selection into EHR based on healthcare utilisation.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> References:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [1] Hernan MA et al. Using Big Data to Emulate a Target Trial When a Randomized Trial Is Not Available. Am J Epidemiol. 2016;183:758-764.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [2] Wells BJ et al. Strategies for handling missing data in electronic health record derived data. EGEMS. 2013;1:1035.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [3] Goldstein BA et al. Opportunities and challenges in developing risk prediction models with EHR data: a systematic review. JAMIA. 2017;24:198-208.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Shadows (5):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   - diagnosis_misclass: measurement_error shadow (misclassification)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   - lab_error: measurement_error shadow (classical)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   - missing_labs: item_missingness shadow (MNAR, rate: 0.35)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   - lab_truncation: truncation shadow</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   - selection: selection shadow</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;margot_scenario&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Name: Typical EHR </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Description: Electronic health record data with typical limitations </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Justification: EHR data quality varies by healthcare system and data type. Diagnosis codes have known validity issues. Lab values missing not at random (sicker patients tested more). Selection into EHR based on healthcare utilisation. </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> References: Hernan MA et al. Using Big Data to Emulate a Target Trial When a Randomized Trial Is Not Available. Am J Epidemiol. 2016;183:758-764.; Wells BJ et al. Strategies for handling missing data in electronic health record derived data. EGEMS. 2013;1:1035.; Goldstein BA et al. Opportunities and challenges in developing risk prediction models with EHR data: a systematic review. JAMIA. 2017;24:198-208. </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Number of shadows: 5 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Shadow types: measurement_error, measurement_error, item_missingness, truncation, selection </span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
