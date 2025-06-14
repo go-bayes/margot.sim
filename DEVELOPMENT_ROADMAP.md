@@ -309,16 +309,39 @@ Based on IMPLEMENTATION_PLAN.md, these are scheduled for completion before CRAN 
 **Priority**: MEDIUM  
 **Implementation**: Add U parameters to `.default_sim_params()`
 
-## Margotsphere Architecture (Future Development)
+## Margotsphere Architecture - URGENT PRIORITY
 
-**Status**: Planning phase  
-**Priority**: LOW - Focus on margot.sim stability first  
-**Why**: Modular ecosystem will enable better maintenance and extension
+**Status**: MUST START NOW - Critical foundation needed  
+**Priority**: CRITICAL - Required before any new features  
+**Why**: S3 classes must be locked down before API freeze to prevent breaking changes
 
-**Planned packages**:
-- `margot.core` - S3 classes, validation, core infrastructure
+### Critical Risk: API Instability
+The planning documents identify that we're adding features without a stable S3 foundation. This will cause cascading breaks across the ecosystem. We must create margot.core IMMEDIATELY.
+
+### Implementation Order (MUST FOLLOW):
+
+#### Phase 1: margot.core (IMMEDIATE - Week 1)
+**What moves from margot.sim to margot.core:**
+- All S3 classes: `margot_shadow`, `margot_scenario`, `shadow_list`, etc.
+- Constructors: `new_shadow()`, `new_scenario()`, `validate_*()` functions
+- Core utilities: `%||%`, `is_shadow()`, `as_shadow()`, option management
+- Shadow dependency system (WITH CYCLE DETECTION - currently missing!)
+- Generic methods that other packages will use
+
+**What stays in margot.sim:**
+- Simulation functions: `margot_simulate()`, `margot_simulate_causal()`
+- Shadow application logic: `apply_shadow()` methods
+- Monte Carlo framework
+- Distribution specifications
+- All vignettes and examples
+
+#### Phase 2: Refactor margot.sim (Week 2)
+- Update to import S3 classes from margot.core
+- Remove duplicated code
+- Add contract tests to ensure compatibility
+
+#### Phase 3: Other packages (Weeks 3-6)
 - `margot.wrangle` - Data transformation, long-to-wide conversion
-- `margot.sim` - Simulation engine (current package)
 - `margot.lmtp` - LMTP integration, batch estimators
 - `margot.grf` - GRF integration, heterogeneous effects
 - `margot.viz` - Visualization, tables, graphs
