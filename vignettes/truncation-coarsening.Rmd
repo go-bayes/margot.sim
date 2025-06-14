@@ -558,8 +558,8 @@ Based on these analyses, here are key recommendations for handling truncation an
 
 ```{r sensitivity}
 # function to perform sensitivity analysis
-sensitivity_analysis <- function(data, outcome_var, truncation_var, 
-                               truncation_points = c(Inf, 90, 80, 70)) {
+truncation_sensitivity_analysis <- function(data, outcome_var, truncation_var, 
+                                          truncation_points = c(Inf, 90, 80, 70)) {
   
   results <- lapply(truncation_points, function(tp) {
     # apply truncation
@@ -596,7 +596,7 @@ example_data <- data.frame(
 )
 example_data$outcome <- 2 + 0.5 * example_data$predictor + rnorm(1000, 0, 10)
 
-sens_results <- sensitivity_analysis(
+sens_results <- truncation_sensitivity_analysis(
   example_data, 
   "outcome",
   "predictor",

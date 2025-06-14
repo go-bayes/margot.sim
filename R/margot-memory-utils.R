@@ -18,10 +18,22 @@
 #' )
 #' 
 #' # Use in Monte Carlo
+#' \dontrun{
 #' results <- margot_monte_carlo(
 #'   n_reps = 1000,
+#'   n_per_rep = 100,
+#'   dgp_params = list(
+#'     waves = 2,
+#'     treatments = "a",
+#'     interventions = list(
+#'       natural = function(data, time, trt) data[[trt]],
+#'       shifted = function(data, time, trt) pmin(data[[trt]] + 1, 2)
+#'     )
+#'   ),
+#'   estimator_fn = function(data) list(estimate = mean(data$t2_y)),
 #'   summarize_fn = summarizer
 #' )
+#' }
 create_data_summarizer <- function(stats = c("mean", "sd", "quantiles"),
                                  vars = NULL) {
   stats <- match.arg(stats, several.ok = TRUE,

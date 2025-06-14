@@ -410,8 +410,8 @@ Let's examine how bias changes with different levels of misclassification:
 
 ```{r sensitivity-analysis}
 # Function to calculate bias for different misclassification levels
-sensitivity_analysis <- function(sens_range = seq(0.6, 1, 0.05),
-                               spec_range = seq(0.6, 1, 0.05)) {
+misclass_sensitivity_analysis <- function(sens_range = seq(0.6, 1, 0.05),
+                                        spec_range = seq(0.6, 1, 0.05)) {
   
   results <- expand.grid(
     sensitivity = sens_range,
@@ -454,7 +454,7 @@ sensitivity_analysis <- function(sens_range = seq(0.6, 1, 0.05),
 }
 
 # Run sensitivity analysis
-sens_results <- sensitivity_analysis(
+sens_results <- misclass_sensitivity_analysis(
   sens_range = seq(0.7, 1, 0.1),
   spec_range = seq(0.7, 1, 0.1)
 )

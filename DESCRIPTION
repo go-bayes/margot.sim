@@ -45,7 +45,15 @@ Suggests:
     doParallel,
     moments,
     lme4,
-    patchwork
+    patchwork,
+    survival,
+    mice,
+    rpart,
+    rpart.plot,
+    scales,
+    broom,
+    future,
+    future.apply
 Config/testthat/edition: 3
 RoxygenNote: 7.3.2
 VignetteBuilder: knitr

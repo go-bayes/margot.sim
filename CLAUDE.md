@@ -3,6 +3,7 @@
 - run pkgdown::build_articles() after each vingette is completed
 - use nz english
 - write unit tests for each new function
+- .Rbuildignore all planning documents
 
 # margot.sim Package Context
 
