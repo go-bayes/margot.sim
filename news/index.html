@@ -52,7 +52,115 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.1.3" id="margotsim-013-2025-06-12-development-version">margot.sim 0.1.3 (2025-06-12 development version)<a class="anchor" aria-label="anchor" href="#margotsim-013-2025-06-12-development-version"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.1.3" id="margotsim-013-2025-01-15">margot.sim 0.1.3 (2025-01-15)<a class="anchor" aria-label="anchor" href="#margotsim-013-2025-01-15"></a></h2>
+<div class="section level3">
+<h3 id="major-architecture-improvements-0-1-3">Major Architecture Improvements<a class="anchor" aria-label="anchor" href="#major-architecture-improvements-0-1-3"></a></h3>
+<div class="section level4">
+<h4 id="s3-object-system-0-1-3">S3 Object System<a class="anchor" aria-label="anchor" href="#s3-object-system-0-1-3"></a></h4>
+<ul><li>Complete S3 class implementation for shadows and scenarios
+<ul><li>
+<code><a href="../reference/new_shadow.html">new_shadow()</a></code>: Low-level constructor with automatic validation</li>
+<li>
+<code><a href="../reference/new_scenario.html">new_scenario()</a></code>: Scenario constructor with S3 dispatch</li>
+<li>
+<code><a href="../reference/validate_shadow.html">validate_shadow()</a></code>, <code><a href="../reference/validate_scenario.html">validate_scenario()</a></code>: S3 generic validation</li>
+<li>
+<code><a href="../reference/is_shadow.html">is_shadow()</a></code>, <code><a href="../reference/is_scenario.html">is_scenario()</a></code>: Type checking functions</li>
+<li>
+<code><a href="../reference/as_shadow.html">as_shadow()</a></code>, <code><a href="../reference/as_scenario.html">as_scenario()</a></code>: Coercion methods</li>
+<li>Print, summary, and as.data.frame methods for all classes</li>
+<li>
+<code>shadow_list</code> class for managing collections of shadows</li>
+</ul></li>
+</ul></div>
+<div class="section level4">
+<h4 id="shadow-dependency-management-0-1-3">Shadow Dependency Management<a class="anchor" aria-label="anchor" href="#shadow-dependency-management-0-1-3"></a></h4>
+<ul><li>Automatic dependency resolution and reordering
+<ul><li>
+<code><a href="../reference/get_shadow_dependencies.html">get_shadow_dependencies()</a></code>: Define dependency relationships</li>
+<li>
+<code><a href="../reference/check_shadow_ordering.html">check_shadow_ordering()</a></code>: Validate correct application order</li>
+<li>
+<code><a href="../reference/reorder_shadows.html">reorder_shadows()</a></code>: Automatic topological sorting</li>
+<li>
+<code><a href="../reference/update_shadow_params.html">update_shadow_params()</a></code>: Adjust parameters based on upstream effects</li>
+<li>
+<code><a href="../reference/apply_shadows_with_dependencies.html">apply_shadows_with_dependencies()</a></code>: Apply with automatic reordering</li>
+<li>
+<code><a href="../reference/visualize_shadow_dependencies.html">visualize_shadow_dependencies()</a></code>: Display dependency graph</li>
+</ul></li>
+</ul></div>
+<div class="section level4">
+<h4 id="multi-treatment-support-0-1-3">Multi-Treatment Support<a class="anchor" aria-label="anchor" href="#multi-treatment-support-0-1-3"></a></h4>
+<ul><li>Enhanced shift interventions for complex treatment interactions
+<ul><li>
+<code><a href="../reference/create_multi_treatment_shift.html">create_multi_treatment_shift()</a></code>: Handle multiple concurrent treatments</li>
+<li>
+<code><a href="../reference/create_interaction_shift.html">create_interaction_shift()</a></code>: Define treatment interactions</li>
+<li>
+<code><a href="../reference/create_interaction_patterns.html">create_interaction_patterns()</a></code>: Complex interaction specifications</li>
+<li>
+<code><a href="../reference/create_lmtp_wrapper.html">create_lmtp_wrapper()</a></code>: LMTP-compatible intervention wrapper</li>
+<li>Updated <code><a href="../reference/margot_simulate_causal.html">margot_simulate_causal()</a></code> to accept treatment lists</li>
+</ul></li>
+</ul></div>
+<div class="section level4">
+<h4 id="memory-management-0-1-3">Memory Management<a class="anchor" aria-label="anchor" href="#memory-management-0-1-3"></a></h4>
+<ul><li>Efficient handling of large-scale simulations
+<ul><li>Memory limit enforcement in <code><a href="../reference/margot_monte_carlo.html">margot_monte_carlo()</a></code>
+</li>
+<li>Checkpoint saving for resumable simulations</li>
+<li>
+<code><a href="../reference/create_memory_monitor.html">create_memory_monitor()</a></code>: Track memory usage</li>
+<li>
+<code><a href="../reference/create_mc_streamer.html">create_mc_streamer()</a></code>: Stream results to disk</li>
+<li>
+<code><a href="../reference/create_data_summarizer.html">create_data_summarizer()</a></code>: On-the-fly summarization</li>
+<li>
+<code><a href="../reference/resume_monte_carlo.html">resume_monte_carlo()</a></code>: Resume interrupted simulations</li>
+</ul></li>
+</ul></div>
+<div class="section level4">
+<h4 id="positivity-diagnostics-0-1-3">Positivity Diagnostics<a class="anchor" aria-label="anchor" href="#positivity-diagnostics-0-1-3"></a></h4>
+<ul><li>Comprehensive tools for detecting violations
+<ul><li>
+<code><a href="../reference/margot_check_positivity.html">margot_check_positivity()</a></code>: Check empirical and model-based positivity</li>
+<li>
+<code><a href="../reference/create_positivity_shadow_from_diagnostic.html">create_positivity_shadow_from_diagnostic()</a></code>: Create shadows from diagnostics</li>
+<li>Print and plot methods for diagnostics</li>
+<li>Integration with scenario framework</li>
+</ul></li>
+</ul></div>
+<div class="section level4">
+<h4 id="rng-and-reproducibility-0-1-3">RNG and Reproducibility<a class="anchor" aria-label="anchor" href="#rng-and-reproducibility-0-1-3"></a></h4>
+<ul><li>Proper seed discipline for parallel simulations
+<ul><li>
+<code><a href="../reference/create_seed_sequence.html">create_seed_sequence()</a></code>: Generate reproducible seed sequences</li>
+<li>
+<code><a href="../reference/create_rng_streams.html">create_rng_streams()</a></code>: Create independent RNG streams</li>
+<li>
+<code><a href="../reference/setup_parallel_rng.html">setup_parallel_rng()</a></code>: Configure parallel backends</li>
+<li>
+<code><a href="../reference/validate_parallel_rng.html">validate_parallel_rng()</a></code>: Verify RNG independence</li>
+<li>
+<code><a href="../reference/diagnose_rng_streams.html">diagnose_rng_streams()</a></code>: Debug RNG issues</li>
+</ul></li>
+</ul></div>
+</div>
+<div class="section level3">
+<h3 id="cran-compliance-0-1-3">CRAN Compliance<a class="anchor" aria-label="anchor" href="#cran-compliance-0-1-3"></a></h3>
+<ul><li>
+<strong>Full R CMD check compliance</strong>: 0 errors, 0 warnings, 0 notes</li>
+<li>Fixed all documentation issues including <code>%||%</code> operator</li>
+<li>Added missing parameter documentation</li>
+<li>Replaced non-ASCII characters</li>
+<li>Fixed example errors</li>
+<li>Added igraph to Suggests</li>
+<li>Cleaned up namespace imports</li>
+</ul></div>
+<div class="section level3">
+<h3 id="previous-features-v013-development---0-1-3">Previous Features (v0.1.3 development - 2025-06-12)<a class="anchor" aria-label="anchor" href="#previous-features-v013-development---0-1-3"></a></h3>
+</div>
 <div class="section level3">
 <h3 id="major-new-features-0-1-3">Major New Features<a class="anchor" aria-label="anchor" href="#major-new-features-0-1-3"></a></h3>
 <div class="section level4">
@@ -195,7 +303,7 @@
 </ul></div>
 </div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.1.2" id="margotsim-012-2025-06-11">margot.sim 0.1.2 (2025-06-11)<a class="anchor" aria-label="anchor" href="#margotsim-012-2025-06-11"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.1.2" id="margotsim-012-2025-01-11">margot.sim 0.1.2 (2025-01-11)<a class="anchor" aria-label="anchor" href="#margotsim-012-2025-01-11"></a></h2>
 <div class="section level3">
 <h3 id="new-features-0-1-2">New features<a class="anchor" aria-label="anchor" href="#new-features-0-1-2"></a></h3>
 <div class="section level4">
